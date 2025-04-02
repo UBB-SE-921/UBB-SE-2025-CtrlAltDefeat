@@ -27,16 +27,16 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void AddUserToWaitlist(int userId, int productWaitListId)
         {
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("AddUserToWaitlist", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("AddUserToWaitlist", sqlConnection))
                 {
-                    SQLcommand.CommandType = CommandType.StoredProcedure;
-                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    SQLcommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    sqlCommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
 
-                    SQLconnection.Open();
-                    SQLcommand.ExecuteNonQuery();
+                    sqlConnection.Open();
+                    sqlCommand.ExecuteNonQuery();
                 }
             }
         }
@@ -49,16 +49,16 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void RemoveUserFromWaitlist(int userId, int productWaitListId)
         {
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("RemoveUserFromWaitlist", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("RemoveUserFromWaitlist", sqlConnection))
                 {
-                    SQLcommand.CommandType = CommandType.StoredProcedure;
-                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    SQLcommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    sqlCommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
 
-                    SQLconnection.Open();
-                    SQLcommand.ExecuteNonQuery();
+                    sqlConnection.Open();
+                    sqlCommand.ExecuteNonQuery();
                 }
             }
         }
@@ -73,16 +73,16 @@ namespace ArtAttack.Model
         {
             var usersInWaitList = new List<UserWaitList>();
 
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("GetUsersInWaitlist", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("GetUsersInWaitlist", sqlConnection))
                 {
-                    SQLcommand.CommandType = CommandType.StoredProcedure;
-                    SQLcommand.Parameters.Add("@WaitListProductID", SqlDbType.BigInt).Value = waitListProductId;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add("@WaitListProductID", SqlDbType.BigInt).Value = waitListProductId;
 
-                    SQLconnection.Open();
+                    sqlConnection.Open();
 
-                    using (SqlDataReader SQLDataReader = SQLcommand.ExecuteReader())
+                    using (SqlDataReader SQLDataReader = sqlCommand.ExecuteReader())
                     {
                         while (SQLDataReader.Read())
                         {
@@ -111,16 +111,16 @@ namespace ArtAttack.Model
         {
             var userWaitlists = new List<UserWaitList>();
 
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("GetUserWaitlists", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("GetUserWaitlists", sqlConnection))
                 {
-                    SQLcommand.CommandType = CommandType.StoredProcedure;
-                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
 
-                    SQLconnection.Open();
+                    sqlConnection.Open();
 
-                    using (SqlDataReader SQLDataReader = SQLcommand.ExecuteReader())
+                    using (SqlDataReader SQLDataReader = sqlCommand.ExecuteReader())
                     {
                         while (SQLDataReader.Read())
                         {
@@ -149,20 +149,20 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetWaitlistSize(int productWaitListId)
         {
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("GetWaitlistSize", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("GetWaitlistSize", sqlConnection))
                 {
-                    SQLcommand.CommandType = CommandType.StoredProcedure;
-                    SQLcommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
                     SqlParameter totalUsersParameter = new SqlParameter("@TotalUsers", SqlDbType.Int)
                     {
                         Direction = ParameterDirection.Output
                     };
-                    SQLcommand.Parameters.Add(totalUsersParameter);
+                    sqlCommand.Parameters.Add(totalUsersParameter);
 
-                    SQLconnection.Open();
-                    SQLcommand.ExecuteNonQuery();
+                    sqlConnection.Open();
+                    sqlCommand.ExecuteNonQuery();
 
                     return (int)totalUsersParameter.Value;
                 }
@@ -179,15 +179,15 @@ namespace ArtAttack.Model
         public bool IsUserInWaitlist(int userId, int productId)
         {
             bool isUserInWaitlist = false;
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("CheckUserInProductWaitlist", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("CheckUserInProductWaitlist", sqlConnection))
                 {
-                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    SQLcommand.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
+                    sqlCommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    sqlCommand.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
 
-                    SQLconnection.Open();
-                    isUserInWaitlist = SQLcommand.ExecuteScalar() != null;
+                    sqlConnection.Open();
+                    isUserInWaitlist = sqlCommand.ExecuteScalar() != null;
                     return isUserInWaitlist;
                 }
             }
@@ -203,22 +203,22 @@ namespace ArtAttack.Model
         public int GetUserWaitlistPosition(int userId, int productId)
 
         {
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("GetUserWaitlistPosition", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("GetUserWaitlistPosition", sqlConnection))
                 {
-                    SQLcommand.CommandType = CommandType.StoredProcedure;
-                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    SQLcommand.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    sqlCommand.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
 
                     SqlParameter positionOutputParameter = new SqlParameter("@Position", SqlDbType.Int)
                     {
                         Direction = ParameterDirection.Output
                     };
-                    SQLcommand.Parameters.Add(positionOutputParameter);
+                    sqlCommand.Parameters.Add(positionOutputParameter);
 
-                    SQLconnection.Open();
-                    SQLcommand.ExecuteNonQuery();
+                    sqlConnection.Open();
+                    sqlCommand.ExecuteNonQuery();
 
                     if (positionOutputParameter.Value != DBNull.Value)
                     {
@@ -242,15 +242,15 @@ namespace ArtAttack.Model
         {
             var orderedWaitlistUsers = new List<UserWaitList>();
 
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("GetOrderedWaitlistUsers", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("GetOrderedWaitlistUsers", sqlConnection))
                 {
-                    SQLcommand.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
+                    sqlCommand.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
 
-                    SQLconnection.Open();
+                    sqlConnection.Open();
 
-                    using (SqlDataReader SQLDataReader = SQLcommand.ExecuteReader())
+                    using (SqlDataReader SQLDataReader = sqlCommand.ExecuteReader())
                     {
                         while (SQLDataReader.Read())
                         {

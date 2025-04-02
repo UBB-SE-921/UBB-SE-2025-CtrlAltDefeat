@@ -26,31 +26,31 @@ namespace ArtAttack.Model
         {
             List<DummyProduct> dummyProducts = new List<DummyProduct>();
 
-            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand SQLcommand = new SqlCommand("GetDummyProductsFromOrderHistory", SQLconnection))
+                using (SqlCommand sqlCommand = new SqlCommand("GetDummyProductsFromOrderHistory", sqlConnection))
                 {
-                    SQLcommand.CommandType = CommandType.StoredProcedure;
-                    SQLcommand.Parameters.AddWithValue("@OrderHistory", orderHistoryID);
-                    await SQLconnection.OpenAsync();
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@OrderHistory", orderHistoryID);
+                    await sqlConnection.OpenAsync();
 
-                    using (SqlDataReader SQLDataReader = await SQLcommand.ExecuteReaderAsync())
+                    using (SqlDataReader sqlDataReader = await sqlCommand.ExecuteReaderAsync())
                     {
-                        while (await SQLDataReader.ReadAsync())
+                        while (await sqlDataReader.ReadAsync())
                         {
                             DummyProduct dummyProduct = new DummyProduct
                             {
 
-                                ID = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("productID")),
-                                Name = SQLDataReader.GetString(SQLDataReader.GetOrdinal("name")),
-                                Price = (float)SQLDataReader.GetDouble(SQLDataReader.GetOrdinal("price")),
-                                ProductType = SQLDataReader.GetString(SQLDataReader.GetOrdinal("productType")),
-                                SellerID = SQLDataReader["SellerID"] != DBNull.Value
-                                ? SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("SellerID")) : 0,
-                                StartDate = SQLDataReader["startDate"] != DBNull.Value
-                                ? SQLDataReader.GetDateTime(SQLDataReader.GetOrdinal("startDate")) : DateTime.MinValue,
-                                EndDate = SQLDataReader["endDate"] != DBNull.Value
-                                ? SQLDataReader.GetDateTime(SQLDataReader.GetOrdinal("endDate")) : DateTime.MaxValue
+                                ID = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("productID")),
+                                Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("name")),
+                                Price = (float)sqlDataReader.GetDouble(sqlDataReader.GetOrdinal("price")),
+                                ProductType = sqlDataReader.GetString(sqlDataReader.GetOrdinal("productType")),
+                                SellerID = sqlDataReader["SellerID"] != DBNull.Value
+                                ? sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("SellerID")) : 0,
+                                StartDate = sqlDataReader["startDate"] != DBNull.Value
+                                ? sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("startDate")) : DateTime.MinValue,
+                                EndDate = sqlDataReader["endDate"] != DBNull.Value
+                                ? sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("endDate")) : DateTime.MaxValue
                             };
                             dummyProducts.Add(dummyProduct);
                         }
