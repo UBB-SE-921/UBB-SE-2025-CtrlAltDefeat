@@ -47,11 +47,11 @@ namespace ArtAttack
         /// </summary>
         private async void ContractComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ContractComboBox.SelectedItem is Contract selected)
+            if (ContractComboBox.SelectedItem is IContract selected)
             {
-                await viewModel.SelectContractAsync(selected.ID);
+                await viewModel.SelectContractAsync(selected.ContractID);
 
-                var dates = await viewModel.GetProductDetailsByContractIdAsync(selected.ID);
+                var dates = await viewModel.GetProductDetailsByContractIdAsync(selected.ContractID);
 
                 if (dates.HasValue)
                 {
@@ -80,7 +80,7 @@ namespace ArtAttack
         /// </summary>
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ContractComboBox.SelectedItem is not Contract selectedContract)
+            if (ContractComboBox.SelectedItem is not IContract selectedContract)
             {
                 await ShowMessage("Please select a contract.");
                 return;

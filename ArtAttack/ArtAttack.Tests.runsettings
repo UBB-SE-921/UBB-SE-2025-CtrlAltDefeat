@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage">
+        <Configuration>
+          <CodeCoverage>
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*</ModulePath>
+              </Include>
+            </ModulePaths>
+            <Attributes>
+              <Exclude>
+                <Attribute>^System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute$</Attribute>
+              </Exclude>
+            </Attributes>
+            <Sources>
+              <Exclude>
+                <Source>.*\\obj\\.*</Source>
+                <Source>.*\\bin\\.*</Source>
+              </Exclude>
+            </Sources>
+            <UseVerifiableInstrumentation>true</UseVerifiableInstrumentation>
+            <AllowLowIntegrityProcesses>true</AllowLowIntegrityProcesses>
+            <CollectFromChildProcesses>true</CollectFromChildProcesses>
+            <CollectAspDotNet>true</CollectAspDotNet>
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

@@ -1,9 +1,9 @@
 ﻿namespace ArtAttack.Domain
 {
-    public class Contract
+    public class Contract :IContract
     {
         // Unique identifier for the contract (Identity field in the database)
-        public long ID { get; set; }
+        public long ContractID { get; set; }
 
         // Foreign key linking to the Order table (assumed to be of type integer)
         public int OrderID { get; set; }

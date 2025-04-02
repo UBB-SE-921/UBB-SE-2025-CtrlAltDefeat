@@ -11,7 +11,7 @@ namespace ArtAttack.Model
         private readonly string _connectionString;
 
         public DummyProductModel(string connectionString)
-        {
+        {   
             _connectionString = connectionString;
         }
 

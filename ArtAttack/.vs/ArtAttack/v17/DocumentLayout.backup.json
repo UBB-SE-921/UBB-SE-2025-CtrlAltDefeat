@@ -3,32 +3,31 @@
   "WorkspaceRootPath": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\views\\orderhistoryui.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:views\\orderhistoryui.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\shared\\configuration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:shared\\configuration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack.tests\\apptests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\database\\entities\\tableseeddata.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:database\\entities\\tableseeddata.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\database\\entities\\dummyinserts.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:database\\entities\\dummyinserts.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\database\\procedures\\allprocedures.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:database\\procedures\\allprocedures.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\viewmodel\\contractrenewviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\contractrenewviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\database\\entities\\createtables.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:database\\entities\\createtables.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\model\\contractrenewalmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:model\\contractrenewalmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\viewmodel\\billinginfomodelview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\billinginfomodelview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|d:\\faculty\\ctrlaltdefeatmarketplace\\artattack\\viewmodel\\notificationviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\notificationviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,8 +37,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "OrderHistoryUI.xaml.cs",
+              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Views\\OrderHistoryUI.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\OrderHistoryUI.xaml.cs",
+              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Views\\OrderHistoryUI.xaml.cs",
+              "RelativeToolTip": "Views\\OrderHistoryUI.xaml.cs",
+              "ViewState": "AgIAAJUAAAAAAAAAAAAnwKAAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T18:51:07.951Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -53,86 +65,81 @@
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": ".gitignore",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\.gitignore",
-              "RelativeDocumentMoniker": ".gitignore",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\.gitignore",
-              "RelativeToolTip": ".gitignore",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABoAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-04-01T15:14:02.923Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Configuration.cs",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Shared\\Configuration.cs",
-              "RelativeDocumentMoniker": "Shared\\Configuration.cs",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Shared\\Configuration.cs",
-              "RelativeToolTip": "Shared\\Configuration.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Title": "AppTests.cs",
+              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\AppTests.cs",
+              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\AppTests.cs",
+              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\AppTests.cs",
+              "RelativeToolTip": "..\\ArtAttack.Tests\\AppTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-31T19:14:48.072Z",
+              "WhenOpened": "2025-04-02T18:19:34.771Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "TableSeedData.sql",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Entities\\TableSeedData.sql",
-              "RelativeDocumentMoniker": "Database\\Entities\\TableSeedData.sql",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Entities\\TableSeedData.sql",
-              "RelativeToolTip": "Database\\Entities\\TableSeedData.sql",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-03-31T19:12:32.459Z"
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\App.xaml.cs",
+              "RelativeDocumentMoniker": "App.xaml.cs",
+              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\App.xaml.cs",
+              "RelativeToolTip": "App.xaml.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAYwBgAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T18:04:29.011Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "DummyInserts.sql",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Entities\\DummyInserts.sql",
-              "RelativeDocumentMoniker": "Database\\Entities\\DummyInserts.sql",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Entities\\DummyInserts.sql",
-              "RelativeToolTip": "Database\\Entities\\DummyInserts.sql",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-03-31T19:12:31.187Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ALLPROCEDURES.sql",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Procedures\\ALLPROCEDURES.sql",
-              "RelativeDocumentMoniker": "Database\\Procedures\\ALLPROCEDURES.sql",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Procedures\\ALLPROCEDURES.sql",
-              "RelativeToolTip": "Database\\Procedures\\ALLPROCEDURES.sql",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-03-31T19:12:09.184Z"
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
+              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAQwCIAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T13:41:04.784Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "CreateTables.sql",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Entities\\CreateTables.sql",
-              "RelativeDocumentMoniker": "Database\\Entities\\CreateTables.sql",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Database\\Entities\\CreateTables.sql",
-              "RelativeToolTip": "Database\\Entities\\CreateTables.sql",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-03-31T19:12:21.727Z"
+              "Title": "ContractRenewalModel.cs",
+              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Model\\ContractRenewalModel.cs",
+              "RelativeDocumentMoniker": "Model\\ContractRenewalModel.cs",
+              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\Model\\ContractRenewalModel.cs",
+              "RelativeToolTip": "Model\\ContractRenewalModel.cs",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAWwGIAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T14:07:17.686Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ContractRenewViewModel.cs",
+              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\ContractRenewViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModel\\ContractRenewViewModel.cs",
+              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\ContractRenewViewModel.cs",
+              "RelativeToolTip": "ViewModel\\ContractRenewViewModel.cs",
+              "ViewState": "AgIAAHwAAAAAAAAAAAAiwIgAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T14:06:36.573Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "BillingInfoModelView.cs",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\BillingInfoModelView.cs",
-              "RelativeDocumentMoniker": "ViewModel\\BillingInfoModelView.cs",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\BillingInfoModelView.cs",
-              "RelativeToolTip": "ViewModel\\BillingInfoModelView.cs",
-              "ViewState": "AgIAAEQAAAAAAAAAAAAgwBUAAAAAAAAAAAAAAA==",
+              "Title": "NotificationViewModel.cs",
+              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\NotificationViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModel\\NotificationViewModel.cs",
+              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\NotificationViewModel.cs",
+              "RelativeToolTip": "ViewModel\\NotificationViewModel.cs",
+              "ViewState": "AgIAAJwAAAAAAAAAAAAIwKkAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-31T18:59:31.285Z"
+              "WhenOpened": "2025-04-02T13:28:27.567Z"
             }
           ]
         }

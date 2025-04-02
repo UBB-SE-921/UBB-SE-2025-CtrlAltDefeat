@@ -14,81 +14,158 @@ namespace ArtAttack.ViewModel
 {
     public class ContractViewModel : IContractViewModel
     {
-        private readonly ContractModel _model;
+        private readonly IContractModel _model;
 
+        /// <summary>
+        /// Constructor for the ContractViewModel
+        /// </summary>
+        /// <param name="connectionString" type="string">The connection string to the database</param>
         public ContractViewModel(string connectionString)
         {
             _model = new ContractModel(connectionString);
         }
 
-        public async Task<Contract> GetContractByIdAsync(long contractId)
+        /// <summary>
+        /// Get a contract by its ID
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The contract with the given ID></returns>
+        public async Task<IContract> GetContractByIdAsync(long contractId)
         {
             return await _model.GetContractByIdAsync(contractId);
         }
 
-        public async Task<List<Contract>> GetAllContractsAsync()
+        /// <summary>
+        /// Get all contracts
+        /// </summary>
+        /// <returns The list of contracts></returns>
+        public async Task<List<IContract>> GetAllContractsAsync()
         {
             return await _model.GetAllContractsAsync();
         }
 
-        public async Task<List<Contract>> GetContractHistoryAsync(long contractId)
+        /// <summary>
+        /// Get the history of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The list of contracts that are related to the given contract></returns>
+        public async Task<List<IContract>> GetContractHistoryAsync(long contractId)
         {
             return await _model.GetContractHistoryAsync(contractId);
         }
 
-        public async Task<Contract> AddContractAsync(Contract contract, byte[] pdfFile)
+        /// <summary>
+        /// Add a contract to the database
+        /// </summary>
+        /// <param name="contract" type="Contract">The contract to add</param>
+        /// <param name="pdfFile" type="byte[]">The PDF file of the contract</param>
+        /// <returns The added contract></returns>  
+        public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
             return await _model.AddContractAsync(contract, pdfFile);
         }
 
+        /// <summary>
+        /// Get the seller of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The ID and name of the seller></returns>
         public async Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId)
         {
             return await _model.GetContractSellerAsync(contractId);
         }
 
+        /// <summary>
+        /// Get the buyer of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The ID and name of the buyer></returns>
         public async Task<(int BuyerID, string BuyerName)> GetContractBuyerAsync(long contractId)
         {
             return await _model.GetContractBuyerAsync(contractId);
         }
 
+        /// <summary>
+        /// Get the order summary information of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The order summary information></returns>
         public async Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId)
         {
             return await _model.GetOrderSummaryInformationAsync(contractId);
         }
 
+        /// <summary>
+        /// Get the product details of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The product details></returns>
         public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
             return await _model.GetProductDetailsByContractIdAsync(contractId);
         }
 
-        public async Task<List<Contract>> GetContractsByBuyerAsync(int buyerId)
+        /// <summary>
+        /// Get the contracts of a buyer
+        /// </summary>
+        /// <param name="buyerId" type="int">The ID of the buyer</param>
+        /// <returns The list of contracts of the buyer></returns>
+        public async Task<List<IContract>> GetContractsByBuyerAsync(int buyerId)
         {
             return await _model.GetContractsByBuyerAsync(buyerId);
         }
 
-        public async Task<PredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
+        /// <summary>
+        /// Get the predefined contract by its type
+        /// </summary>
+        /// <param name="predefinedContractType" type="PredefinedContractType">The type of the predefined contract</param>
+        /// <returns The predefined contract with the given type></returns>
+        public async Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
             return await _model.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
         }
 
+        /// <summary>
+        /// Get the order details of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The payment method and order date></returns>
         public async Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
             return await _model.GetOrderDetailsAsync(contractId);
         }
 
+        /// <summary>
+        /// Get the delivery date of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The delivery date></returns>
         public async Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId)
         {
             return await _model.GetDeliveryDateByContractIdAsync(contractId);
         }
 
+        /// <summary>
+        /// Get the PDF of a contract
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract</param>
+        /// <returns The PDF of the contract></returns>
         public async Task<byte[]> GetPdfByContractIdAsync(long contractId)
         {
             return await _model.GetPdfByContractIdAsync(contractId);
         }
 
+        /// <summary>
+        /// Generate and save a contract
+        /// </summary>
+        /// <param name="contract" type="Contract">The contract to generate and save</param>
+        /// <param name="predefinedContract" type="PredefinedContractType">The type of the predefined contract</param>
+        /// <param name="fieldReplacements" type="Dictionary<string, string>">The field replacements for the contract</param>
+        /// <returns The task></returns>
+        /// <exception cref="ArgumentNullException" throws on="contract == null">Thrown when the contract is null</exception>
         private byte[] _GenerateContractPdf(
-    Contract contract,
-    PredefinedContract predefinedContract,
+    IContract contract,
+    IPredefinedContract predefinedContract,
     Dictionary<string, string> fieldReplacements)
         {
             // Validate inputs.
@@ -108,7 +185,7 @@ namespace ArtAttack.ViewModel
             }
 
             // Replace specific placeholders.
-            content = content.Replace("{ContractID}", contract.ID.ToString());
+            content = content.Replace("{ContractID}", contract.ContractID.ToString());
             content = content.Replace("{OrderID}", contract.OrderID.ToString());
             content = content.Replace("{ContractStatus}", contract.ContractStatus);
             content = content.Replace("{AdditionalTerms}", contract.AdditionalTerms);
@@ -198,20 +275,25 @@ namespace ArtAttack.ViewModel
             return document.GeneratePdf();
         }
 
-        private async Task<Dictionary<string, string>> _GetFieldReplacements(Contract contract)
+        /// <summary>
+        /// Get the field replacements for a contract
+        /// </summary>
+        /// <param name="contract" type="Contract">The contract to get the field replacements for</param>
+        /// <returns The field replacements></returns>
+        private async Task<Dictionary<string, string>> _GetFieldReplacements(IContract contract)
         {
             var fieldReplacements = new Dictionary<string, string>();
 
             // Retrieve the product dates asynchronously.
-            var productDetails = await GetProductDetailsByContractIdAsync(contract.ID);
-            var buyerDetails = await GetContractBuyerAsync(contract.ID);
-            var sellerDetails = await GetContractSellerAsync(contract.ID);
+            var productDetails = await GetProductDetailsByContractIdAsync(contract.ContractID);
+            var buyerDetails = await GetContractBuyerAsync(contract.ContractID);
+            var sellerDetails = await GetContractSellerAsync(contract.ContractID);
             DateTime StartDate = productDetails.Value.StartDate;
             DateTime EndDate = productDetails.Value.EndDate;
             var LoanPeriod = (EndDate - StartDate).TotalDays;
-            var orderDetails = await GetOrderDetailsAsync(contract.ID);
-            var orderSummaryData = await GetOrderSummaryInformationAsync(contract.ID);
-            var deliveryDate = await GetDeliveryDateByContractIdAsync(contract.ID);
+            var orderDetails = await GetOrderDetailsAsync(contract.ContractID);
+            var orderSummaryData = await GetOrderSummaryInformationAsync(contract.ContractID);
+            var deliveryDate = await GetDeliveryDateByContractIdAsync(contract.ContractID);
 
 
             if (productDetails.HasValue)
@@ -246,8 +328,13 @@ namespace ArtAttack.ViewModel
             return fieldReplacements;
         }
 
-
-        public async Task GenerateAndSaveContractAsync(Contract contract, PredefinedContractType contractType)
+        /// <summary>
+        /// Generate and save a contract asynchronously
+        /// </summary>
+        /// <param name="contract" type="Contract">The contract to generate and save</param>
+        /// <param name="contractType" type="PredefinedContractType">The type of the predefined contract</param>
+        /// <returns The task></returns>
+        public async Task GenerateAndSaveContractAsync(IContract contract, PredefinedContractType contractType)
         {
 
             var predefinedContract = await GetPredefinedContractByPredefineContractTypeAsync(contractType);
@@ -260,7 +347,7 @@ namespace ArtAttack.ViewModel
 
             // Determine the Downloads folder path.
             string downloadsPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-            string fileName = $"Contract_{contract.ID}.pdf";
+            string fileName = $"Contract_{contract.ContractID}.pdf";
             string filePath = System.IO.Path.Combine(downloadsPath, fileName);
 
             // Save the PDF file asynchronously.
@@ -271,9 +358,16 @@ namespace ArtAttack.ViewModel
             await Launcher.LaunchFileAsync(file);
         }
 
-        public async Task GeneratePDFAndAddContract(Contract contract, PredefinedContractType contractType)
+        /// <summary>
+        /// Generate a PDF and add a contract
+        /// </summary>
+        /// <param name="contract" type="Contract">The contract to generate and add</param>
+        /// <param name="contractType" type="PredefinedContractType">The type of the predefined contract</param>
+        /// <returns The task></returns>
+        /// <exception cref="Exception" throws on="File already exists">Thrown when the file already exists</exception>
+        public async Task GeneratePDFAndAddContract(IContract contract, PredefinedContractType contractType)
         {
-            if(await GetPdfByContractIdAsync(contract.ID) != null)
+            if(await GetPdfByContractIdAsync(contract.ContractID) != null)
             {
                 throw new Exception("File already exists");
             }

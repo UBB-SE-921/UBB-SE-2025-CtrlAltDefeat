@@ -9,12 +9,21 @@ public class NotificationDataAdapter : IDisposable
 {
     private SqlConnection _connection;
 
+    /// <summary>
+    /// Constructor for the NotificationDataAdapter class.
+    /// </summary>
+    /// <param name="connectionString"> The connection String for accessing the database</param>
     public NotificationDataAdapter(string connectionString)
     {
         _connection = new SqlConnection(connectionString);
         _connection.Open();
     }
 
+    /// <summary>
+    /// Retrieves all notifications for a given user.
+    /// </summary>
+    /// <param name="recipientId"> The id of the recipient, user that receives the notification </param>
+    /// <returns></returns>
     public List<Notification> GetNotificationsForUser(int recipientId)
     {
         var notifications = new List<Notification>();
@@ -33,6 +42,10 @@ public class NotificationDataAdapter : IDisposable
         return notifications;
     }
 
+    /// <summary>
+    /// Marks a notification as read.
+    /// </summary>
+    /// <param name="notificationId"> The notification which will pe marked as read </param>
     public void MarkAsRead(int notificationId)
     {
         using (var command = new SqlCommand("MarkNotificationAsRead", _connection))
@@ -44,7 +57,11 @@ public class NotificationDataAdapter : IDisposable
         }
     }
 
-
+    /// <summary>
+    /// Adds a new notification to the database.
+    /// </summary>
+    /// <param name="notification"> Notification which will be added </param>
+    /// <exception cref="ArgumentException"></exception>
     public void AddNotification(Notification notification)
     {
         using (var command = new SqlCommand("AddNotification", _connection))
@@ -111,6 +128,11 @@ public class NotificationDataAdapter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Sets null parameters for unused fields in the AddNotification stored procedure.
+    /// </summary>
+    /// <param name="command">The SqlCommand object used to execute the AddNotification stored procedure.</param>
+    /// <param name="notification">The Notification object containing the data to be added to the database.</param>
     private void SetNullParametersForUnusedFields(SqlCommand command, Notification notification)
     {
         var allParams = new[] { "@contractID", "@isAccepted", "@productID", "@orderID",
@@ -125,6 +147,9 @@ public class NotificationDataAdapter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes of the SqlConnection object.
+    /// </summary>
     public void Dispose()
     {
         _connection?.Close();
