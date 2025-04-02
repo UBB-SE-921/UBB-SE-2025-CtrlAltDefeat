@@ -51,7 +51,7 @@ namespace ArtAttack.ViewModel
             try
             {
                 int returnedID = await model.AddTrackedOrderAsync(trackedOrder);
-                OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
+                IOrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
                 try
                 {
                     Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
@@ -83,7 +83,7 @@ namespace ArtAttack.ViewModel
                 {
                     try
                     {
-                        OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
+                        IOrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
                         Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
                         NotificationViewModel buyerNotificationViewModel = new NotificationViewModel(order.BuyerID);
                         Notification placedOrderNotification = new OrderShippingProgressNotification(order.BuyerID, DateTime.Now, trackedOrder.TrackedOrderID, trackedOrder.CurrentStatus.ToString(), trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));
@@ -130,7 +130,7 @@ namespace ArtAttack.ViewModel
                 {
                     try
                     {
-                        OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
+                        IOrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
                         Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
                         NotificationViewModel buyerNotificationViewModel = new NotificationViewModel(order.BuyerID);
                         Notification placedOrderNotification = new OrderShippingProgressNotification(order.BuyerID, DateTime.Now, trackedOrder.TrackedOrderID, trackedOrder.CurrentStatus.ToString(), trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));

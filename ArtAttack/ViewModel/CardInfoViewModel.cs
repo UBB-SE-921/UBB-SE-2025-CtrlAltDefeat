@@ -12,7 +12,7 @@ namespace ArtAttack.ViewModel
     {
         private readonly OrderHistoryModel orderHistoryModel;
         private readonly OrderSummaryModel orderSummaryModel;
-        private readonly OrderModel orderModel;
+        private readonly IOrderModel orderModel;
         private readonly DummyCardModel dummyCardModel;
 
         private int orderHistoryID;

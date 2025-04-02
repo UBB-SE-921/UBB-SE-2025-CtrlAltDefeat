@@ -18,7 +18,7 @@ namespace ArtAttack
     {
         private readonly string _connectionString;
         private readonly int _userId;
-        private OrderViewModel _orderViewModel;
+        private IOrderViewModel _orderViewModel;
         private IContractViewModel _contractViewModel;
 
         Dictionary<int, string> types = new Dictionary<int, string>();
