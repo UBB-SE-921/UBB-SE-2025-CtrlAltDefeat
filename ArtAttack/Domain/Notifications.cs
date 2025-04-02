@@ -2,7 +2,7 @@ using System;
 
 namespace ArtAttack.Domain
 {
-    abstract public class Notification
+    abstract public class Notification : INotification
     {
         protected int notificationID;
         protected int recipientID;

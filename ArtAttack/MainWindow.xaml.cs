@@ -16,7 +16,7 @@ namespace ArtAttack
     public sealed partial class MainWindow : Window
     {
 
-        private Contract contract;
+        private IContract contract;
         private IContractViewModel _contractViewModel;
         private ITrackedOrderViewModel trackedOrderViewModel;
 
@@ -34,7 +34,7 @@ namespace ArtAttack
         private async void RootGrid_Loaded(object sender, RoutedEventArgs e)
         {
             // Asynchronously fetch the contract after the UI is ready.
-            contract = await _contractViewModel.GetContractByIdAsync(2);
+            contract = await _contractViewModel.GetContractByIdAsync(1);
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)

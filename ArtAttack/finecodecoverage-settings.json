@@ -1,0 +1,20 @@
+﻿{
+  "enabled": true,
+  "includedProjects": [
+    "ArtAttack",
+    "ArtAttack.Tests"
+  ],
+  "excludedProjects": [],
+  "includedItems": [
+    "[ArtAttack]*"
+  ],
+  "excludedItems": [
+    "*\\obj\\*",
+    "*\\bin\\*"
+  ],
+  "includeTestAssembly": false,
+  "thresholdForMinimumCodeCoveragePercentage": 60,
+  "useProjectFilePaths": true,
+  "runMsCodeCoverage": "Yes",
+  "runSettingsFilePath": "ArtAttack.Tests.runsettings"
+}
