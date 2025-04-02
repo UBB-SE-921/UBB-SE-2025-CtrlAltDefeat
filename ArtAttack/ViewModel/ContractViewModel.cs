@@ -164,9 +164,9 @@ namespace ArtAttack.ViewModel
         /// <returns The task></returns>
         /// <exception cref="ArgumentNullException" throws on="contract == null">Thrown when the contract is null</exception>
         private byte[] _GenerateContractPdf(
-    IContract contract,
-    IPredefinedContract predefinedContract,
-    Dictionary<string, string> fieldReplacements)
+                IContract contract,
+                IPredefinedContract predefinedContract,
+                Dictionary<string, string> fieldReplacements)
         {
             // Validate inputs.
             if (contract == null)
@@ -288,16 +288,16 @@ namespace ArtAttack.ViewModel
             var productDetails = await GetProductDetailsByContractIdAsync(contract.ContractID);
             var buyerDetails = await GetContractBuyerAsync(contract.ContractID);
             var sellerDetails = await GetContractSellerAsync(contract.ContractID);
-            DateTime StartDate = productDetails.Value.StartDate;
-            DateTime EndDate = productDetails.Value.EndDate;
-            var LoanPeriod = (EndDate - StartDate).TotalDays;
             var orderDetails = await GetOrderDetailsAsync(contract.ContractID);
             var orderSummaryData = await GetOrderSummaryInformationAsync(contract.ContractID);
             var deliveryDate = await GetDeliveryDateByContractIdAsync(contract.ContractID);
 
-
             if (productDetails.HasValue)
             {
+                DateTime StartDate = productDetails.Value.StartDate;
+                DateTime EndDate = productDetails.Value.EndDate;
+                var LoanPeriod = (EndDate - StartDate).TotalDays;
+
                 fieldReplacements["StartDate"] = StartDate.ToShortDateString();
                 fieldReplacements["EndDate"] = EndDate.ToShortDateString();
                 fieldReplacements["LoanPeriod"] = LoanPeriod.ToString();
