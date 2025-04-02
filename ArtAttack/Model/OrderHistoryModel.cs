@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArtAttack.Model
 {
-    public class OrderHistoryModel
+    public class OrderHistoryModel : IOrderHistoryModel
     {
         private readonly string _connectionString;
 
@@ -16,43 +16,49 @@ namespace ArtAttack.Model
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Retrieves a list of DummyProduct objects from the order history.
+        /// </summary>
+        /// <param name="orderHistoryID">The ID of the order history. Must be a positive integer.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a list of DummyProduct objects.</returns>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
         {
-            List<DummyProduct> products = new List<DummyProduct>();
+            List<DummyProduct> dummyProducts = new List<DummyProduct>();
 
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("GetDummyProductsFromOrderHistory", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("GetDummyProductsFromOrderHistory", SQLconnection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@OrderHistory", orderHistoryID);
-                    await conn.OpenAsync();
+                    SQLcommand.CommandType = CommandType.StoredProcedure;
+                    SQLcommand.Parameters.AddWithValue("@OrderHistory", orderHistoryID);
+                    await SQLconnection.OpenAsync();
 
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (SqlDataReader SQLDataReader = await SQLcommand.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync())
+                        while (await SQLDataReader.ReadAsync())
                         {
-                            DummyProduct product = new DummyProduct
+                            DummyProduct dummyProduct = new DummyProduct
                             {
 
-                                ID = reader.GetInt32(reader.GetOrdinal("productID")),
-                                Name = reader.GetString(reader.GetOrdinal("name")),
-                                Price = (float)reader.GetDouble(reader.GetOrdinal("price")),
-                                ProductType = reader.GetString(reader.GetOrdinal("productType")),
-                                SellerID = reader["SellerID"] != DBNull.Value
-                                ? reader.GetInt32(reader.GetOrdinal("SellerID")): 0,
-                                StartDate = reader["startDate"] != DBNull.Value
-                                ? reader.GetDateTime(reader.GetOrdinal("startDate")): DateTime.MinValue,  
-                                EndDate = reader["endDate"] != DBNull.Value
-                                ? reader.GetDateTime(reader.GetOrdinal("endDate")): DateTime.MaxValue
+                                ID = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("productID")),
+                                Name = SQLDataReader.GetString(SQLDataReader.GetOrdinal("name")),
+                                Price = (float)SQLDataReader.GetDouble(SQLDataReader.GetOrdinal("price")),
+                                ProductType = SQLDataReader.GetString(SQLDataReader.GetOrdinal("productType")),
+                                SellerID = SQLDataReader["SellerID"] != DBNull.Value
+                                ? SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("SellerID")) : 0,
+                                StartDate = SQLDataReader["startDate"] != DBNull.Value
+                                ? SQLDataReader.GetDateTime(SQLDataReader.GetOrdinal("startDate")) : DateTime.MinValue,
+                                EndDate = SQLDataReader["endDate"] != DBNull.Value
+                                ? SQLDataReader.GetDateTime(SQLDataReader.GetOrdinal("endDate")) : DateTime.MaxValue
                             };
-                            products.Add(product);
+                            dummyProducts.Add(dummyProduct);
                         }
                     }
                 }
             }
 
-            return products;
+            return dummyProducts;
         }
     }
 }

@@ -10,109 +10,126 @@ using System.Threading.Tasks;
 
 namespace ArtAttack.Model
 {
-    public class WaitListModel
+    public class WaitListModel : IWaitListModel
     {
         private readonly string _connectionString;
-        private object productWaitListId;
 
         public WaitListModel(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        // <summary>
+        /// <summary>
         /// Adds a user to the waitlist for a specific product.
+        /// </summary>
+        /// <param name="userId">The ID of the user to be added to the waitlist. Must be a positive integer.</param>
+        /// <param name="productWaitListId">The ID of the product waitlist. Must be a positive integer.</param>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void AddUserToWaitlist(int userId, int productWaitListId)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("AddUserToWaitlist", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("AddUserToWaitlist", SQLconnection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    cmd.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    SQLcommand.CommandType = CommandType.StoredProcedure;
+                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    SQLcommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    SQLconnection.Open();
+                    SQLcommand.ExecuteNonQuery();
                 }
             }
         }
 
+        /// <summary>
         /// Removes a user from the waitlist and adjusts the queue positions.
+        /// </summary>
+        /// <param name="userId">The ID of the user to be removed from the waitlist. Must be a positive integer.</param>
+        /// <param name="productWaitListId">The ID of the product waitlist. Must be a positive integer.</param>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void RemoveUserFromWaitlist(int userId, int productWaitListId)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("RemoveUserFromWaitlist", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("RemoveUserFromWaitlist", SQLconnection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    cmd.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    SQLcommand.CommandType = CommandType.StoredProcedure;
+                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    SQLcommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    SQLconnection.Open();
+                    SQLcommand.ExecuteNonQuery();
                 }
             }
         }
 
+        /// <summary>
         /// Retrieves all users in a waitlist for a given product.
+        /// </summary>
+        /// <param name="waitListProductId">The ID of the product waitlist. Must be a positive integer.</param>
+        /// <returns>A list of UserWaitList objects representing the users in the waitlist.</returns>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public List<UserWaitList> GetUsersInWaitlist(int waitListProductId)
         {
-            var waitlistEntries = new List<UserWaitList>();
+            var usersInWaitList = new List<UserWaitList>();
 
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("GetUsersInWaitlist", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("GetUsersInWaitlist", SQLconnection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@WaitListProductID", SqlDbType.BigInt).Value = waitListProductId;
+                    SQLcommand.CommandType = CommandType.StoredProcedure;
+                    SQLcommand.Parameters.Add("@WaitListProductID", SqlDbType.BigInt).Value = waitListProductId;
 
-                    conn.Open();
+                    SQLconnection.Open();
 
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlDataReader SQLDataReader = SQLcommand.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (SQLDataReader.Read())
                         {
-                            var entry = new UserWaitList
+                            var userWaitListEntry = new UserWaitList
                             {
-                                userID = reader.GetInt32(reader.GetOrdinal("userID")),
-                                positionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
-                                joinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
+                                userID = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("userID")),
+                                positionInQueue = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("positionInQueue")),
+                                joinedTime = SQLDataReader.GetDateTime(SQLDataReader.GetOrdinal("joinedTime"))
                             };
-                            waitlistEntries.Add(entry);
+                            usersInWaitList.Add(userWaitListEntry);
                         }
                     }
                 }
             }
 
-            return waitlistEntries;
+            return usersInWaitList;
         }
 
         /// <summary>
         /// Gets all waitlists that a user is part of.
+        /// </summary>
+        /// <param name="userId">The ID of the user. Must be a positive integer.</param>
+        /// <returns>A list of UserWaitList objects representing the waitlists the user is part of.</returns>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public List<UserWaitList> GetUserWaitlists(int userId)
         {
             var userWaitlists = new List<UserWaitList>();
 
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("GetUserWaitlists", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("GetUserWaitlists", SQLconnection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    SQLcommand.CommandType = CommandType.StoredProcedure;
+                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
 
-                    conn.Open();
+                    SQLconnection.Open();
 
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlDataReader SQLDataReader = SQLcommand.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (SQLDataReader.Read())
                         {
                             var userWaitlist = new UserWaitList
                             {
                                 userID = userId,
-                                productWaitListID = reader.GetInt32(reader.GetOrdinal("productWaitListID")),
-                                positionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
-                                joinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
+                                productWaitListID = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("productWaitListID")),
+                                positionInQueue = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("positionInQueue")),
+                                joinedTime = SQLDataReader.GetDateTime(SQLDataReader.GetOrdinal("joinedTime"))
                             };
 
                             userWaitlists.Add(userWaitlist);
@@ -126,100 +143,131 @@ namespace ArtAttack.Model
 
         /// <summary>
         /// Gets the number of users in a product's waitlist.
+        /// </summary>
+        /// <param name="productWaitListId">The ID of the product waitlist. Must be a positive integer.</param>
+        /// <returns>The number of users in the waitlist.</returns>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetWaitlistSize(int productWaitListId)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("GetWaitlistSize", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("GetWaitlistSize", SQLconnection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
-                    SqlParameter outputParam = new SqlParameter("@TotalUsers", SqlDbType.Int)
+                    SQLcommand.CommandType = CommandType.StoredProcedure;
+                    SQLcommand.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    SqlParameter totalUsersParameter = new SqlParameter("@TotalUsers", SqlDbType.Int)
                     {
                         Direction = ParameterDirection.Output
                     };
-                    cmd.Parameters.Add(outputParam);
+                    SQLcommand.Parameters.Add(totalUsersParameter);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    SQLconnection.Open();
+                    SQLcommand.ExecuteNonQuery();
 
-                    return (int)outputParam.Value;
+                    return (int)totalUsersParameter.Value;
                 }
             }
         }
 
         /// <summary>
         /// Checks if a user is in a product's waitlist.
+        /// </summary>
+        /// <param name="userId">The ID of the user. Must be a positive integer.</param>
+        /// <param name="productId">The ID of the product. Must be a positive integer.</param>
+        /// <returns>True if the user is in the waitlist, otherwise false.</returns>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public bool IsUserInWaitlist(int userId, int productId)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            bool isUserInWaitlist = false;
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("CheckUserInProductWaitlist", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("CheckUserInProductWaitlist", SQLconnection))
                 {
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    cmd.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
+                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    SQLcommand.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
 
-                    conn.Open();
-                    return cmd.ExecuteScalar() != null;
+                    SQLconnection.Open();
+                    isUserInWaitlist = SQLcommand.ExecuteScalar() != null;
+                    return isUserInWaitlist;
                 }
             }
         }
 
+        /// <summary>
+        /// Gets the position of a user in a product's waitlist.
+        /// </summary>
+        /// <param name="userId">The ID of the user. Must be a positive integer.</param>
+        /// <param name="productId">The ID of the product. Must be a positive integer.</param>
+        /// <returns>The position of the user in the waitlist, or -1 if the user is not in the waitlist.</returns>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetUserWaitlistPosition(int userId, int productId)
 
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("GetUserWaitlistPosition", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("GetUserWaitlistPosition", SQLconnection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    cmd.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
+                    SQLcommand.CommandType = CommandType.StoredProcedure;
+                    SQLcommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                    SQLcommand.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
 
-                    SqlParameter outputParam = new SqlParameter("@Position", SqlDbType.Int)
+                    SqlParameter positionOutputParameter = new SqlParameter("@Position", SqlDbType.Int)
                     {
                         Direction = ParameterDirection.Output
                     };
-                    cmd.Parameters.Add(outputParam);
+                    SQLcommand.Parameters.Add(positionOutputParameter);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    SQLconnection.Open();
+                    SQLcommand.ExecuteNonQuery();
 
-                    return outputParam.Value != DBNull.Value ? (int)outputParam.Value : -1;
+                    if (positionOutputParameter.Value != DBNull.Value)
+                    {
+                        return (int)positionOutputParameter.Value;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
                 }
             }
         }
 
-            public List<UserWaitList> GetUsersInWaitlistOrdered(int productId)
+        /// <summary>
+        /// Retrieves all users in a waitlist for a given product, ordered by their position in the queue.
+        /// </summary>
+        /// <param name="productId">The ID of the product. Must be a positive integer.</param>
+        /// <returns>A list of UserWaitList objects representing the users in the waitlist, ordered by their position in the queue.</returns>
+        /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
+        public List<UserWaitList> GetUsersInWaitlistOrdered(int productId)
         {
-            var waitlistEntries = new List<UserWaitList>();
+            var orderedWaitlistUsers = new List<UserWaitList>();
 
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection SQLconnection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("GetOrderedWaitlistUsers", conn))
+                using (SqlCommand SQLcommand = new SqlCommand("GetOrderedWaitlistUsers", SQLconnection))
                 {
-                    cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
+                    SQLcommand.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
 
-                    conn.Open();
+                    SQLconnection.Open();
 
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlDataReader SQLDataReader = SQLcommand.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (SQLDataReader.Read())
                         {
-                            var entry = new UserWaitList
+                            var waitListUser = new UserWaitList
                             {
-                                productWaitListID = reader.GetInt32(reader.GetOrdinal("productWaitListID")),
-                                userID = reader.GetInt32(reader.GetOrdinal("userID")),
-                                joinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime")),
-                                positionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue"))
+                                productWaitListID = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("productWaitListID")),
+                                userID = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("userID")),
+                                joinedTime = SQLDataReader.GetDateTime(SQLDataReader.GetOrdinal("joinedTime")),
+                                positionInQueue = SQLDataReader.GetInt32(SQLDataReader.GetOrdinal("positionInQueue"))
                             };
-                            waitlistEntries.Add(entry);
+                            orderedWaitlistUsers.Add(waitListUser);
                         }
                     }
                 }
             }
 
-            return waitlistEntries;
+            return orderedWaitlistUsers;
         }
     }
 }
