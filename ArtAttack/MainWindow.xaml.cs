@@ -48,7 +48,7 @@ namespace ArtAttack
         //    myButton.Content = "Clicked";
         //}
 
-        private void purchaseButton_Click(object sender, RoutedEventArgs e)
+        private void purchaseButton_Clicked(object sender, RoutedEventArgs e)
         {
             BillingInfoWindow billingInfoWindow = new BillingInfoWindow();
             var bp = new BillingInfo(1);
@@ -56,7 +56,7 @@ namespace ArtAttack
             billingInfoWindow.Activate();
         }
 
-        private void OrderHitoryButton_Click(object sender, RoutedEventArgs e)
+        private void OrderHitoryButton_Clicked(object sender, RoutedEventArgs e)
         {
             int user_id = 1;
             var orderhistorywindow = new OrderHistoryUI(Configuration._CONNECTION_STRING_, user_id);
@@ -87,7 +87,7 @@ namespace ArtAttack
             billingInfoWindow.Activate();
         }
 
-        private async void generateContractButton_Click(object sender, RoutedEventArgs e)
+        private async void generateContractButton_Clicked(object sender, RoutedEventArgs e)
         {
             if (contract != null)
             {
@@ -122,7 +122,7 @@ namespace ArtAttack
             await contentDialog.ShowAsync();
         }
 
-        private async void borrowButton_Click(object sender, RoutedEventArgs e)
+        private async void borrowButton_Clicked(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace ArtAttack
         }
 
 
-        private async void renewContractButton_Click(object sender, RoutedEventArgs e)
+        private async void renewContractButton_Clicked(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -173,7 +173,7 @@ namespace ArtAttack
             await dialog.ShowAsync();
         }
 
-        private async void trackOrderButton_Click(object sender, RoutedEventArgs e)
+        private async void trackOrderButton_Clicked(object sender, RoutedEventArgs e)
         {
             var inputID = await ShowTrackedOrderInputDialogAsync();
             if (inputID == null)
