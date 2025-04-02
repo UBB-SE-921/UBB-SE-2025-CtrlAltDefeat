@@ -29,21 +29,21 @@
     <AppXManifest Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2025-04-02T18:14:54.233</Modified>
+      <Modified>2025-04-02T19:11:23.543</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2025-04-02T18:12:04.847</Modified>
+      <Modified>2025-04-02T18:58:06.346</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
       <PackagePath>ArtAttack.runtimeconfig.json</PackagePath>
-      <Modified>2025-04-02T18:12:04.743</Modified>
+      <Modified>2025-04-02T18:58:06.213</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
       <PackagePath>ArtAttack.dll</PackagePath>
-      <Modified>2025-04-02T18:14:53.721</Modified>
+      <Modified>2025-04-02T19:11:23.220</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
       <PackagePath>ArtAttack.dll.config</PackagePath>
@@ -1687,7 +1687,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
       <PackagePath>ArtAttack.deps.json</PackagePath>
-      <Modified>2025-04-02T18:12:04.740</Modified>
+      <Modified>2025-04-02T18:58:06.112</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\microsoft.testplatform.testhost\17.13.0\build\netcoreapp3.1\x64\testhost.exe">
       <PackagePath>testhost.exe</PackagePath>
@@ -1783,7 +1783,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
       <PackagePath>ArtAttack.exe</PackagePath>
-      <Modified>2025-04-02T18:14:53.796</Modified>
+      <Modified>2025-04-02T19:11:23.229</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
