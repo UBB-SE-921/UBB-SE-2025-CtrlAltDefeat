@@ -23,13 +23,13 @@ namespace ArtAttack.Model
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@cname", paymentDetails.cardholderName);
-                    cmd.Parameters.AddWithValue("@cnumber", paymentDetails.cardNumber);
-                    cmd.Parameters.AddWithValue("@cvc", paymentDetails.cvc);
-                    cmd.Parameters.AddWithValue("@mon", paymentDetails.month);
-                    cmd.Parameters.AddWithValue("@yr", paymentDetails.year);
-                    cmd.Parameters.AddWithValue("@country", paymentDetails.country);
-                    cmd.Parameters.AddWithValue("@balance", paymentDetails.balance);
+                    cmd.Parameters.AddWithValue("@cname", paymentDetails.CardholderName);
+                    cmd.Parameters.AddWithValue("@cnumber", paymentDetails.CardNumber);
+                    cmd.Parameters.AddWithValue("@cvc", paymentDetails.Cvc);
+                    cmd.Parameters.AddWithValue("@mon", paymentDetails.Month);
+                    cmd.Parameters.AddWithValue("@yr", paymentDetails.Year);
+                    cmd.Parameters.AddWithValue("@country", paymentDetails.Country);
+                    cmd.Parameters.AddWithValue("@balance", paymentDetails.Balance);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
