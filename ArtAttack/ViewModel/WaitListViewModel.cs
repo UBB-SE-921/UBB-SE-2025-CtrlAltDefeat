@@ -12,6 +12,15 @@ namespace ArtAttack.Services
         private readonly IWaitListModel _waitListModel;
         private readonly IDummyProductModel _dummyProductModel;
 
+        /// <summary>
+        /// Default constructor for WaitListViewModel.
+        /// </summary>
+        /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
+        /// <remarks>
+        /// Initializes a new instance of the WaitListViewModel class with the specified connection string,
+        /// creating new instances of the required model dependencies (WaitListModel and DummyProductModel).
+        /// This constructor is typically used in production scenarios where real database connections are needed.
+        /// </remarks>
         public WaitListViewModel(string connectionString)
         {
             _waitListModel = new WaitListModel(connectionString);

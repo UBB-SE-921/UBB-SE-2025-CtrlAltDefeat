@@ -537,9 +537,6 @@ namespace ArtAttack.Tests
             _mockCommand.VerifySet(c => c.CommandText = "GetWaitlistSize");
             _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
             _mockConnection.Verify(c => c.Open(), Times.Once);
-
-            // Verify parameters were added correctly
-            //_mockParameter.Verify(p => p.Direction = ParameterDirection.Output, Times.AtLeastOnce);
         }
 
 
