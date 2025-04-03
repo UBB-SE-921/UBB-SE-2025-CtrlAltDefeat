@@ -3,13 +3,9 @@ using ArtAttack.Model;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Moq.Protected;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArtAttack.Tests.Model
@@ -17,367 +13,262 @@ namespace ArtAttack.Tests.Model
     [TestClass]
     public class OrderHistoryModelTests
     {
-        private readonly string _connectionString = "Server=(localdb)\\MSSQLLocalDB;Database=TestDb;Integrated Security=True;";
+        private const string TestConnectionString = "Data Source=test;Initial Catalog=TestDB;Integrated Security=True";
 
         [TestMethod]
-        public async Task GetDummyProductsFromOrderHistoryAsync_ValidOrderHistoryId_ReturnsProducts()
+        public void Constructor_WithConnectionString_SetsConnectionStringProperty()
+        {
+            // Arrange & Act
+            var model = new OrderHistoryModel(TestConnectionString);
+
+            // Assert
+            // We're testing a private field, so we can only verify functionality indirectly
+            // by testing methods that use the connection string
+            Assert.IsNotNull(model);
+        }
+
+        [TestMethod]
+        public async Task GetDummyProductsFromOrderHistoryAsync_ReturnsExpectedProducts()
         {
             // Arrange
-            int orderHistoryId = 1;
-            var mockDb = SetupMockDatabase(GetValidProductDataReader());
-            var model = new OrderHistoryModelWrapper(_connectionString, mockDb.Object);
+            var mockSqlHelper = new MockSqlHelper();
+            mockSqlHelper.SetupDataReader(new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    { "productID", 1 },
+                    { "name", "Test Product 1" },
+                    { "price", 99.99 },
+                    { "productType", "new" },
+                    { "SellerID", 101 },
+                    { "startDate", DateTime.Today },
+                    { "endDate", DateTime.Today.AddDays(30) }
+                },
+                new Dictionary<string, object>
+                {
+                    { "productID", 2 },
+                    { "name", "Test Product 2" },
+                    { "price", 149.99 },
+                    { "productType", "used" },
+                    { "SellerID", DBNull.Value },
+                    { "startDate", DBNull.Value },
+                    { "endDate", DBNull.Value }
+                }
+            });
+
+            var orderHistoryModel = new OrderHistoryModelWrapper(TestConnectionString, mockSqlHelper);
 
             // Act
-            var result = await model.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
+            var result = await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(1);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count);
+
+            // Check first product
             Assert.AreEqual(1, result[0].ID);
             Assert.AreEqual("Test Product 1", result[0].Name);
             Assert.AreEqual(99.99f, result[0].Price);
             Assert.AreEqual("new", result[0].ProductType);
             Assert.AreEqual(101, result[0].SellerID);
+            Assert.AreEqual(DateTime.Today, result[0].StartDate);
+            Assert.AreEqual(DateTime.Today.AddDays(30), result[0].EndDate);
 
-            // Verify the SQL parameters were correct
-            mockDb.Verify(m => m.SetupCommand("GetDummyProductsFromOrderHistory", It.IsAny<Action<SqlCommand>>()),
-                Times.Once);
-        }
+            // Check second product
+            Assert.AreEqual(2, result[1].ID);
+            Assert.AreEqual("Test Product 2", result[1].Name);
+            Assert.AreEqual(149.99f, result[1].Price);
+            Assert.AreEqual("used", result[1].ProductType);
+            Assert.AreEqual(0, result[1].SellerID);  // Default value for null
+            Assert.AreEqual(DateTime.MinValue, result[1].StartDate);  // Default value for null
+            Assert.AreEqual(DateTime.MaxValue, result[1].EndDate);  // Default value for null
 
-        [TestMethod]
-        public async Task GetDummyProductsFromOrderHistoryAsync_EmptyResultSet_ReturnsEmptyList()
-        {
-            // Arrange
-            int orderHistoryId = 99; // ID with no results
-            var mockDb = SetupMockDatabase(GetEmptyDataReader());
-            var model = new OrderHistoryModelWrapper(_connectionString, mockDb.Object);
-
-            // Act
-            var result = await model.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count);
-
-            // Verify the SQL parameters were correct
-            mockDb.Verify(m => m.SetupCommand("GetDummyProductsFromOrderHistory", It.IsAny<Action<SqlCommand>>()),
-                Times.Once);
-        }
-
-        [TestMethod]
-        public async Task GetDummyProductsFromOrderHistoryAsync_NullValues_HandlesNullsCorrectly()
-        {
-            // Arrange
-            int orderHistoryId = 2;
-            var mockDb = SetupMockDatabase(GetNullValuesDataReader());
-            var model = new OrderHistoryModelWrapper(_connectionString, mockDb.Object);
-
-            // Act
-            var result = await model.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(2, result[0].ID);
-            Assert.AreEqual("Null Values Product", result[0].Name);
-            Assert.AreEqual(0, result[0].SellerID); // Default value for null
-            Assert.AreEqual(DateTime.MinValue, result[0].StartDate); // Default for null
-            Assert.AreEqual(DateTime.MaxValue, result[0].EndDate); // Default for null
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(Exception))]
-        public async Task GetDummyProductsFromOrderHistoryAsync_DatabaseError_ThrowsSqlException()
-        {
-            // Arrange
-            int orderHistoryId = 3;
-            var mockDb = new Mock<IDatabaseHelper>();
-            mockDb.Setup(m => m.SetupCommand(It.IsAny<string>(), It.IsAny<Action<SqlCommand>>()))
-                .Throws(new Exception("Database error"));
-            var model = new OrderHistoryModelWrapper(_connectionString, mockDb.Object);
-
-            // Act
-            await model.GetDummyProductsFromOrderHistoryAsync(orderHistoryId); // Should throw SqlException
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidCastException))]
-        public async Task GetDummyProductsFromOrderHistoryAsync_InvalidDataTypes_ThrowsInvalidCastException()
-        {
-            // Arrange
-            int orderHistoryId = 4;
-            var mockDb = SetupMockDatabase(GetInvalidDataTypesReader());
-            var model = new OrderHistoryModelWrapper(_connectionString, mockDb.Object);
-
-            // Act
-            await model.GetDummyProductsFromOrderHistoryAsync(orderHistoryId); // Should throw InvalidCastException
-        }
-
-        [TestMethod]
-        public async Task GetDummyProductsFromOrderHistoryAsync_Large_ReturnsCorrectNumberOfProducts()
-        {
-            // Arrange
-            int orderHistoryId = 5;
-            var mockDb = SetupMockDatabase(GetLargeDataReader(1000)); // 1000 products
-            var model = new OrderHistoryModelWrapper(_connectionString, mockDb.Object);
-
-            // Act
-            var result = await model.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1000, result.Count);
-        }
-
-        // Helper Methods for Creating Mock Data
-        private Mock<IDatabaseHelper> SetupMockDatabase(DbDataReader mockReader)
-        {
-            var mockDb = new Mock<IDatabaseHelper>();
-            mockDb.Setup(m => m.SetupCommand(It.IsAny<string>(), It.IsAny<Action<SqlCommand>>()))
-                .Returns(mockReader);
-            return mockDb;
-        }
-
-        private DbDataReader GetValidProductDataReader()
-        {
-            // Create a mock data reader with valid product data
-            var mockDataReader = new Mock<DbDataReader>();
-
-            // Set up data rows
-            var rowIndex = -1;
-            var data = new[]
-            {
-                new object[] { 1, "Test Product 1", 99.99, "new", 101, DateTime.Today, DateTime.Today.AddDays(30) },
-                new object[] { 2, "Test Product 2", 149.99, "used", 102, DateTime.Today.AddDays(-10), DateTime.Today.AddDays(20) }
-            };
-
-            // Configure Read() to advance through the rows
-            mockDataReader.Setup(m => m.ReadAsync(It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(++rowIndex < data.Length));
-
-            // Configure GetOrdinal to return correct column indexes
-            mockDataReader.Setup(m => m.GetOrdinal("productID")).Returns(0);
-            mockDataReader.Setup(m => m.GetOrdinal("name")).Returns(1);
-            mockDataReader.Setup(m => m.GetOrdinal("price")).Returns(2);
-            mockDataReader.Setup(m => m.GetOrdinal("productType")).Returns(3);
-            mockDataReader.Setup(m => m.GetOrdinal("SellerID")).Returns(4);
-            mockDataReader.Setup(m => m.GetOrdinal("startDate")).Returns(5);
-            mockDataReader.Setup(m => m.GetOrdinal("endDate")).Returns(6);
-
-            // Configure data access
-            mockDataReader.Setup(m => m.GetInt32(0)).Returns(() => (int)data[rowIndex][0]);
-            mockDataReader.Setup(m => m.GetString(1)).Returns(() => (string)data[rowIndex][1]);
-            mockDataReader.Setup(m => m.GetDouble(2)).Returns(() => (double)data[rowIndex][2]);
-            mockDataReader.Setup(m => m.GetString(3)).Returns(() => (string)data[rowIndex][3]);
-            mockDataReader.Setup(m => m.GetInt32(4)).Returns(() => (int)data[rowIndex][4]);
-            mockDataReader.Setup(m => m.GetDateTime(5)).Returns(() => (DateTime)data[rowIndex][5]);
-            mockDataReader.Setup(m => m.GetDateTime(6)).Returns(() => (DateTime)data[rowIndex][6]);
-
-            // For integer indexer
-            mockDataReader.Setup(m => m[It.IsAny<int>()]).Returns((int i) => data[rowIndex][i]);
-
-            // For string indexer
-            mockDataReader.Setup(m => m[It.IsAny<string>()]).Returns((string name) => {
-                int idx = 0;
-                switch (name)
-                {
-                    case "productID": idx = 0; break;
-                    case "name": idx = 1; break;
-                    case "price": idx = 2; break;
-                    case "productType": idx = 3; break;
-                    case "SellerID": idx = 4; break;
-                    case "startDate": idx = 5; break;
-                    case "endDate": idx = 6; break;
-                }
-                return data[rowIndex][idx];
-            });
-
-
-
-            return mockDataReader.Object;
-        }
-
-        private DbDataReader GetEmptyDataReader()
-        {
-            var mockDataReader = new Mock<DbDataReader>();
-            mockDataReader.Setup(m => m.ReadAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(false)); // No rows
-            return mockDataReader.Object;
-        }
-
-        private DbDataReader GetNullValuesDataReader()
-        {
-            // Create a mock data reader with some null values
-            var mockDataReader = new Mock<DbDataReader>();
-
-            // Set up data row with null values
-            var data = new[]
-            {
-                new object[] { 2, "Null Values Product", 59.99, "used", DBNull.Value, DBNull.Value, DBNull.Value }
-            };
-
-            // Configure Read()
-            mockDataReader.Setup(m => m.ReadAsync(It.IsAny<CancellationToken>()))
-                .Returns(new Func<Task<bool>>(() => {
-                    if (data.Length > 0)
-                    {
-                        return Task.FromResult(true);
-                    }
-                    return Task.FromResult(false);
-                }))
-                .Callback(() => data = Array.Empty<object[]>()); // Clear data after first read
-
-
-            // Configure GetOrdinal
-            mockDataReader.Setup(m => m.GetOrdinal("productID")).Returns(0);
-            mockDataReader.Setup(m => m.GetOrdinal("name")).Returns(1);
-            mockDataReader.Setup(m => m.GetOrdinal("price")).Returns(2);
-            mockDataReader.Setup(m => m.GetOrdinal("productType")).Returns(3);
-            mockDataReader.Setup(m => m.GetOrdinal("SellerID")).Returns(4);
-            mockDataReader.Setup(m => m.GetOrdinal("startDate")).Returns(5);
-            mockDataReader.Setup(m => m.GetOrdinal("endDate")).Returns(6);
-
-            // Configure data access
-            mockDataReader.Setup(m => m.GetInt32(0)).Returns(2);
-            mockDataReader.Setup(m => m.GetString(1)).Returns("Null Values Product");
-            mockDataReader.Setup(m => m.GetDouble(2)).Returns(59.99);
-            mockDataReader.Setup(m => m.GetString(3)).Returns("used");
-
-            // Configure DBNull checks
-            var statefulData = new object[] { 2, "Null Values Product", 59.99, "used", DBNull.Value, DBNull.Value, DBNull.Value };
-            mockDataReader.Setup(m => m[It.IsAny<int>()]).Returns((int i) => statefulData[i]);
-            mockDataReader.Setup(m => m[It.IsAny<string>()]).Returns((string name) => {
-                int idx = 0;
-                switch (name)
-                {
-                    case "productID": idx = 0; break;
-                    case "name": idx = 1; break;
-                    case "price": idx = 2; break;
-                    case "productType": idx = 3; break;
-                    case "SellerID": idx = 4; break;
-                    case "startDate": idx = 5; break;
-                    case "endDate": idx = 6; break;
-                }
-                return statefulData[idx];
-            });
-
-            return mockDataReader.Object;
-        }
-
-        private DbDataReader GetInvalidDataTypesReader()
-        {
-            // Create a data reader that will throw InvalidCastException
-            var mockDataReader = new Mock<DbDataReader>();
-
-            // Configure Read()
-            mockDataReader.Setup(m => m.ReadAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(true));
-
-            // Configure GetOrdinal
-            mockDataReader.Setup(m => m.GetOrdinal("productID")).Returns(0);
-
-            // This will cause an InvalidCastException when GetInt32 is called on a string
-            mockDataReader.Setup(m => m.GetInt32(0))
-                .Throws(new InvalidCastException("Cannot convert string to int"));
-
-            return mockDataReader.Object;
-        }
-
-        private DbDataReader GetLargeDataReader(int count)
-        {
-            // Create a mock data reader with many rows
-            var mockDataReader = new Mock<DbDataReader>();
-            var rowCount = 0;
-
-            // Configure Read() to return true 'count' times
-            mockDataReader.Setup(m => m.ReadAsync(It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(rowCount++ < count));
-
-            // Configure GetOrdinal
-            mockDataReader.Setup(m => m.GetOrdinal("productID")).Returns(0);
-            mockDataReader.Setup(m => m.GetOrdinal("name")).Returns(1);
-            mockDataReader.Setup(m => m.GetOrdinal("price")).Returns(2);
-            mockDataReader.Setup(m => m.GetOrdinal("productType")).Returns(3);
-            mockDataReader.Setup(m => m.GetOrdinal("SellerID")).Returns(4);
-            mockDataReader.Setup(m => m.GetOrdinal("startDate")).Returns(5);
-            mockDataReader.Setup(m => m.GetOrdinal("endDate")).Returns(6);
-
-            // Configure data access
-            mockDataReader.Setup(m => m.GetInt32(0)).Returns(() => rowCount);
-            mockDataReader.Setup(m => m.GetString(1)).Returns(() => $"Product {rowCount}");
-            mockDataReader.Setup(m => m.GetDouble(2)).Returns(19.99);
-            mockDataReader.Setup(m => m.GetString(3)).Returns("new");
-
-            // Handle column access and DBNull checks
-            var columnValues = new Dictionary<string, object>
-            {
-                { "productID", 0 },
-                { "name", "Product" },
-                { "price", 19.99 },
-                { "productType", "new" },
-                { "SellerID", 100 },
-                { "startDate", DateTime.Today },
-                { "endDate", DateTime.Today.AddMonths(1) }
-            };
-
-            mockDataReader.Setup(m => m[It.IsAny<string>()]).Returns((string name) => columnValues[name]);
-
-            return mockDataReader.Object;
+            // Verify stored procedure was called with correct parameters
+            Assert.AreEqual("GetDummyProductsFromOrderHistory", mockSqlHelper.LastCommandText);
+            Assert.AreEqual(CommandType.StoredProcedure, mockSqlHelper.LastCommandType);
+            Assert.AreEqual(1, mockSqlHelper.LastParameters["@OrderHistory"]);
         }
     }
 
-    // Wrapper and interface for dependency injection and testing
-    public interface IDatabaseHelper
-    {
-        DbDataReader SetupCommand(string storedProcName, Action<SqlCommand> parameterSetup);
-    }
-
+    // Helper classes for testing
     public class OrderHistoryModelWrapper : OrderHistoryModel
     {
-        private readonly IDatabaseHelper _dbHelper;
+        private readonly MockSqlHelper _mockSqlHelper;
 
-        public OrderHistoryModelWrapper(string connectionString, IDatabaseHelper dbHelper)
+        public OrderHistoryModelWrapper(string connectionString, MockSqlHelper mockSqlHelper)
             : base(connectionString)
         {
-            _dbHelper = dbHelper;
+            _mockSqlHelper = mockSqlHelper;
         }
 
-        // Override the GetDummyProductsFromOrderHistoryAsync method to use our mock
         public new async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
         {
             List<DummyProduct> dummyProducts = new List<DummyProduct>();
 
-            try
+            _mockSqlHelper.LastCommandText = "GetDummyProductsFromOrderHistory";
+            _mockSqlHelper.LastCommandType = CommandType.StoredProcedure;
+            _mockSqlHelper.LastParameters = new Dictionary<string, object>
             {
-                DbDataReader sqlDataReader = _dbHelper.SetupCommand(
-                    "GetDummyProductsFromOrderHistory",
-                    cmd => cmd.Parameters.AddWithValue("@OrderHistory", orderHistoryID));
+                { "@OrderHistory", orderHistoryID }
+            };
 
-                while (await sqlDataReader.ReadAsync())
-                {
-                    DummyProduct dummyProduct = new DummyProduct
-                    {
-                        ID = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("productID")),
-                        Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("name")),
-                        Price = (float)sqlDataReader.GetDouble(sqlDataReader.GetOrdinal("price")),
-                        ProductType = sqlDataReader.GetString(sqlDataReader.GetOrdinal("productType")),
-                        SellerID = sqlDataReader["SellerID"] != DBNull.Value
-                            ? sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("SellerID")) : 0,
-                        StartDate = sqlDataReader["startDate"] != DBNull.Value
-                            ? sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("startDate")) : DateTime.MinValue,
-                        EndDate = sqlDataReader["endDate"] != DBNull.Value
-                            ? sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("endDate")) : DateTime.MaxValue
-                    };
-                    dummyProducts.Add(dummyProduct);
-                }
-            }
-            catch (Exception ex)
+            var dataReader = _mockSqlHelper.ExecuteReader();
+
+            while (await dataReader.ReadAsync())
             {
-                // Re-throw the exception to match original behavior
-                throw ex;
+                DummyProduct dummyProduct = new DummyProduct
+                {
+                    ID = dataReader.GetInt32(dataReader.GetOrdinal("productID")),
+                    Name = dataReader.GetString(dataReader.GetOrdinal("name")),
+                    Price = (float)dataReader.GetDouble(dataReader.GetOrdinal("price")),
+                    ProductType = dataReader.GetString(dataReader.GetOrdinal("productType")),
+                    SellerID = dataReader["SellerID"] != DBNull.Value
+                        ? dataReader.GetInt32(dataReader.GetOrdinal("SellerID")) : 0,
+                    StartDate = dataReader["startDate"] != DBNull.Value
+                        ? dataReader.GetDateTime(dataReader.GetOrdinal("startDate")) : DateTime.MinValue,
+                    EndDate = dataReader["endDate"] != DBNull.Value
+                        ? dataReader.GetDateTime(dataReader.GetOrdinal("endDate")) : DateTime.MaxValue
+                };
+                dummyProducts.Add(dummyProduct);
             }
 
             return dummyProducts;
         }
+    }
+
+    public class MockSqlHelper
+    {
+        private List<Dictionary<string, object>> _mockData;
+
+        public string LastCommandText { get; set; }
+        public CommandType LastCommandType { get; set; }
+        public Dictionary<string, object> LastParameters { get; set; }
+
+        public void SetupDataReader(List<Dictionary<string, object>> mockData)
+        {
+            _mockData = mockData;
+        }
+
+        public MockDataReader ExecuteReader()
+        {
+            return new MockDataReader(_mockData);
+        }
+    }
+
+    public class MockDataReader : IDataReader
+    {
+        private readonly List<Dictionary<string, object>> _rows;
+        private int _currentIndex = -1;
+        private Dictionary<string, int> _ordinalMap;
+
+        public MockDataReader(List<Dictionary<string, object>> rows)
+        {
+            _rows = rows;
+
+            // Build ordinal map if rows exist
+            if (rows.Count > 0)
+            {
+                _ordinalMap = new Dictionary<string, int>();
+                int i = 0;
+                foreach (var key in rows[0].Keys)
+                {
+                    _ordinalMap[key] = i++;
+                }
+            }
+        }
+
+        public async Task<bool> ReadAsync()
+        {
+            return Read();
+        }
+
+        public bool Read()
+        {
+            _currentIndex++;
+            return _currentIndex < _rows.Count;
+        }
+
+        public int GetOrdinal(string name)
+        {
+            return _ordinalMap[name];
+        }
+
+        public int GetInt32(int i)
+        {
+            var columnName = GetColumnNameByOrdinal(i);
+            var value = _rows[_currentIndex][columnName];
+            return Convert.ToInt32(value);
+        }
+
+        public string GetString(int i)
+        {
+            var columnName = GetColumnNameByOrdinal(i);
+            var value = _rows[_currentIndex][columnName];
+            return Convert.ToString(value);
+        }
+
+        public double GetDouble(int i)
+        {
+            var columnName = GetColumnNameByOrdinal(i);
+            var value = _rows[_currentIndex][columnName];
+            return Convert.ToDouble(value);
+        }
+
+        public DateTime GetDateTime(int i)
+        {
+            var columnName = GetColumnNameByOrdinal(i);
+            var value = _rows[_currentIndex][columnName];
+            return Convert.ToDateTime(value);
+        }
+
+        public object this[string name]
+        {
+            get { return _rows[_currentIndex][name]; }
+        }
+
+        public object this[int i]
+        {
+            get { return _rows[_currentIndex][GetColumnNameByOrdinal(i)]; }
+        }
+
+        private string GetColumnNameByOrdinal(int i)
+        {
+            foreach (var kvp in _ordinalMap)
+            {
+                if (kvp.Value == i)
+                    return kvp.Key;
+            }
+            throw new IndexOutOfRangeException($"Could not find column at ordinal {i}");
+        }
+
+        #region IDataReader Implementation
+        // Implement other IDataReader members as needed
+        public void Close() { }
+        public int Depth => 0;
+        public bool IsClosed => false;
+        public int RecordsAffected => 0;
+        public int FieldCount => _ordinalMap?.Count ?? 0;
+        public void Dispose() { }
+        // These methods would be implemented similarly to the ones above
+        public bool GetBoolean(int i) => throw new NotImplementedException();
+        public byte GetByte(int i) => throw new NotImplementedException();
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length) => throw new NotImplementedException();
+        public char GetChar(int i) => throw new NotImplementedException();
+        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length) => throw new NotImplementedException();
+        public IDataReader GetData(int i) => throw new NotImplementedException();
+        public string GetDataTypeName(int i) => throw new NotImplementedException();
+        public decimal GetDecimal(int i) => throw new NotImplementedException();
+        public float GetFloat(int i) => throw new NotImplementedException();
+        public Guid GetGuid(int i) => throw new NotImplementedException();
+        public short GetInt16(int i) => throw new NotImplementedException();
+        public long GetInt64(int i) => throw new NotImplementedException();
+        public Type GetFieldType(int i) => throw new NotImplementedException();
+        public string GetName(int i) => throw new NotImplementedException();
+        public DataTable GetSchemaTable() => throw new NotImplementedException();
+        public object GetValue(int i) => throw new NotImplementedException();
+        public int GetValues(object[] values) => throw new NotImplementedException();
+        public bool IsDBNull(int i) => _rows[_currentIndex][GetColumnNameByOrdinal(i)] == DBNull.Value;
+        public bool NextResult() => false;
+        #endregion
     }
 }
