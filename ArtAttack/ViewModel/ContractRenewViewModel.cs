@@ -14,13 +14,13 @@ namespace ArtAttack.ViewModel
 {
     public class ContractRenewViewModel
     {
-        private readonly ContractModel _contractModel;
-        private readonly ContractRenewalModel _renewalModel;
+        private readonly IContractModel _contractModel;
+        private readonly IContractRenewalModel _renewalModel;
         private readonly NotificationDataAdapter _notificationAdapter;
         private readonly string _connectionString;
 
-        public List<Contract> BuyerContracts { get; private set; }
-        public Contract SelectedContract { get; private set; } = null!;
+        public List<IContract> BuyerContracts { get; private set; }
+        public IContract SelectedContract { get; private set; } = null!;
 
         public ContractRenewViewModel(string connectionString)
         {
@@ -28,12 +28,14 @@ namespace ArtAttack.ViewModel
             _renewalModel = new ContractRenewalModel(connectionString);
             _notificationAdapter = new NotificationDataAdapter(connectionString);
             _connectionString = connectionString;
-            BuyerContracts = new List<Contract>();
+            BuyerContracts = new List<IContract>();
         }
 
         /// <summary>
         /// Loads all contracts for the given buyer and filters them to include only those with status "ACTIVE" or "RENEWED".
         /// </summary>
+        /// <param name="buyerID" >The ID of the buyer to load contracts for.</param>
+        /// <returns >A task representing the asynchronous operation.</returns>
         public async Task LoadContractsForBuyerAsync(int buyerID)
         {
             // Load all contracts for the buyer
@@ -46,6 +48,8 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Retrieves and sets the selected contract by its ID.
         /// </summary>
+        /// <param name="contractID" >The ID of the contract to select.</param>
+        /// <returns >A task representing the asynchronous operation.</returns>
         public async Task SelectContractAsync(long contractID)
         {
             SelectedContract = await _contractModel.GetContractByIdAsync(contractID);
@@ -62,9 +66,10 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Checks whether the current date is within the valid renewal period (between 2 and 7 days before contract end).
         /// </summary>
+        /// <returns >A task representing the asynchronous operation.</returns>
         public async Task<bool> IsRenewalPeriodValidAsync()
         {
-            var dates = await GetProductDetailsByContractIdAsync(SelectedContract.ID);
+            var dates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
             if (dates == null) return false;
 
             DateTime oldEndDate = dates.Value.EndDate;
@@ -78,6 +83,8 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Simulates a check to determine if a product is available.
         /// </summary>
+        /// <param name="productId">The ID of the product to check.</param>
+        /// <returns >True if the product is available; false otherwise.</returns>
         public bool IsProductAvailable(int productId)
         {
             return true;
@@ -87,6 +94,8 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Simulates a check to determine if the seller can approve a renewal based on the renewal count.
         /// </summary>
+        /// <param name="renewalCount" > The current renewal count of the contract.</param>
+        /// <returns >True if the seller can approve the renewal; false otherwise.</returns>
         public bool CanSellerApproveRenewal(int renewalCount)
         {
             return renewalCount < 1;
@@ -95,6 +104,8 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Inserts a PDF file into the database and returns the newly generated PDF ID.
         /// </summary>
+        /// <param name="fileBytes" >The byte array representing the PDF file.</param>
+        /// <returns >The ID of the newly inserted PDF.</returns>
         private async Task<int> InsertPdfAsync(byte[] fileBytes)
         {
             using (var conn = new SqlConnection(_connectionString))
@@ -109,15 +120,19 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Checks whether the currently selected contract has already been renewed.
         /// </summary>
+        /// <returns >True if the contract has been renewed; false otherwise.</returns>
         public async Task<bool> HasContractBeenRenewedAsync()
         {
-            return await _renewalModel.HasContractBeenRenewedAsync(SelectedContract.ID);
+            return await _renewalModel.HasContractBeenRenewedAsync(SelectedContract.ContractID);
         }
 
         /// <summary>
         /// Generates a PDF document containing the contract content.
         /// </summary>
-        private byte[] GenerateContractPdf(Contract contract, string content)
+        /// <param name="content" >The content of the contract to include in the PDF.</param>
+        /// <param name="contract" >The contract object to include in the PDF.</param>
+        /// <returns >The byte array representing the generated PDF.</returns>
+        private byte[] GenerateContractPdf(IContract contract, string content)
         {
             var document = Document.Create(container =>
             {
@@ -138,6 +153,11 @@ namespace ArtAttack.ViewModel
         /// Submits a request to renew the selected contract if all business rules are satisfied.
         /// Also generates and saves a new PDF and sends notifications.
         /// </summary>
+        /// <param name="buyerID" >The ID of the buyer submitting the renewal request.</param>
+        /// <param name="newEndDate" >The new end date for the contract.</param>
+        /// <param name="productID" >The ID of the product associated with the contract.</param>
+        /// <param name="sellerID" >The ID of the seller associated with the contract.</param>
+        /// <returns >A tuple containing a boolean indicating success and a message describing the result.</returns>
         public async Task<(bool Success, string Message)> SubmitRenewalRequestAsync(DateTime newEndDate, int buyerID, int productID, int sellerID)
         {
             try
@@ -155,7 +175,7 @@ namespace ArtAttack.ViewModel
                     return (false, "Contract is not in a valid renewal period (between 2 and 7 days before end date).");
 
                 // Get the current contract's product dates
-                var oldDates = await GetProductDetailsByContractIdAsync(SelectedContract.ID);
+                var oldDates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
                 if (!oldDates.HasValue)
                     return (false, "Could not retrieve current contract dates.");
 
@@ -172,7 +192,7 @@ namespace ArtAttack.ViewModel
                     return (false, "Renewal not allowed: seller limit exceeded.");
 
                 // Build the updated contract content text
-                string contractContent = $"Renewed Contract for Order {SelectedContract.OrderID}.\nOriginal Contract ID: {SelectedContract.ID}.\nNew End Date: {newEndDate:dd/MM/yyyy}";
+                string contractContent = $"Renewed Contract for Order {SelectedContract.OrderID}.\nOriginal Contract ID: {SelectedContract.ContractID}.\nNew End Date: {newEndDate:dd/MM/yyyy}";
 
                 // Generate the contract PDF
                 byte[] pdfBytes = GenerateContractPdf(SelectedContract, contractContent);
@@ -182,7 +202,7 @@ namespace ArtAttack.ViewModel
 
                 // Save PDF locally in Downloads folder
                 string downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-                string fileName = $"RenewedContract_{SelectedContract.ID}_to_{newEndDate:yyyyMMdd}.pdf";
+                string fileName = $"RenewedContract_{SelectedContract.ContractID}_to_{newEndDate:yyyyMMdd}.pdf";
                 string filePath = Path.Combine(downloadsPath, fileName);
                 await File.WriteAllBytesAsync(filePath, pdfBytes);
 
@@ -195,15 +215,15 @@ namespace ArtAttack.ViewModel
                     RenewalCount = SelectedContract.RenewalCount + 1,
                     PredefinedContractID = SelectedContract.PredefinedContractID,
                     PDFID = newPdfId,
-                    RenewedFromContractID = SelectedContract.ID
+                    RenewedFromContractID = SelectedContract.ContractID
                 };
 
                 await _renewalModel.AddRenewedContractAsync(updatedContract, pdfBytes);
 
                 // Send notifications to seller, buyer, and waitlist
                 var now = DateTime.Now;
-                _notificationAdapter.AddNotification(new ContractRenewalRequestNotification(sellerID, now, (int)SelectedContract.ID));
-                _notificationAdapter.AddNotification(new ContractRenewalAnswerNotification(buyerID, now, (int)SelectedContract.ID, true));
+                _notificationAdapter.AddNotification(new ContractRenewalRequestNotification(sellerID, now, (int)SelectedContract.ContractID));
+                _notificationAdapter.AddNotification(new ContractRenewalAnswerNotification(buyerID, now, (int)SelectedContract.ContractID, true));
                 _notificationAdapter.AddNotification(new ContractRenewalWaitlistNotification(999, now, productID));
 
                 return (true, "Contract renewed successfully!");

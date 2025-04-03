@@ -20,7 +20,8 @@ public class NotificationDataAdapter : IDisposable, INotificationDataAdapter
         _sqlConnection.Open();
     }
 
-/// <summary>
+
+    /// <summary>
     /// Retrieves a list of notifications for a specific user.
     /// </summary>
     /// <param name="recipientId">The ID of the recipient user.</param>
@@ -144,6 +145,7 @@ public class NotificationDataAdapter : IDisposable, INotificationDataAdapter
             sqlCommand.ExecuteNonQuery();
         }
     }
+
 
 
     /// <summary>

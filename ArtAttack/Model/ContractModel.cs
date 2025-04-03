@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArtAttack.Model
 {
-    public class ContractModel
+    public class ContractModel : IContractModel
     {
         private readonly string _connectionString;
 
@@ -16,9 +16,14 @@ namespace ArtAttack.Model
             _connectionString = connectionString;
         }
 
-        public async Task<PredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
+        /// <summary>
+        /// Asynchronously retrieves a predefined contract by predefined contract type using the GetPredefinedContractByID stored procedure.
+        /// </summary>
+        /// <param name="predefinedContractType" type="PredefinedContractType">The type of predefined contract to retrieve.</param>
+        /// <returns type="Task<PredefinedContract>">The predefined contract.</returns>
+        public async Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
-            PredefinedContract predefinedContract = null;
+            IPredefinedContract predefinedContract = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetPredefinedContractByID", conn))
@@ -34,7 +39,6 @@ namespace ArtAttack.Model
                         {
                             predefinedContract = new PredefinedContract
                             {
-
                                 ID = reader.GetInt32("ID"),
                                 Content = reader["content"] as string
                             };
@@ -42,15 +46,17 @@ namespace ArtAttack.Model
                     }
                 }
             }
-            return predefinedContract;
+            return predefinedContract ?? new PredefinedContract { Content = string.Empty };
         }
 
         /// <summary>
         /// Asynchronously retrieves a single contract using the GetContractByID stored procedure.
         /// </summary>
-        public async Task<Contract> GetContractByIdAsync(long contractId)
+        /// <param name="contractId" type="long">The ID of the contract to retrieve.</param>
+        /// <returns type="Task<Contract>">The contract.</returns>
+        public async Task<IContract> GetContractByIdAsync(long contractId)
         {
-            Contract contract = null;
+            IContract contract = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractByID", conn))
@@ -65,7 +71,7 @@ namespace ArtAttack.Model
                         {
                             contract = new Contract
                             {
-                                ID = reader.GetInt32("ID"),
+                                ContractID = reader.GetInt32("ID"),
                                 OrderID = reader.GetInt32("orderID"),
                                 ContractStatus = reader.GetString("contractStatus"),
                                 ContractContent = reader["contractContent"] as string,
@@ -82,15 +88,16 @@ namespace ArtAttack.Model
                     }
                 }
             }
-            return contract;
+            return contract ?? new Contract();
         }
 
         /// <summary>
         /// Asynchronously retrieves all contracts using the GetAllContracts stored procedure.
         /// </summary>
-        public async Task<List<Contract>> GetAllContractsAsync()
+        /// <returns type="Task<List<Contract>>">The list of contracts.</returns>
+        public async Task<List<IContract>> GetAllContractsAsync()
         {
-            var contracts = new List<Contract>();
+            var contracts = new List<IContract>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetAllContracts", conn))
@@ -104,7 +111,7 @@ namespace ArtAttack.Model
                         {
                             var contract = new Contract
                             {
-                                ID = reader.GetInt64(reader.GetOrdinal("ID")),
+                                ContractID = reader.GetInt64(reader.GetOrdinal("ID")),
                                 OrderID = reader.GetInt32(reader.GetOrdinal("orderID")),
                                 ContractStatus = reader.GetString(reader.GetOrdinal("contractStatus")),
                                 ContractContent = reader["contractContent"] as string,
@@ -122,15 +129,17 @@ namespace ArtAttack.Model
                     }
                 }
             }
-            return contracts;
+            return contracts ;
         }
 
         /// <summary>
         /// Asynchronously retrieves the renewal history for a contract using the GetContractHistory stored procedure.
         /// </summary>
-        public async Task<List<Contract>> GetContractHistoryAsync(long contractId)
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the history for.</param>
+        /// <returns type="Task<List<Contract>>">The list of contracts.</returns>
+        public async Task<List<IContract>> GetContractHistoryAsync(long contractId)
         {
-            var history = new List<Contract>();
+            var history = new List<IContract>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractHistory", conn))
@@ -145,7 +154,7 @@ namespace ArtAttack.Model
                         {
                             var contract = new Contract
                             {
-                                ID = reader.GetInt64(reader.GetOrdinal("ID")),
+                                ContractID = reader.GetInt64(reader.GetOrdinal("ID")),
                                 OrderID = reader.GetInt32(reader.GetOrdinal("orderID")),
                                 ContractStatus = reader.GetString(reader.GetOrdinal("contractStatus")),
                                 ContractContent = reader["contractContent"] as string,
@@ -169,9 +178,12 @@ namespace ArtAttack.Model
         /// <summary>
         /// Asynchronously inserts a new contract and updates the PDF file using the AddContract stored procedure.
         /// </summary>
-        public async Task<Contract> AddContractAsync(Contract contract, byte[] pdfFile)
+        /// <param name="pdfFile" type="byte[]">The PDF file to update.</param>
+        /// <param name="contract" type="Contract">The contract to insert.</param>
+        /// <returns type="Task<Contract>">The new contract.</returns>
+        public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
-            Contract newContract = null;
+            IContract newContract = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("AddContract", conn))
@@ -203,7 +215,7 @@ namespace ArtAttack.Model
                         {
                             newContract = new Contract
                             {
-                                ID = reader.GetInt64(reader.GetOrdinal("ID")),
+                                ContractID = reader.GetInt64(reader.GetOrdinal("ID")),
                                 OrderID = reader.GetInt32(reader.GetOrdinal("orderID")),
                                 ContractStatus = reader.GetString(reader.GetOrdinal("contractStatus")),
                                 ContractContent = reader["contractContent"] as string,
@@ -222,12 +234,14 @@ namespace ArtAttack.Model
                 }
 
             }
-            return newContract;
+            return newContract ?? new Contract();
         }
 
         /// <summary>
         /// Asynchronously retrieves seller information for a given contract using the GetContractSeller stored procedure.
         /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the seller information for.</param>
+        /// <returns type="(int SellerID, string SellerName)">The seller information.</returns>
         public async Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId)
         {
             (int SellerID, string SellerName) sellerInfo = (0, string.Empty);
@@ -257,6 +271,8 @@ namespace ArtAttack.Model
         /// <summary>
         /// Asynchronously retrieves buyer information for a given contract using the GetContractBuyer stored procedure.
         /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the buyer information for.</param>
+        /// <returns type="(int BuyerID, string BuyerName)">The buyer information.</returns>
         public async Task<(int BuyerID, string BuyerName)> GetContractBuyerAsync(long contractId)
         {
             (int BuyerID, string BuyerName) buyerInfo = (0, string.Empty);
@@ -286,6 +302,8 @@ namespace ArtAttack.Model
         /// <summary>
         /// Asynchronously retrieves order summary information for a contract using the GetOrderSummaryInformation stored procedure.
         /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the order summary information for.</param>
+        /// <returns type="Dictionary<string, object)">The order summary information.</returns>
         public async Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId)
         {
             var orderSummary = new Dictionary<string, object>();
@@ -323,6 +341,8 @@ namespace ArtAttack.Model
         /// <summary>
         /// Asynchronously retrieves the startDate and endDate for a contract from the DummyProduct table.
         /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the product details for.</param>
+        /// <returns type="(DateTime StartDate, DateTime EndDate, double price, string name)?">The product details.</returns>
         public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -346,15 +366,18 @@ namespace ArtAttack.Model
                     }
                 }
             }
-            return null;
+            //return null; dont return null
+            return default;
         }
 
         /// <summary>
         /// Asynchronously retrieves all contracts for a given buyer using the GetContractsByBuyer stored procedure.
         /// </summary>
-        public async Task<List<Contract>> GetContractsByBuyerAsync(int buyerId)
+        /// <param name="buyerId" type="int">The ID of the buyer to retrieve the contracts for.</param>
+        /// <returns type="Task<List<Contract>>">The list of contracts.</returns>
+        public async Task<List<IContract>> GetContractsByBuyerAsync(int buyerId)
         {
-            var contracts = new List<Contract>();
+            var contracts = new List<IContract>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractsByBuyer", conn))
@@ -369,7 +392,7 @@ namespace ArtAttack.Model
                         {
                             var contract = new Contract
                             {
-                                ID = reader.GetInt64(reader.GetOrdinal("ID")),
+                                ContractID = reader.GetInt64(reader.GetOrdinal("ID")),
                                 OrderID = reader.GetInt32(reader.GetOrdinal("orderID")),
                                 ContractStatus = reader.GetString(reader.GetOrdinal("contractStatus")),
                                 ContractContent = reader["contractContent"] as string,
@@ -387,6 +410,11 @@ namespace ArtAttack.Model
             return contracts;
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the payment method and order date for a given contract using the GetOrderDetails stored procedure.
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the order details for.</param>
+        /// <returns type="(string PaymentMethod, DateTime OrderDate)">The order details.</returns>
         public async Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
             (string PaymentMethod, DateTime OrderDate) details = (null, default);
@@ -411,6 +439,11 @@ namespace ArtAttack.Model
             return details;
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the delivery date for a given contract using the GetDeliveryDateByContractID stored procedure.
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the delivery date for.</param>
+        /// <returns type="Task<DateTime?>">The delivery date.</returns>
         public async Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId)
         {
             DateTime? deliveryDate = null;
@@ -438,6 +471,11 @@ namespace ArtAttack.Model
             return deliveryDate;
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the PDF file for a given contract using the GetPdfByContractID stored procedure.
+        /// </summary>
+        /// <param name="contractId" type="long">The ID of the contract to retrieve the PDF file for.</param>
+        /// <returns type="Task<byte[]>">The PDF file.</returns>    
         public async Task<byte[]> GetPdfByContractIdAsync(long contractId)
         {
             byte[] pdfFile = null;

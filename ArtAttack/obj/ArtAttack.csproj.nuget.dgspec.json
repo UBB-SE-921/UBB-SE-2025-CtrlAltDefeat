@@ -42,7 +42,7 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
+          "auditMode": "direct"
         },
         "SdkAnalysisLevel": "9.0.200"
       },
@@ -50,6 +50,10 @@
         "net8.0-windows10.0.19041": {
           "targetAlias": "net8.0-windows10.0.19041.0",
           "dependencies": {
+            "MSTest.TestAdapter": {
+              "target": "Package",
+              "version": "[3.8.3, )"
+            },
             "MSTest.TestFramework": {
               "target": "Package",
               "version": "[3.8.3, )"
@@ -57,6 +61,10 @@
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[6.0.1, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.13.0, )"
             },
             "Microsoft.Windows.SDK.BuildTools": {
               "target": "Package",
@@ -66,9 +74,13 @@
               "target": "Package",
               "version": "[1.7.250310001, )"
             },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
             "QuestPDF": {
               "target": "Package",
-              "version": "[2025.1.6, )"
+              "version": "[2025.1.7, )"
             }
           },
           "imports": [
@@ -84,72 +96,44 @@
           "warn": true,
           "downloadDependencies": [
             {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
               "name": "Microsoft.AspNetCore.App.Runtime.win-arm64",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x86",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
-              "name": "Microsoft.Net.Sdk.Compilers.Toolset",
-              "version": "[9.0.200, 9.0.200]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-arm64",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x86",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-arm64",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x86",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.Windows.SDK.NET.Ref",
               "version": "[10.0.19041.57, 10.0.19041.57]"
             },
             {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-arm64",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x86",
-              "version": "[8.0.13, 8.0.13]"
+              "version": "[8.0.14, 8.0.14]"
             }
           ],
           "frameworkReferences": {
@@ -160,7 +144,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
