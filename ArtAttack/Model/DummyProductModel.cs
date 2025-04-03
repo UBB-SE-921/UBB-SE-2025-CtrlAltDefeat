@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArtAttack.Model
 {
-    public class DummyProductModel
+    public class DummyProductModel : IDummyProductModel
     {
         private readonly string _connectionString;
 
@@ -77,12 +77,12 @@ namespace ArtAttack.Model
             }
         }
 
-        internal async Task<string> GetSellerNameAsync(int? sellerId)
+        public async Task<string> GetSellerNameAsync(int? sellerId)
         {
             throw new NotImplementedException();
         }
 
-        internal async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
+        public async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
         {
             throw new NotImplementedException();
         }
