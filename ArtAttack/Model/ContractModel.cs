@@ -35,8 +35,8 @@ namespace ArtAttack.Model
                             predefinedContract = new PredefinedContract
                             {
 
-                                ID = reader.GetInt32("ID"),
-                                Content = reader["content"] as string
+                                ContractID = reader.GetInt32("ID"),
+                                ContractContent = reader["content"] as string
                             };
                         }
                     }
@@ -57,7 +57,7 @@ namespace ArtAttack.Model
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@ContractID", SqlDbType.BigInt).Value = contractId;
-                    await conn.OpenAsync();
+                     await conn.OpenAsync();
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {

@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -150,12 +151,15 @@ namespace ArtAttack.Model
 
         /// <summary>
         /// Checks if a user is in a product's waitlist.
+        /// </summary>
         public bool IsUserInWaitlist(int userId, int productId)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            Debug.WriteLine($"IsUserInWaitlist: UserID: {userId}, ProductID: {productId}");
+            using (SqlConnection conn = new SqlConnection(this._connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("CheckUserInProductWaitlist", conn))
                 {
+                    Debug.WriteLine($"UserID: {userId}, ProductID: {productId}");
                     cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                     cmd.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
 
@@ -166,13 +170,15 @@ namespace ArtAttack.Model
         }
 
         public int GetUserWaitlistPosition(int userId, int productId)
-
         {
+            Debug.WriteLine($"GetUserWaitlistPosition: UserID: {userId}, ProductID: {productId}");
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetUserWaitlistPosition", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+
+                    Debug.WriteLine($"UserID: {userId}, ProductID: {productId}");
                     cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                     cmd.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
 

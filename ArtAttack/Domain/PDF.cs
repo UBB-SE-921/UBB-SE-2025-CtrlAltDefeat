@@ -2,7 +2,8 @@
 {
     public class PDF
     {
-        public int ID { get; set; }
+        public int ContractID { get; set; }
+        public int PdfID { get; set; }
         public byte[] File { get; set; }
     }
 }

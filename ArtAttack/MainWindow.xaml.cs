@@ -18,6 +18,7 @@ namespace ArtAttack
 
         private Contract contract;
         private IContractViewModel _contractViewModel;
+        private int _currentProductId;
         private ITrackedOrderViewModel trackedOrderViewModel;
 
         public MainWindow()
@@ -26,6 +27,7 @@ namespace ArtAttack
 
             this.InitializeComponent();
             contract = new Contract();
+            _currentProductId = 2;
             _contractViewModel = new ContractViewModel(Configuration._CONNECTION_STRING_);
             trackedOrderViewModel = new TrackedOrderViewModel(Configuration._CONNECTION_STRING_);
         }
@@ -91,7 +93,7 @@ namespace ArtAttack
         {
             if (contract != null)
             {
-                await _contractViewModel.GenerateAndSaveContractAsync(contract, PredefinedContractType.Borrowing);
+                await _contractViewModel.GenerateAndSaveContractAsync(contract, PredefinedContractType.BorrowingContract);
 
                 // Optionally, show a success dialog after generating the contract.
                 var successDialog = new ContentDialog
@@ -126,10 +128,7 @@ namespace ArtAttack
         {
             try
             {
-                int productId = 2; 
-
-
-                var borrowWindow = new BorrowProductWindow(Configuration._CONNECTION_STRING_, productId);
+                var borrowWindow = new BorrowProductWindow(Configuration._CONNECTION_STRING_, _currentProductId);
                 borrowWindow.Activate();
             }
             catch (Exception ex)
@@ -137,7 +136,6 @@ namespace ArtAttack
                 await ShowErrorDialogAsync("Failed to open Borrow Product", ex.Message);
             }
         }
-
 
         private async void renewContractButton_Clicked(object sender, RoutedEventArgs e)
         {
