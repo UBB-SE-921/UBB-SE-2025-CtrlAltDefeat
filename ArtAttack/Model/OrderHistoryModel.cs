@@ -4,16 +4,41 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
     public class OrderHistoryModel : IOrderHistoryModel
     {
         private readonly string _connectionString;
+        private readonly IDatabaseProvider _databaseProvider;
 
+        /// <summary>
+        /// Default constructor for OrderHistoryModel.
+        /// </summary>
+        /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
+        /// <remarks>
+        /// Initializes a new instance of the OrderHistoryModel class with the specified connection string 
+        /// and a default SqlDatabaseProvider. This constructor is typically used in production code.
+        /// </remarks>
         public OrderHistoryModel(string connectionString)
+            : this(connectionString, new SqlDatabaseProvider())
+        {
+        }
+
+        /// <summary>
+        /// Constructor for OrderHistoryModel with dependency injection support.
+        /// </summary>
+        /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
+        /// <param name="databaseProvider">The database provider implementation to use for database operations. Cannot be null.</param>
+        /// <remarks>
+        /// Initializes a new instance of the OrderHistoryModel class with the specified connection string
+        /// and database provider. This constructor is primarily used for testing with mock database providers.
+        /// </remarks>
+        public OrderHistoryModel(string connectionString, IDatabaseProvider databaseProvider)
         {
             _connectionString = connectionString;
+            _databaseProvider = databaseProvider;
         }
 
         /// <summary>
@@ -26,31 +51,38 @@ namespace ArtAttack.Model
         {
             List<DummyProduct> dummyProducts = new List<DummyProduct>();
 
-            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (SqlCommand sqlCommand = new SqlCommand("GetDummyProductsFromOrderHistory", sqlConnection))
+                await connection.OpenAsync();
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@OrderHistory", orderHistoryID);
-                    await sqlConnection.OpenAsync();
+                    command.CommandText = "GetDummyProductsFromOrderHistory";
+                    command.CommandType = CommandType.StoredProcedure;
 
-                    using (SqlDataReader sqlDataReader = await sqlCommand.ExecuteReaderAsync())
+                    IDbDataParameter param = command.CreateParameter();
+                    param.ParameterName = "@OrderHistory";
+                    param.Value = orderHistoryID;
+                    command.Parameters.Add(param);
+
+                    using (IDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        while (await sqlDataReader.ReadAsync())
+                        while (await reader.ReadAsync())
                         {
                             DummyProduct dummyProduct = new DummyProduct
                             {
-
-                                ID = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("productID")),
-                                Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("name")),
-                                Price = (float)sqlDataReader.GetDouble(sqlDataReader.GetOrdinal("price")),
-                                ProductType = sqlDataReader.GetString(sqlDataReader.GetOrdinal("productType")),
-                                SellerID = sqlDataReader["SellerID"] != DBNull.Value
-                                ? sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("SellerID")) : 0,
-                                StartDate = sqlDataReader["startDate"] != DBNull.Value
-                                ? sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("startDate")) : DateTime.MinValue,
-                                EndDate = sqlDataReader["endDate"] != DBNull.Value
-                                ? sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("endDate")) : DateTime.MaxValue
+                                ID = reader.GetInt32(reader.GetOrdinal("productID")),
+                                Name = reader.GetString(reader.GetOrdinal("name")),
+                                Price = (float)reader.GetDouble(reader.GetOrdinal("price")),
+                                ProductType = reader.GetString(reader.GetOrdinal("productType")),
+                                SellerID = reader["SellerID"] != DBNull.Value
+                                    ? reader.GetInt32(reader.GetOrdinal("SellerID"))
+                                    : 0,
+                                StartDate = reader["startDate"] != DBNull.Value
+                                    ? reader.GetDateTime(reader.GetOrdinal("startDate"))
+                                    : DateTime.MinValue,
+                                EndDate = reader["endDate"] != DBNull.Value
+                                    ? reader.GetDateTime(reader.GetOrdinal("endDate"))
+                                    : DateTime.MaxValue
                             };
                             dummyProducts.Add(dummyProduct);
                         }

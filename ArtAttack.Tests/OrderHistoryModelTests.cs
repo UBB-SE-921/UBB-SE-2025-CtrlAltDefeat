@@ -1,274 +1,232 @@
 ﻿using ArtAttack.Domain;
 using ArtAttack.Model;
-using Microsoft.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using System.Data;  // Use System.Data interfaces
+using System.Threading;  // For CancellationToken
 
-namespace ArtAttack.Tests.Model
+namespace ArtAttack.Tests
 {
     [TestClass]
     public class OrderHistoryModelTests
     {
-        private const string TestConnectionString = "Data Source=test;Initial Catalog=TestDB;Integrated Security=True";
+        private Mock<IDbConnection> _mockConnection;
+        private Mock<IDbCommand> _mockCommand;
+        private Mock<IDataReader> _mockReader;
+        private Mock<IDataParameterCollection> _mockParameters;
+        private Mock<IDbDataParameter> _mockParameter;
+        private string _testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
+        private OrderHistoryModel _orderHistoryModel;
+        private MockDatabase _mockDatabase;
 
-        [TestMethod]
-        public void Constructor_WithConnectionString_SetsConnectionStringProperty()
+        [TestInitialize]
+        public void Setup()
         {
-            // Arrange & Act
-            var model = new OrderHistoryModel(TestConnectionString);
+            // Initialize mocks
+            _mockConnection = new Mock<IDbConnection>();
+            _mockCommand = new Mock<IDbCommand>();
+            _mockReader = new Mock<IDataReader>();
+            _mockParameters = new Mock<IDataParameterCollection>();
+            _mockParameter = new Mock<IDbDataParameter>();
 
-            // Assert
-            // We're testing a private field, so we can only verify functionality indirectly
-            // by testing methods that use the connection string
-            Assert.IsNotNull(model);
+            // Setup the parameter collection mock
+            _mockParameters.Setup(p => p.Add(It.IsAny<object>())).Returns(0);
+
+            // Setup the command mock
+            _mockCommand.Setup(c => c.CreateParameter()).Returns(_mockParameter.Object);
+            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
+
+            // Setup the connection mock
+            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
+
+            // Setup the mock database 
+            _mockDatabase = new MockDatabase();
+            _mockDatabase.SetupMockConnection(_mockConnection.Object);
+
+            // Initialize the model with the mock database
+            _orderHistoryModel = new OrderHistoryModel(_testConnectionString, _mockDatabase);
         }
 
         [TestMethod]
-        public async Task GetDummyProductsFromOrderHistoryAsync_ReturnsExpectedProducts()
+        public void Constructor_SetsConnectionString()
+        {
+            // Arrange & Act
+            var model = new OrderHistoryModel(_testConnectionString);
+
+            // Assert - using reflection to access private field
+            var field = typeof(OrderHistoryModel).GetField("_connectionString",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var value = field.GetValue(model);
+
+            Assert.AreEqual(_testConnectionString, value);
+        }
+
+        [TestMethod]
+        public async Task GetDummyProductsFromOrderHistoryAsync_ExecutesCorrectStoredProcedure()
         {
             // Arrange
-            var mockSqlHelper = new MockSqlHelper();
-            mockSqlHelper.SetupDataReader(new List<Dictionary<string, object>>
-            {
-                new Dictionary<string, object>
-                {
-                    { "productID", 1 },
-                    { "name", "Test Product 1" },
-                    { "price", 99.99 },
-                    { "productType", "new" },
-                    { "SellerID", 101 },
-                    { "startDate", DateTime.Today },
-                    { "endDate", DateTime.Today.AddDays(30) }
-                },
-                new Dictionary<string, object>
-                {
-                    { "productID", 2 },
-                    { "name", "Test Product 2" },
-                    { "price", 149.99 },
-                    { "productType", "used" },
-                    { "SellerID", DBNull.Value },
-                    { "startDate", DBNull.Value },
-                    { "endDate", DBNull.Value }
-                }
-            });
+            int orderHistoryId = 42;
 
-            var orderHistoryModel = new OrderHistoryModelWrapper(TestConnectionString, mockSqlHelper);
+            _mockCommand.Setup(c => c.CommandType).Returns(CommandType.StoredProcedure);
+
+            // Don't use extension methods in setup
+            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockReader.Setup(r => r.Read()).Returns(false);  // Empty result
 
             // Act
-            var result = await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(1);
+            var result = await _orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
+
+            // Assert
+            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(c => c.CommandText = "GetDummyProductsFromOrderHistory");
+            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);  // Verify standard method call
+            _mockConnection.Verify(c => c.Open(), Times.Once);  // Verify standard method call
+        }
+
+        [TestMethod]
+        public async Task GetDummyProductsFromOrderHistoryAsync_AddsCorrectParameter()
+        {
+            // Arrange
+            int orderHistoryId = 42;
+
+            // Don't use extension methods in setup
+            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockReader.Setup(r => r.Read()).Returns(false);  // Empty result
+
+            List<(string Name, object Value)> capturedParams = new List<(string, object)>();
+            _mockParameter.SetupSet(p => p.ParameterName = It.IsAny<string>())
+                .Callback<string>(name => capturedParams.Add((name, null)));
+            _mockParameter.SetupSet(p => p.Value = It.IsAny<object>())
+                .Callback<object>(val => capturedParams[capturedParams.Count - 1] = (capturedParams[capturedParams.Count - 1].Name, val));
+
+            // Act
+            var result = await _orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
+
+            // Assert
+            Assert.AreEqual(1, capturedParams.Count);
+            Assert.AreEqual("@OrderHistory", capturedParams[0].Name);
+            Assert.AreEqual(orderHistoryId, capturedParams[0].Value);
+        }
+
+        [TestMethod]
+        public async Task GetDummyProductsFromOrderHistoryAsync_ReturnsCorrectData()
+        {
+            // Arrange
+            int orderHistoryId = 42;
+            DateTime today = DateTime.Today;
+
+            // Setup column ordinals
+            _mockReader.Setup(r => r.GetOrdinal("productID")).Returns(0);
+            _mockReader.Setup(r => r.GetOrdinal("name")).Returns(1);
+            _mockReader.Setup(r => r.GetOrdinal("price")).Returns(2);
+            _mockReader.Setup(r => r.GetOrdinal("productType")).Returns(3);
+            _mockReader.Setup(r => r.GetOrdinal("SellerID")).Returns(4);
+            _mockReader.Setup(r => r.GetOrdinal("startDate")).Returns(5);
+            _mockReader.Setup(r => r.GetOrdinal("endDate")).Returns(6);
+
+            // Setup Read calls (without using ReadAsync)
+            _mockReader.SetupSequence(r => r.Read())
+                .Returns(true)   // First record
+                .Returns(true)   // Second record
+                .Returns(false); // End of data
+
+            // First product
+            _mockReader.SetupSequence(r => r.GetInt32(0))
+                .Returns(101)
+                .Returns(102);
+            _mockReader.SetupSequence(r => r.GetString(1))
+                .Returns("Test Product 1")
+                .Returns("Test Product 2");
+            _mockReader.SetupSequence(r => r.GetDouble(2))
+                .Returns(19.99)
+                .Returns(29.99);
+            _mockReader.SetupSequence(r => r.GetString(3))
+                .Returns("purchase")
+                .Returns("borrowed");
+
+            // Set up indexer for DBNull checks
+            _mockReader.SetupSequence(r => r["SellerID"])
+                .Returns(501)
+                .Returns(DBNull.Value);
+            _mockReader.SetupSequence(r => r["startDate"])
+                .Returns(today)
+                .Returns(DBNull.Value);
+            _mockReader.SetupSequence(r => r["endDate"])
+                .Returns(today.AddDays(30))
+                .Returns(DBNull.Value);
+
+            // SellerID
+            _mockReader.SetupSequence(r => r.GetInt32(4))
+                .Returns(501);
+            // startDate
+            _mockReader.SetupSequence(r => r.GetDateTime(5))
+                .Returns(today);
+            // endDate
+            _mockReader.SetupSequence(r => r.GetDateTime(6))
+                .Returns(today.AddDays(30));
+
+            // Setup standard method (not extension)
+            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+
+            // Act
+            var results = await _orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
+
+            // Assert
+            Assert.AreEqual(2, results.Count);
+
+            // First product
+            Assert.AreEqual(101, results[0].ID);
+            Assert.AreEqual("Test Product 1", results[0].Name);
+            Assert.AreEqual(19.99f, results[0].Price);
+            Assert.AreEqual("purchase", results[0].ProductType);
+            Assert.AreEqual(501, results[0].SellerID);
+            Assert.AreEqual(today, results[0].StartDate);
+            Assert.AreEqual(today.AddDays(30), results[0].EndDate);
+
+            // Second product - with DBNull values
+            Assert.AreEqual(102, results[1].ID);
+            Assert.AreEqual("Test Product 2", results[1].Name);
+            Assert.AreEqual(29.99f, results[1].Price);
+            Assert.AreEqual("borrowed", results[1].ProductType);
+            Assert.AreEqual(0, results[1].SellerID); // Default for DBNull
+            Assert.AreEqual(DateTime.MinValue, results[1].StartDate); // Default for DBNull
+            Assert.AreEqual(DateTime.MaxValue, results[1].EndDate); // Default for DBNull
+        }
+
+        [TestMethod]
+        public async Task GetDummyProductsFromOrderHistoryAsync_ReturnsEmptyList_WhenNoData()
+        {
+            // Arrange
+            int orderHistoryId = 42;
+
+            // Use standard methods instead of extension methods
+            _mockReader.Setup(r => r.Read()).Returns(false);
+            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+
+            // Act
+            var result = await _orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-
-            // Check first product
-            Assert.AreEqual(1, result[0].ID);
-            Assert.AreEqual("Test Product 1", result[0].Name);
-            Assert.AreEqual(99.99f, result[0].Price);
-            Assert.AreEqual("new", result[0].ProductType);
-            Assert.AreEqual(101, result[0].SellerID);
-            Assert.AreEqual(DateTime.Today, result[0].StartDate);
-            Assert.AreEqual(DateTime.Today.AddDays(30), result[0].EndDate);
-
-            // Check second product
-            Assert.AreEqual(2, result[1].ID);
-            Assert.AreEqual("Test Product 2", result[1].Name);
-            Assert.AreEqual(149.99f, result[1].Price);
-            Assert.AreEqual("used", result[1].ProductType);
-            Assert.AreEqual(0, result[1].SellerID);  // Default value for null
-            Assert.AreEqual(DateTime.MinValue, result[1].StartDate);  // Default value for null
-            Assert.AreEqual(DateTime.MaxValue, result[1].EndDate);  // Default value for null
-
-            // Verify stored procedure was called with correct parameters
-            Assert.AreEqual("GetDummyProductsFromOrderHistory", mockSqlHelper.LastCommandText);
-            Assert.AreEqual(CommandType.StoredProcedure, mockSqlHelper.LastCommandType);
-            Assert.AreEqual(1, mockSqlHelper.LastParameters["@OrderHistory"]);
+            Assert.AreEqual(0, result.Count);
         }
-    }
 
-    // Helper classes for testing
-    public class OrderHistoryModelWrapper : OrderHistoryModel
-    {
-        private readonly MockSqlHelper _mockSqlHelper;
-
-        public OrderHistoryModelWrapper(string connectionString, MockSqlHelper mockSqlHelper)
-            : base(connectionString)
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public async Task GetDummyProductsFromOrderHistoryAsync_ThrowsException_WhenExecutionFails()
         {
-            _mockSqlHelper = mockSqlHelper;
+            // Arrange
+            int orderHistoryId = 42;
+
+            // Use standard method, not extension
+            _mockCommand.Setup(c => c.ExecuteReader()).Throws(new Exception("Database error"));
+
+            // Act & Assert
+            await _orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
         }
-
-        public new async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
-        {
-            List<DummyProduct> dummyProducts = new List<DummyProduct>();
-
-            _mockSqlHelper.LastCommandText = "GetDummyProductsFromOrderHistory";
-            _mockSqlHelper.LastCommandType = CommandType.StoredProcedure;
-            _mockSqlHelper.LastParameters = new Dictionary<string, object>
-            {
-                { "@OrderHistory", orderHistoryID }
-            };
-
-            var dataReader = _mockSqlHelper.ExecuteReader();
-
-            while (await dataReader.ReadAsync())
-            {
-                DummyProduct dummyProduct = new DummyProduct
-                {
-                    ID = dataReader.GetInt32(dataReader.GetOrdinal("productID")),
-                    Name = dataReader.GetString(dataReader.GetOrdinal("name")),
-                    Price = (float)dataReader.GetDouble(dataReader.GetOrdinal("price")),
-                    ProductType = dataReader.GetString(dataReader.GetOrdinal("productType")),
-                    SellerID = dataReader["SellerID"] != DBNull.Value
-                        ? dataReader.GetInt32(dataReader.GetOrdinal("SellerID")) : 0,
-                    StartDate = dataReader["startDate"] != DBNull.Value
-                        ? dataReader.GetDateTime(dataReader.GetOrdinal("startDate")) : DateTime.MinValue,
-                    EndDate = dataReader["endDate"] != DBNull.Value
-                        ? dataReader.GetDateTime(dataReader.GetOrdinal("endDate")) : DateTime.MaxValue
-                };
-                dummyProducts.Add(dummyProduct);
-            }
-
-            return dummyProducts;
-        }
-    }
-
-    public class MockSqlHelper
-    {
-        private List<Dictionary<string, object>> _mockData;
-
-        public string LastCommandText { get; set; }
-        public CommandType LastCommandType { get; set; }
-        public Dictionary<string, object> LastParameters { get; set; }
-
-        public void SetupDataReader(List<Dictionary<string, object>> mockData)
-        {
-            _mockData = mockData;
-        }
-
-        public MockDataReader ExecuteReader()
-        {
-            return new MockDataReader(_mockData);
-        }
-    }
-
-    public class MockDataReader : IDataReader
-    {
-        private readonly List<Dictionary<string, object>> _rows;
-        private int _currentIndex = -1;
-        private Dictionary<string, int> _ordinalMap;
-
-        public MockDataReader(List<Dictionary<string, object>> rows)
-        {
-            _rows = rows;
-
-            // Build ordinal map if rows exist
-            if (rows.Count > 0)
-            {
-                _ordinalMap = new Dictionary<string, int>();
-                int i = 0;
-                foreach (var key in rows[0].Keys)
-                {
-                    _ordinalMap[key] = i++;
-                }
-            }
-        }
-
-        public async Task<bool> ReadAsync()
-        {
-            return Read();
-        }
-
-        public bool Read()
-        {
-            _currentIndex++;
-            return _currentIndex < _rows.Count;
-        }
-
-        public int GetOrdinal(string name)
-        {
-            return _ordinalMap[name];
-        }
-
-        public int GetInt32(int i)
-        {
-            var columnName = GetColumnNameByOrdinal(i);
-            var value = _rows[_currentIndex][columnName];
-            return Convert.ToInt32(value);
-        }
-
-        public string GetString(int i)
-        {
-            var columnName = GetColumnNameByOrdinal(i);
-            var value = _rows[_currentIndex][columnName];
-            return Convert.ToString(value);
-        }
-
-        public double GetDouble(int i)
-        {
-            var columnName = GetColumnNameByOrdinal(i);
-            var value = _rows[_currentIndex][columnName];
-            return Convert.ToDouble(value);
-        }
-
-        public DateTime GetDateTime(int i)
-        {
-            var columnName = GetColumnNameByOrdinal(i);
-            var value = _rows[_currentIndex][columnName];
-            return Convert.ToDateTime(value);
-        }
-
-        public object this[string name]
-        {
-            get { return _rows[_currentIndex][name]; }
-        }
-
-        public object this[int i]
-        {
-            get { return _rows[_currentIndex][GetColumnNameByOrdinal(i)]; }
-        }
-
-        private string GetColumnNameByOrdinal(int i)
-        {
-            foreach (var kvp in _ordinalMap)
-            {
-                if (kvp.Value == i)
-                    return kvp.Key;
-            }
-            throw new IndexOutOfRangeException($"Could not find column at ordinal {i}");
-        }
-
-        #region IDataReader Implementation
-        // Implement other IDataReader members as needed
-        public void Close() { }
-        public int Depth => 0;
-        public bool IsClosed => false;
-        public int RecordsAffected => 0;
-        public int FieldCount => _ordinalMap?.Count ?? 0;
-        public void Dispose() { }
-        // These methods would be implemented similarly to the ones above
-        public bool GetBoolean(int i) => throw new NotImplementedException();
-        public byte GetByte(int i) => throw new NotImplementedException();
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length) => throw new NotImplementedException();
-        public char GetChar(int i) => throw new NotImplementedException();
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length) => throw new NotImplementedException();
-        public IDataReader GetData(int i) => throw new NotImplementedException();
-        public string GetDataTypeName(int i) => throw new NotImplementedException();
-        public decimal GetDecimal(int i) => throw new NotImplementedException();
-        public float GetFloat(int i) => throw new NotImplementedException();
-        public Guid GetGuid(int i) => throw new NotImplementedException();
-        public short GetInt16(int i) => throw new NotImplementedException();
-        public long GetInt64(int i) => throw new NotImplementedException();
-        public Type GetFieldType(int i) => throw new NotImplementedException();
-        public string GetName(int i) => throw new NotImplementedException();
-        public DataTable GetSchemaTable() => throw new NotImplementedException();
-        public object GetValue(int i) => throw new NotImplementedException();
-        public int GetValues(object[] values) => throw new NotImplementedException();
-        public bool IsDBNull(int i) => _rows[_currentIndex][GetColumnNameByOrdinal(i)] == DBNull.Value;
-        public bool NextResult() => false;
-        #endregion
     }
 }
