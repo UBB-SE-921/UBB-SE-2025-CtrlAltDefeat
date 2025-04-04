@@ -1,5 +1,6 @@
 ﻿using ArtAttack.Domain;
 using ArtAttack.Model;
+using ArtAttack.Shared;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -12,36 +13,45 @@ namespace ArtAttack.ViewModel
 
     public class OrderViewModel : IOrderViewModel
     {
-        private readonly OrderModel _model;
+        private readonly IOrderModel _model;
+        private readonly string _connectionString;
+        private readonly IDatabaseProvider _databaseProvider;
 
         public OrderViewModel(string connectionString)
+            : this(connectionString, new SqlDatabaseProvider())
         {
-            _model = new OrderModel(connectionString);
+        }
+
+        public OrderViewModel(string connectionString, IDatabaseProvider databaseProvider)
+        {
+            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            _model = new OrderModel(connectionString, databaseProvider);
         }
 
         public async Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate)
         {
-            await Task.Run(() => _model.AddOrderAsync(productId, buyerId, productType, paymentMethod, orderSummaryId, orderDate));
+            await _model.AddOrderAsync(productId, buyerId, productType, paymentMethod, orderSummaryId, orderDate);
         }
 
         public async Task UpdateOrderAsync(int orderId, int productType, string paymentMethod, DateTime orderDate)
         {
-            await Task.Run(() => _model.UpdateOrderAsync(orderId, productType, paymentMethod, orderDate));
+            await _model.UpdateOrderAsync(orderId, productType, paymentMethod, orderDate);
         }
 
         public async Task DeleteOrderAsync(int orderId)
         {
-            await Task.Run(() => _model.DeleteOrderAsync(orderId));
+            await _model.DeleteOrderAsync(orderId);
         }
 
         public async Task<List<Order>> GetBorrowedOrderHistoryAsync(int buyerId)
         {
-            return await Task.Run(() => _model.GetBorrowedOrderHistoryAsync(buyerId));
+            return await _model.GetBorrowedOrderHistoryAsync(buyerId);
         }
 
         public async Task<List<Order>> GetNewOrUsedOrderHistoryAsync(int buyerId)
         {
-            return await Task.Run(() => _model.GetNewOrUsedOrderHistoryAsync(buyerId));
+            return await _model.GetNewOrUsedOrderHistoryAsync(buyerId);
         }
 
         public async Task<List<Order>> GetOrdersFromLastThreeMonthsAsync(int buyerId)
@@ -71,111 +81,93 @@ namespace ArtAttack.ViewModel
 
         public async Task<List<Order>> GetOrdersFromOrderHistoryAsync(int orderHistoryId)
         {
-            return await Task.Run(() => _model.GetOrdersFromOrderHistoryAsync(orderHistoryId));
+            return await _model.GetOrdersFromOrderHistoryAsync(orderHistoryId);
         }
 
         public async Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId)
         {
-            return await Task.Run(() =>
+            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (SqlConnection conn = new SqlConnection(_model.ConnectionString))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
                     string query = @"SELECT * FROM [OrderSummary] WHERE ID = @OrderSummaryId";
-                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@OrderSummaryId", orderSummaryId);
 
-
-                    cmd.Parameters.Add("@OrderSummaryId", SqlDbType.Int).Value = orderSummaryId;
-
-                    conn.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             return new OrderSummary()
                             {
-                                ID = reader.GetInt32("ID"),
-                                Subtotal = (float)reader.GetDouble("Subtotal"),
-                                WarrantyTax = (float)reader.GetDouble("WarrantyTax"),
-                                DeliveryFee = (float)reader.GetDouble("DeliveryFee"),
-                                FinalTotal = (float)reader.GetDouble("FinalTotal"),
-                                FullName = reader.GetString("FullName"),
-                                Email = reader.GetString("Email"),
-                                PhoneNumber = reader.GetString("PhoneNumber"),
-                                Address = reader.GetString("Address"),
-                                PostalCode = reader.GetString("PostalCode"),
-                                AdditionalInfo = reader.IsDBNull("AdditionalInfo") ? "" : reader.GetString("AdditionalInfo"),
-                                ContractDetails = reader.IsDBNull("ContractDetails") ? "" : reader.GetString("ContractDetails")
+                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                Subtotal = (float)reader.GetDouble(reader.GetOrdinal("Subtotal")),
+                                WarrantyTax = (float)reader.GetDouble(reader.GetOrdinal("WarrantyTax")),
+                                DeliveryFee = (float)reader.GetDouble(reader.GetOrdinal("DeliveryFee")),
+                                FinalTotal = (float)reader.GetDouble(reader.GetOrdinal("FinalTotal")),
+                                FullName = reader.GetString(reader.GetOrdinal("FullName")),
+                                Email = reader.GetString(reader.GetOrdinal("Email")),
+                                PhoneNumber = reader.GetString(reader.GetOrdinal("PhoneNumber")),
+                                Address = reader.GetString(reader.GetOrdinal("Address")),
+                                PostalCode = reader.GetString(reader.GetOrdinal("PostalCode")),
+                                AdditionalInfo = reader.IsDBNull(reader.GetOrdinal("AdditionalInfo")) ? "" : reader.GetString(reader.GetOrdinal("AdditionalInfo")),
+                                ContractDetails = reader.IsDBNull(reader.GetOrdinal("ContractDetails")) ? "" : reader.GetString(reader.GetOrdinal("ContractDetails"))
                             };
                         }
                     }
                 }
-                throw new KeyNotFoundException($"OrderSummary with ID {orderSummaryId} not found");
-            });
+            }
+            throw new KeyNotFoundException($"OrderSummary with ID {orderSummaryId} not found");
         }
 
         public async Task<Order> GetOrderByIdAsync(int orderId)
         {
-            return await Task.Run(async () =>
+            var borrowedOrders = await _model.GetBorrowedOrderHistoryAsync(0);
+            foreach (var order in borrowedOrders)
             {
-                var borrowedOrders = await _model.GetBorrowedOrderHistoryAsync(0);
+                if (order.OrderID == orderId)
+                    return order;
+            }
 
-                foreach (var order in borrowedOrders)
-                {
-                    if (order.OrderID == orderId)
-                        return order;
-                }
+            var newUsedOrders = await _model.GetNewOrUsedOrderHistoryAsync(0);
+            foreach (var order in newUsedOrders)
+            {
+                if (order.OrderID == orderId)
+                    return order;
+            }
 
-                var newUsedOrders = await _model.GetNewOrUsedOrderHistoryAsync(0);
-
-                foreach (var order in newUsedOrders)
-                {
-                    if (order.OrderID == orderId)
-                        return order;
-                }
-
-                return null;
-            });
+            return null;
         }
 
         public async Task<List<Order>> GetCombinedOrderHistoryAsync(int buyerId, string timePeriodFilter = "all")
         {
-            return await Task.Run(async () =>
+            List<Order> orders = new List<Order>();
+
+            switch (timePeriodFilter.ToLower())
             {
-                List<Order> orders = new List<Order>();
+                case "3months":
+                    orders = _model.GetOrdersFromLastThreeMonths(buyerId);
+                    break;
+                case "6months":
+                    orders = _model.GetOrdersFromLastSixMonths(buyerId);
+                    break;
+                case "2024":
+                    orders = _model.GetOrdersFrom2024(buyerId);
+                    break;
+                case "2025":
+                    orders = _model.GetOrdersFrom2025(buyerId);
+                    break;
+                case "all":
+                default:
+                    var borrowedOrders = await _model.GetBorrowedOrderHistoryAsync(buyerId);
+                    var newUsedOrders = await _model.GetNewOrUsedOrderHistoryAsync(buyerId);
+                    orders.AddRange(borrowedOrders);
+                    orders.AddRange(newUsedOrders);
+                    break;
+            }
 
-                switch (timePeriodFilter.ToLower())
-                {
-                    case "3months":
-                        orders = _model.GetOrdersFromLastThreeMonths(buyerId);
-                        break;
-                    case "6months":
-                        orders = _model.GetOrdersFromLastSixMonths(buyerId);
-                        break;
-                    case "2024":
-                        orders = _model.GetOrdersFrom2024(buyerId);
-                        break;
-                    case "2025":
-                        orders = _model.GetOrdersFrom2025(buyerId);
-                        break;
-                    case "all":
-                    default:
-                        var borrowedOrders = await _model.GetBorrowedOrderHistoryAsync(buyerId);
-                        var newUsedOrders = await _model.GetNewOrUsedOrderHistoryAsync(buyerId);
-
-                        foreach (var order in borrowedOrders)
-                        {
-                            orders.Add(order);
-                        }
-
-                        foreach (var order in newUsedOrders)
-                        {
-                            orders.Add(order);
-                        }
-                        break;
-                }
-
-                return orders;
-            });
+            return orders;
         }
 
         /// <summary>
@@ -193,15 +185,16 @@ namespace ArtAttack.ViewModel
         /// </remarks>
         public async Task<List<OrderDisplayInfo>> GetOrdersWithProductInfoAsync(int userId, string searchText = null, string timePeriod = null)
         {
-            return await Task.Run(async () =>
+            if (userId <= 0)
+                throw new ArgumentException("User ID must be positive", nameof(userId));
+
+            List<OrderDisplayInfo> orderDisplayInfos = new List<OrderDisplayInfo>();
+            Dictionary<int, string> productCategoryTypes = new Dictionary<int, string>();
+
+            using (var connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                List<OrderDisplayInfo> orderDisplayInfos = new List<OrderDisplayInfo>();
-                Dictionary<int, string> productCategoryTypes = new Dictionary<int, string>();
-
-                using (var SQLconnection = new SqlConnection(_model.ConnectionString))
+                using (var command = connection.CreateCommand())
                 {
-                    await SQLconnection.OpenAsync();
-
                     string query = @"SELECT 
                         o.OrderID, 
                         p.name AS ProductName, 
@@ -224,54 +217,53 @@ namespace ArtAttack.ViewModel
                     else if (timePeriod == "This Year")
                         query += " AND YEAR(o.OrderDate) = YEAR(GETDATE())";
 
-                    using (var SQLcommand = new SqlCommand(query, SQLconnection))
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    if (!string.IsNullOrEmpty(searchText))
+                        command.Parameters.AddWithValue("@SearchText", $"%{searchText}%");
+
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        SQLcommand.Parameters.AddWithValue("@UserId", userId);
-                        if (!string.IsNullOrEmpty(searchText))
-                            SQLcommand.Parameters.AddWithValue("@SearchText", $"%{searchText}%");
-
-                        using (var sqlDataReader = await SQLcommand.ExecuteReaderAsync())
+                        while (await reader.ReadAsync())
                         {
-                            while (await sqlDataReader.ReadAsync())
+                            var orderId = reader.GetInt32(reader.GetOrdinal("OrderID"));
+                            var productName = reader.GetString(reader.GetOrdinal("ProductName"));
+                            var productType = reader.GetInt32(reader.GetOrdinal("ProductType"));
+                            var productTypeName = reader.GetString(reader.GetOrdinal("ProductTypeName"));
+                            var orderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"));
+                            var paymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod"));
+                            var orderSummaryId = reader.GetInt32(reader.GetOrdinal("OrderSummaryID"));
+
+                            // Determine product type category
+                            string productCategory;
+                            if (productTypeName == "new" || productTypeName == "used")
                             {
-                                var orderId = sqlDataReader.GetInt32(0);
-                                var productName = sqlDataReader.GetString(1);
-                                var productType = sqlDataReader.GetInt32(2);
-                                var productTypeName = sqlDataReader.GetString(3);
-                                var orderDate = sqlDataReader.GetDateTime(4);
-                                var paymentMethod = sqlDataReader.GetString(5);
-                                var orderSummaryId = sqlDataReader.GetInt32(6);
-
-                                // Determine product type category
-                                string productCategory;
-                                if (productTypeName == "new" || productTypeName == "used")
-                                {
-                                    productCategory = "new";
-                                    productCategoryTypes[orderSummaryId] = "new";
-                                }
-                                else
-                                {
-                                    productCategory = "borrowed";
-                                    productCategoryTypes[orderSummaryId] = "borrowed";
-                                }
-
-                                orderDisplayInfos.Add(new OrderDisplayInfo
-                                {
-                                    OrderID = orderId,
-                                    ProductName = productName,
-                                    ProductTypeName = productTypeName,
-                                    OrderDate = orderDate.ToString("yyyy-MM-dd"),
-                                    PaymentMethod = paymentMethod,
-                                    OrderSummaryID = orderSummaryId,
-                                    ProductCategory = productCategory
-                                });
+                                productCategory = "new";
+                                productCategoryTypes[orderSummaryId] = "new";
                             }
+                            else
+                            {
+                                productCategory = "borrowed";
+                                productCategoryTypes[orderSummaryId] = "borrowed";
+                            }
+
+                            orderDisplayInfos.Add(new OrderDisplayInfo
+                            {
+                                OrderID = orderId,
+                                ProductName = productName,
+                                ProductTypeName = productTypeName,
+                                OrderDate = orderDate.ToString("yyyy-MM-dd"),
+                                PaymentMethod = paymentMethod,
+                                OrderSummaryID = orderSummaryId,
+                                ProductCategory = productCategory
+                            });
                         }
                     }
                 }
+            }
 
-                return orderDisplayInfos;
-            });
+            return orderDisplayInfos;
         }
 
         /// <summary>
@@ -287,14 +279,15 @@ namespace ArtAttack.ViewModel
         /// </remarks>
         public async Task<Dictionary<int, string>> GetProductCategoryTypesAsync(int userId)
         {
-            return await Task.Run(async () =>
+            if (userId <= 0)
+                throw new ArgumentException("User ID must be positive", nameof(userId));
+
+            Dictionary<int, string> productCategoryTypes = new Dictionary<int, string>();
+
+            using (var connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                Dictionary<int, string> productCategoryTypes = new Dictionary<int, string>();
-
-                using (var SQLconnection = new SqlConnection(_model.ConnectionString))
+                using (var command = connection.CreateCommand())
                 {
-                    await SQLconnection.OpenAsync();
-
                     string query = @"SELECT 
                         o.OrderSummaryID,
                         p.productType
@@ -302,32 +295,31 @@ namespace ArtAttack.ViewModel
                     JOIN [DummyProduct] p ON o.ProductType = p.ID
                     WHERE o.BuyerID = @UserId";
 
-                    using (var SQLcommand = new SqlCommand(query, SQLconnection))
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        SQLcommand.Parameters.AddWithValue("@UserId", userId);
-
-                        using (var sqlDataReader = await SQLcommand.ExecuteReaderAsync())
+                        while (await reader.ReadAsync())
                         {
-                            while (await sqlDataReader.ReadAsync())
-                            {
-                                var orderSummaryId = sqlDataReader.GetInt32(0);
-                                var productTypeName = sqlDataReader.GetString(1);
+                            var orderSummaryId = reader.GetInt32(reader.GetOrdinal("OrderSummaryID"));
+                            var productTypeName = reader.GetString(reader.GetOrdinal("productType"));
 
-                                if (productTypeName == "new" || productTypeName == "used")
-                                {
-                                    productCategoryTypes[orderSummaryId] = "new";
-                                }
-                                else
-                                {
-                                    productCategoryTypes[orderSummaryId] = "borrowed";
-                                }
+                            if (productTypeName == "new" || productTypeName == "used")
+                            {
+                                productCategoryTypes[orderSummaryId] = "new";
+                            }
+                            else
+                            {
+                                productCategoryTypes[orderSummaryId] = "borrowed";
                             }
                         }
                     }
                 }
+            }
 
-                return productCategoryTypes;
-            });
+            return productCategoryTypes;
         }
     }
 
