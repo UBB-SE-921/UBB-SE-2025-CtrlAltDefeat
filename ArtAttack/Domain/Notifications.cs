@@ -76,6 +76,12 @@ namespace ArtAttack.Domain
 
     }
 
+<<<<<<< HEAD
+=======
+    public class ContractRenewalWaitlistNotification : Notification
+    {
+        private readonly int _productID;
+>>>>>>> e34dd40ddaa927d127659c5ca3192e87d5fb05ad
 
     public class ContractRenewalWaitlistNotification : Notification
     {
