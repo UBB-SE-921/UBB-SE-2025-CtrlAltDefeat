@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArtAttack.Model
 {
-    public class OrderModel
+    public class OrderModel : IOrderModel
     {
         private readonly string _connectionString;
         private readonly IDatabaseProvider _databaseProvider;
