@@ -1,10 +1,10 @@
-﻿using ArtAttack.Domain;
-using System.Collections.Generic;
+﻿//using ArtAttack.Domain;
+//using System.Collections.Generic;
 
-public interface INotificationDataAdapter
-{
-    void AddNotification(Notification notification);
-    void Dispose();
-    List<Notification> GetNotificationsForUser(int recipientId);
-    void MarkAsRead(int notificationId);
-}
+//public interface INotificationDataAdapter
+//{
+//    void AddNotification(INotification notification);
+//    void Dispose();
+//    List<INotification> GetNotificationsForUser(int recipientId);
+//    void MarkAsRead(int notificationId);
+//}

@@ -660,3 +660,15 @@ D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\obj\x64\Debug\net8.0-windows
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\qualifiers.txt.intermediate
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\MultipleQualifiersPerDimensionFound.txt
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\.msCoverageSourceRootsMapping_ArtAttack.Tests
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.csproj.AssemblyReference.cache
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.gentestingplatformentrypointinputcache.cache
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.genautoregisteredextensionsinputcache.cache
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.AssemblyInfoInputs.cache
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.AssemblyInfo.cs
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.csproj.CoreCompileInputs.cache
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.sourcelink.json
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.dll
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\refint\ArtAttack.Tests.dll
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.pdb

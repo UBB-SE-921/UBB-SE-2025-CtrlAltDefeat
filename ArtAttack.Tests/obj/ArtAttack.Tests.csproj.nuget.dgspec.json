@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj": {}
+    "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj": {}
   },
   "projects": {
-    "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj": {
+    "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
         "projectName": "ArtAttack.Tests",
-        "projectPath": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
+        "projectPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
         "packagesPath": "C:\\Users\\alexe\\.nuget\\packages\\",
-        "outputPath": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\obj\\",
+        "outputPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0-windows10.0.19041": {
             "targetAlias": "net8.0-windows10.0.19041.0",
             "projectReferences": {
-              "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ArtAttack.csproj": {
-                "projectPath": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ArtAttack.csproj"
+              "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj": {
+                "projectPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj"
               }
             }
           }
@@ -151,14 +151,14 @@
         }
       }
     },
-    "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ArtAttack.csproj": {
+    "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ArtAttack.csproj",
+        "projectUniqueName": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj",
         "projectName": "ArtAttack",
-        "projectPath": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ArtAttack.csproj",
+        "projectPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj",
         "packagesPath": "C:\\Users\\alexe\\.nuget\\packages\\",
-        "outputPath": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\obj\\",
+        "outputPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

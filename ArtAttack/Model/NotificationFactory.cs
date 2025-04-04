@@ -6,12 +6,6 @@ namespace ArtAttack.Model
 {
     public static class NotificationFactory
     {
-        /// <summary>
-        /// Creates a notification object from the given SqlDataReader.
-        /// </summary>
-        /// <param name="reader">SqlDataReader containing notification data</param>
-        /// <returns>Notification object</returns>
-        /// <exception cref="ArgumentException">Thrown when the notification category is unknown</exception>
         public static Notification CreateFromDataReader(SqlDataReader reader)
         {
             //Common fields

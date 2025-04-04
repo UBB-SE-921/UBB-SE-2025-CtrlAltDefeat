@@ -11,14 +11,14 @@
     <Grid x:Name="RootGrid" Loaded="RootGrid_Loaded">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
             <!--Button x:Name="myButton" Click="myButton_Click">Click Me</Button!-->
-            <Button x:Name="purchaseButton" Click="purchaseButton_Clicked">Purchase</Button>
+            <Button x:Name="purchaseButton" Click="purchaseButton_Click">Purchase</Button>
             <Button x:Name="bidProductButton" Click="bidProductButton_Clicked">Order Bid Product</Button>
             <Button x:Name="walletrefillButton" Click="walletrefillButton_Clicked">Refill Wallet</Button>
-            <Button x:Name="generateContractButton" Click="generateContractButton_Clicked">Generate Contract</Button>
-            <Button x:Name="borrowButton" Click="borrowButton_Clicked">Borrow Product</Button>
-            <Button x:Name="notificationButton" Click="notificationButton_Clicked">Notification Window</Button>
-            <Button x:Name="OrderHistoryButton" Click="OrderHitoryButton_Clicked">Order History</Button>
-            <Button x:Name="renewContractButton" Click="renewContractButton_Clicked">Renew Contract</Button>
+            <Button x:Name="generateContractButton" Click="generateContractButton_Click">Generate Contract</Button>
+            <Button x:Name="borrowButton" Click="borrowButton_Click">Borrow Product</Button>
+            <Button x:Name="notificationButton" Click="notificationButton_Click">Notification Window</Button>
+            <Button x:Name="OrderHistoryButton" Click="OrderHitoryButton_Click">Order History</Button>
+            <Button x:Name="renewContractButton" Click="renewContractButton_Click">Renew Contract</Button>
             <Button x:Name="trackOrderButton" Click="trackOrderButton_Clicked">Track Order</Button>
         </StackPanel>
     </Grid>

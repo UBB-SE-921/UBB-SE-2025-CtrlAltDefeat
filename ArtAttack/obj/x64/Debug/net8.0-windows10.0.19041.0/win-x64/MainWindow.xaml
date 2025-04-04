@@ -11,14 +11,14 @@
     <Grid x:ConnectionId='2' x:Name="RootGrid"                         >
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
             <!--Button x:Name="myButton" Click="myButton_Click">Click Me</Button!-->
-            <Button x:ConnectionId='3' x:Name="purchaseButton"                               >Purchase</Button>
+            <Button x:ConnectionId='3' x:Name="purchaseButton"                             >Purchase</Button>
             <Button x:ConnectionId='4' x:Name="bidProductButton"                                 >Order Bid Product</Button>
             <Button x:ConnectionId='5' x:Name="walletrefillButton"                                   >Refill Wallet</Button>
-            <Button x:ConnectionId='6' x:Name="generateContractButton"                                       >Generate Contract</Button>
-            <Button x:ConnectionId='7' x:Name="borrowButton"                             >Borrow Product</Button>
-            <Button x:ConnectionId='8' x:Name="notificationButton"                                   >Notification Window</Button>
-            <Button x:ConnectionId='9' x:Name="OrderHistoryButton"                                  >Order History</Button>
-            <Button x:ConnectionId='10' x:Name="renewContractButton"                                    >Renew Contract</Button>
+            <Button x:ConnectionId='6' x:Name="generateContractButton"                                     >Generate Contract</Button>
+            <Button x:ConnectionId='7' x:Name="borrowButton"                           >Borrow Product</Button>
+            <Button x:ConnectionId='8' x:Name="notificationButton"                                 >Notification Window</Button>
+            <Button x:ConnectionId='9' x:Name="OrderHistoryButton"                                >Order History</Button>
+            <Button x:ConnectionId='10' x:Name="renewContractButton"                                  >Renew Contract</Button>
             <Button x:ConnectionId='11' x:Name="trackOrderButton"                                 >Track Order</Button>
         </StackPanel>
     </Grid>
