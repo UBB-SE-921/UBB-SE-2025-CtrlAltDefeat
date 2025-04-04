@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "8f6JRHVnyrM=",
+=======
+  "dgSpecHash": "KsyBci3xixM=",
+>>>>>>> updated project for tests
   "success": true,
   "projectFilePath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
   "expectedPackageFiles": [

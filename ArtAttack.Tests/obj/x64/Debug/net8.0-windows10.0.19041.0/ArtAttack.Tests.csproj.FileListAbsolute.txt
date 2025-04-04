@@ -578,13 +578,8 @@ D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win\lib\net8.0\Microsoft.Data.SqlClient.dll
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-arm64\native\WebView2Loader.dll
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-x64\native\WebView2Loader.dll
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-x86\native\WebView2Loader.dll
-D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-arm64\native\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll
-D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-arm64\native\Microsoft.WindowsAppRuntime.Bootstrap.dll
-D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-arm64ec\native\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll
-D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-arm64ec\native\Microsoft.WindowsAppRuntime.Bootstrap.dll
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-x64\native\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-x64\native\Microsoft.WindowsAppRuntime.Bootstrap.dll
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-x86\native\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll
@@ -659,6 +654,7 @@ D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\obj\x64\Debug\net8.0-windows
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\qualifiers.txt
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\qualifiers.txt.intermediate
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\MultipleQualifiersPerDimensionFound.txt
+<<<<<<< HEAD
 D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\.msCoverageSourceRootsMapping_ArtAttack.Tests
 C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.csproj.AssemblyReference.cache
@@ -985,3 +981,5 @@ C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64
 C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\qualifiers.txt
 C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\qualifiers.txt.intermediate
 C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\MultipleQualifiersPerDimensionFound.txt
+=======
+>>>>>>> updated project for tests

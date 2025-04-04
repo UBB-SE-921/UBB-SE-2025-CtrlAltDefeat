@@ -14,7 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ArtAttack.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7b134d722d7294500cef47f33cc1569caffb392d")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+91a6c9bc18d98cded288d6cc2d528cefa7f50a2d")]
+>>>>>>> updated project for tests
 [assembly: System.Reflection.AssemblyProductAttribute("ArtAttack.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ArtAttack.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
