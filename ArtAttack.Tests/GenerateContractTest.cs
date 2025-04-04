@@ -547,5 +547,66 @@ namespace ArtAttack.Tests
             Assert.AreEqual(_mockContract.ContractID, result.ContractID);
             _mockContractModel.Verify(m => m.GetContractByIdAsync(contractId), Times.Once);
         }
+
+        //get predefined contract by type
+        [TestMethod]
+        public void PredefinedContractID_NullableProperty_CanSetAndGetNullValue()
+        {
+            // Arrange
+            var contract = new Contract();
+            int? expectedValue = null;
+
+            // Act
+            contract.PredefinedContractID = expectedValue;
+            var actualValue = contract.PredefinedContractID;
+
+            // Assert
+            Assert.AreEqual(expectedValue, actualValue, "PredefinedContractID should allow null values");
+        }
+
+        [TestMethod]
+        public void PredefinedContractID_NullableProperty_CanSetAndGetValue()
+        {
+            // Arrange
+            var contract = new Contract();
+            int? expectedValue = 42;
+
+            // Act
+            contract.PredefinedContractID = expectedValue;
+            var actualValue = contract.PredefinedContractID;
+
+            // Assert
+            Assert.AreEqual(expectedValue, actualValue, "PredefinedContractID should store the assigned value");
+        }
+
+        [TestMethod]
+        public void RenewedFromContractID_NullableProperty_CanSetAndGetNullValue()
+        {
+            // Arrange
+            var contract = new Contract();
+            long? expectedValue = null;
+
+            // Act
+            contract.RenewedFromContractID = expectedValue;
+            var actualValue = contract.RenewedFromContractID;
+
+            // Assert
+            Assert.AreEqual(expectedValue, actualValue, "RenewedFromContractID should allow null values");
+        }
+
+        [TestMethod]
+        public void RenewedFromContractID_NullableProperty_CanSetAndGetValue()
+        {
+            // Arrange
+            var contract = new Contract();
+            long? expectedValue = 123456789L;
+
+            // Act
+            contract.RenewedFromContractID = expectedValue;
+            var actualValue = contract.RenewedFromContractID;
+
+            // Assert
+            Assert.AreEqual(expectedValue, actualValue, "RenewedFromContractID should store the assigned value");
+        }
     }
 }
