@@ -1,5 +1,6 @@
 ﻿using ArtAttack.Domain;
 using ArtAttack.Model;
+using ArtAttack.Shared;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,82 @@ namespace ArtAttack.ViewModel
         Task<List<Order>> GetOrdersFromOrderHistoryAsync(int orderHistoryId);
         Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId);
         Task<Order> GetOrderByIdAsync(int orderId);
+        Task<List<Order>> GetCombinedOrderHistoryAsync(int buyerId, string timePeriodFilter = "all");
+    }
+
+    /// <summary>
+    /// Interface for retrieving order summary information
+    /// </summary>
+    public interface IOrderSummaryService
+    {
+        /// <summary>
+        /// Retrieves details of a specific order summary
+        /// </summary>
+        /// <param name="orderSummaryId">Unique identifier of the order summary</param>
+        /// <returns>Order summary details</returns>
+        /// <exception cref="KeyNotFoundException">Thrown when order summary with the specified ID is not found</exception>
+        Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId);
+    }
+
+    /// <summary>
+    /// Provides access to order summary data using SQL Server
+    /// </summary>
+    public class SqlOrderSummaryService : IOrderSummaryService
+    {
+        private readonly string _connectionString;
+
+        /// <summary>
+        /// Initializes a new instance of the SqlOrderSummaryService class
+        /// </summary>
+        /// <param name="connectionString">Database connection string</param>
+        public SqlOrderSummaryService(string connectionString)
+        {
+            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        }
+
+        /// <summary>
+        /// Retrieves details of a specific order summary from the database
+        /// </summary>
+        /// <param name="orderSummaryId">Unique identifier of the order summary</param>
+        /// <returns>Order summary details</returns>
+        /// <exception cref="KeyNotFoundException">Thrown when order summary with the specified ID is not found</exception>
+        public async Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId)
+        {
+            return await Task.Run(() =>
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    const string SQL_QUERY = @"SELECT * FROM [OrderSummary] WHERE ID = @OrderSummaryId";
+                    SqlCommand command = new SqlCommand(SQL_QUERY, connection);
+
+                    command.Parameters.Add("@OrderSummaryId", SqlDbType.Int).Value = orderSummaryId;
+
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new OrderSummary()
+                            {
+                                ID = reader.GetInt32("ID"),
+                                Subtotal = (float)reader.GetDouble("Subtotal"),
+                                WarrantyTax = (float)reader.GetDouble("WarrantyTax"),
+                                DeliveryFee = (float)reader.GetDouble("DeliveryFee"),
+                                FinalTotal = (float)reader.GetDouble("FinalTotal"),
+                                FullName = reader.GetString("FullName"),
+                                Email = reader.GetString("Email"),
+                                PhoneNumber = reader.GetString("PhoneNumber"),
+                                Address = reader.GetString("Address"),
+                                PostalCode = reader.GetString("PostalCode"),
+                                AdditionalInfo = reader.IsDBNull("AdditionalInfo") ? string.Empty : reader.GetString("AdditionalInfo"),
+                                ContractDetails = reader.IsDBNull("ContractDetails") ? string.Empty : reader.GetString("ContractDetails")
+                            };
+                        }
+                    }
+                }
+                throw new KeyNotFoundException($"OrderSummary with ID {orderSummaryId} not found");
+            });
+        }
     }
 
     /// <summary>
@@ -34,7 +111,8 @@ namespace ArtAttack.ViewModel
     /// </summary>
     public class OrderViewModel : IOrderViewModel
     {
-        private readonly OrderModel _orderModel;
+        private readonly IOrderModel _orderModel;
+        private readonly IOrderSummaryService _orderSummaryService;
         private const int ALL_ORDERS_DEFAULT_BUYER_ID = 0;
 
         // Product type constants to replace magic numbers
@@ -56,12 +134,28 @@ namespace ArtAttack.ViewModel
         }
 
         /// <summary>
-        /// Initializes a new instance of the OrderViewModel class
+        /// Initializes a new instance of the OrderViewModel class with default implementations
         /// </summary>
         /// <param name="connectionString">Database connection string</param>
         public OrderViewModel(string connectionString)
         {
-            _orderModel = new OrderModel(connectionString);
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentNullException(nameof(connectionString));
+
+            var databaseProvider = new SqlDatabaseProvider();
+            _orderModel = new OrderModel(connectionString, databaseProvider);
+            _orderSummaryService = new SqlOrderSummaryService(connectionString);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OrderViewModel class with specified dependencies (for testing)
+        /// </summary>
+        /// <param name="orderModel">Order model implementation</param>
+        /// <param name="orderSummaryService">Order summary service implementation</param>
+        public OrderViewModel(IOrderModel orderModel, IOrderSummaryService orderSummaryService)
+        {
+            _orderModel = orderModel ?? throw new ArgumentNullException(nameof(orderModel));
+            _orderSummaryService = orderSummaryService ?? throw new ArgumentNullException(nameof(orderSummaryService));
         }
 
         /// <summary>
@@ -188,40 +282,7 @@ namespace ArtAttack.ViewModel
         /// <exception cref="KeyNotFoundException">Thrown when order summary with the specified ID is not found</exception>
         public async Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId)
         {
-            return await Task.Run(() =>
-            {
-                using (SqlConnection connection = new SqlConnection(_orderModel.ConnectionString))
-                {
-                    const string SQL_QUERY = @"SELECT * FROM [OrderSummary] WHERE ID = @OrderSummaryId";
-                    SqlCommand command = new SqlCommand(SQL_QUERY, connection);
-
-                    command.Parameters.Add("@OrderSummaryId", SqlDbType.Int).Value = orderSummaryId;
-
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new OrderSummary()
-                            {
-                                ID = reader.GetInt32("ID"),
-                                Subtotal = (float)reader.GetDouble("Subtotal"),
-                                WarrantyTax = (float)reader.GetDouble("WarrantyTax"),
-                                DeliveryFee = (float)reader.GetDouble("DeliveryFee"),
-                                FinalTotal = (float)reader.GetDouble("FinalTotal"),
-                                FullName = reader.GetString("FullName"),
-                                Email = reader.GetString("Email"),
-                                PhoneNumber = reader.GetString("PhoneNumber"),
-                                Address = reader.GetString("Address"),
-                                PostalCode = reader.GetString("PostalCode"),
-                                AdditionalInfo = reader.IsDBNull("AdditionalInfo") ? string.Empty : reader.GetString("AdditionalInfo"),
-                                ContractDetails = reader.IsDBNull("ContractDetails") ? string.Empty : reader.GetString("ContractDetails")
-                            };
-                        }
-                    }
-                }
-                throw new KeyNotFoundException($"OrderSummary with ID {orderSummaryId} not found");
-            });
+            return await _orderSummaryService.GetOrderSummaryAsync(orderSummaryId);
         }
 
         /// <summary>

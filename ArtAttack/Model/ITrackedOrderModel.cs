@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ArtAttack.Model
 {
-    internal interface ITrackedOrderModel
+    public interface ITrackedOrderModel
     {
         Task<int> AddOrderCheckpointAsync(OrderCheckpoint checkpoint);
         Task<int> AddTrackedOrderAsync(TrackedOrder order);
