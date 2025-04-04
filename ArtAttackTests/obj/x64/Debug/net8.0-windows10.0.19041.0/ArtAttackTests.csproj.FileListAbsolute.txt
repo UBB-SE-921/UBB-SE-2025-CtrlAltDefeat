@@ -1,0 +1,9 @@
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.csproj.AssemblyReference.cache
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.GeneratedMSBuildEditorConfig.editorconfig
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.AssemblyInfoInputs.cache
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.AssemblyInfo.cs
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.csproj.CoreCompileInputs.cache
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.sourcelink.json
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\bin\x64\Debug\net8.0-windows10.0.19041.0\.msCoverageSourceRootsMapping_ArtAttackTests
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.gentestingplatformentrypointinputcache.cache
+D:\Faculty\CtrlAltDefeatMarketplace\ArtAttackTests\obj\x64\Debug\net8.0-windows10.0.19041.0\ArtAttackTests.genautoregisteredextensionsinputcache.cache
