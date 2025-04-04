@@ -55,10 +55,10 @@ namespace ArtAttack
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        [STAThread]
-        public static void Main(string[] args)
-        {
-            Application.Start(p => new App());
-        }
+        //[STAThread]
+        //public static void Main(string[] args)
+        //{
+        //    Application.Start(p => new App());
+        //}
     }
 }
