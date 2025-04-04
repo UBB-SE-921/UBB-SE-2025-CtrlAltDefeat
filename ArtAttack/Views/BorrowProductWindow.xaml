@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="ArtAttack.BorrowProductWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,24 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    xmlns:local="using:ArtAttack.Utils"
     Title="Product Details">
 
-    <Grid Margin="20">
-        <Grid.Resources>
-            <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="#cccaca"/>
-                <Setter Property="FontFamily" Value="Segoe UI"/>
-            </Style>
-
-            <Style TargetType="Button">
-                <Setter Property="Background" Value="#cccaca"/>
-                <Setter Property="Foreground" Value="Black"/>
-                <Setter Property="Padding" Value="15,5"/>
-                <Setter Property="Margin" Value="0,10,0,0"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            </Style>
-        </Grid.Resources>
-
+    <!-- Use a Grid to structure the main content -->
+    <Grid Margin="20" x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -32,63 +18,49 @@
 
         <!-- Product Details Section -->
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
-            <TextBlock x:Name="txtProductName" FontSize="20" FontWeight="Bold"/>
-            <TextBlock x:Name="txtPrice" FontSize="16"/>
-            <TextBlock x:Name="txtSeller" FontSize="16"/>
-            <TextBlock x:Name="txtType" FontSize="16"/>
-            <TextBlock x:Name="txtDates" FontSize="14" Foreground="#666666"/>
+            <TextBlock x:Name="txtProductName" Text="{Binding ProductName}" FontSize="20" FontWeight="Bold"/>
+            <TextBlock x:Name="txtPrice" Text="{Binding PriceText}" FontSize="16"/>
+            <TextBlock x:Name="txtSeller" Text="{Binding SellerText}" FontSize="16"/>
+            <TextBlock x:Name="txtType" Text="{Binding TypeText}" FontSize="16"/>
+            <TextBlock x:Name="txtDates" Text="{Binding DatesText}" FontSize="14" Foreground="#666666"/>
         </StackPanel>
-
-        <!-- Spacer -->
-        <Grid Grid.Row="1"/>
 
         <!-- Action Buttons -->
         <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,20,0,0">
-            <Button x:Name="btnBorrow" 
+            <Button x:Name="BorrowButton" 
                     Content="Borrow" 
-                    Visibility="Collapsed"/>
+                    Visibility="{Binding ProductStatus, Converter={StaticResource BorrowedToVisibilityConverter}}"/>
         </StackPanel>
 
-        <!-- Waitlist Actions - Now properly aligned -->
-        <StackPanel Grid.Row="2" Grid.Column="1" Margin="20,20,0,0">
-            <!-- Join Waitlist Button (shown when not on waitlist) -->
-            <Button x:Name="btnJoinWaitList" 
-            Content="Join Waitlist" 
-            Click="btnJoinWaitList_Click"
-            Margin="0,0,0,10"
-            HorizontalAlignment="Right"
-            Width="150"
-            Visibility="Visible"/>
-
-            <!-- Waitlist Actions (shown when on waitlist) -->
+        <!-- Waitlist Actions -->
+        <StackPanel Grid.Row="2" Grid.Column="1" Margin="90,20,0,0">
+            <Button x:Name="JoinWaitListButton" 
+                    Content="Join Waitlist" 
+                    Visibility="{Binding IsJoinWaitListVisible}"/>
             <StackPanel x:Name="waitlistActionsPanel" 
-                Orientation="Horizontal"
-                HorizontalAlignment="Right"
-                Visibility="Collapsed">
-                <Button x:Name="btnLeaveWaitList" 
-                Content="Leave Waitlist" 
-                Click="btnLeaveWaitList_Click"
-                Margin="0,0,10,0"
-                Width="120"/>
-                <Button x:Name="btnViewPosition" 
-                Content="Position" 
-                Click="btnViewPosition_Click"
-                Width="120"/>
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Visibility="{Binding ShowLeaveWaitlistButton}">
+                <Button x:Name="LeaveWaitListButton" 
+                        Content="Leave Waitlist" 
+                        Width="120"/>
+                <Button x:Name="ViewPositionButton" 
+                        Content="Position" 
+                        Width="120"/>
             </StackPanel>
-
-            <!-- Position text -->
-            <TextBlock x:Name="txtPositionInQueue" 
-               Visibility="Collapsed"
-               Margin="0,5,0,0"
-               FontSize="16"
-               FontWeight="SemiBold"
-               HorizontalAlignment="Right"/>
         </StackPanel>
-        <Button x:Name="ButtonNotifications" 
-                Content="🔔 Notifications" 
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="0,10,10,0"
-                Click="ButtonNotifications_Click"/>
+
+        <!-- Canvas for placing the Notifications Button -->
+        <Canvas VerticalAlignment="Top" HorizontalAlignment="Right" Width="120" Height="40">
+            <!-- Notifications Button positioned at top-right corner of the window -->
+            <Button x:Name="NotificationsButton"
+                    Content="Notifications"
+                    Width="120"
+                    Height="40"
+                    Canvas.Left="0"
+                    Canvas.Top="10"/>
+            <!-- Margin from top-right corner -->
+        </Canvas>
+
     </Grid>
 </Window>

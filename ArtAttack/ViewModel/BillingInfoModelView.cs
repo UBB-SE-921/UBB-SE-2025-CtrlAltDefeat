@@ -134,8 +134,6 @@ namespace ArtAttack.ViewModel
 
                 b_window.Activate();
 
-                // This is just a workaround until I figure out how to switch between pages
-
             }
             else
             {

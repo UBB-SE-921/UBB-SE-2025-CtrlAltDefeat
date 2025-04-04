@@ -12,12 +12,21 @@ namespace ArtAttack.Model
 
         public DummyProductModel(string connectionString)
         {
-            _connectionString = connectionString;
+            this._connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Adds a new DummyProduct record using AddDummyProduct Procedure.
+        /// </summary
+        /// <param name="name"> The name of the product.</param>
+        /// <param name="price"> The price of the product.</param>
+        /// <param name="sellerId"> The ID of the seller.</param>"
+        /// <param name="productType"> The type of the product.</param>"
+        /// <param name="startDate"> The start date of the contract for the product.</param>"
+        /// <param name="endDate"> The end date of the contract for the product.</param>"
         public async Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(this._connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("AddDummyProduct", conn))
                 {
@@ -36,11 +45,18 @@ namespace ArtAttack.Model
         }
 
         /// <summary>
-        /// Updates an existing DummyProduct record.
+        /// Updates an existing DummyProduct record using UpdateDummyProduct Procedure.
         /// </summary>
+        /// <param name="id">The product id.</param>
+        /// <param name="name"> The name of the product.</param>
+        /// <param name="price"> The price of the product.</param>
+        /// <param name="sellerId"> The ID of the seller.</param>"
+        /// <param name="productType"> The type of the product.</param>"
+        /// <param name="startDate"> The start date of the contract for the product.</param>"
+        /// <param name="endDate"> The end date of the contract for the product.</param>"
         public async Task UpdateDummyProductAsync(int id, string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(this._connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("UpdateDummyProduct", conn))
                 {
@@ -62,6 +78,7 @@ namespace ArtAttack.Model
         /// <summary>
         /// Deletes a DummyProduct record by ID.
         /// </summary>
+        /// <param name="id"> The product id.</param>
         public async Task DeleteDummyProduct(int id)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))

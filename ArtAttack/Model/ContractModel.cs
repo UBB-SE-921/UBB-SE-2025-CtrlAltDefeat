@@ -19,7 +19,7 @@ namespace ArtAttack.Model
         public async Task<PredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
             PredefinedContract predefinedContract = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(this._connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetPredefinedContractByID", conn))
                 {
