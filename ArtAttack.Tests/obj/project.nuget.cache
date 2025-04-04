@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hiNDtyJH3OQ=",
+  "dgSpecHash": "8f6JRHVnyrM=",
   "success": true,
-  "projectFilePath": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
+  "projectFilePath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\alexe\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\alexe\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

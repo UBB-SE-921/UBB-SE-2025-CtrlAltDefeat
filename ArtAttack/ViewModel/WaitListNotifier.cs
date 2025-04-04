@@ -8,7 +8,7 @@ using System.Linq;
 public class WaitListNotifier
 {
     private readonly IWaitListModel _waitListModel;
-    private readonly INotificationDataAdapter _notificationAdapter;
+    private readonly NotificationDataAdapter _notificationAdapter;
     private readonly string _connectionString;
 
     /// <summary>

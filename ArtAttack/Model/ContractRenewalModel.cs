@@ -42,7 +42,7 @@ namespace ArtAttack.Model
             }
         }
 
-        private static void AddContractParameters(SqlCommand command, Contract contract)
+        private static void AddContractParameters(SqlCommand command, IContract contract)
         {
             command.Parameters.AddWithValue("@OrderID", contract.OrderID);
             command.Parameters.AddWithValue("@ContractContent", contract.ContractContent);
@@ -81,7 +81,7 @@ namespace ArtAttack.Model
         /// <returns >A task representing the asynchronous operation. The task result is a list of all renewed contracts.</returns>
         public async Task<List<IContract>> GetRenewedContractsAsync()
         {
-            var contracts = new List<Contract>();
+            var contracts = new List<IContract>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 using (SqlCommand command = new SqlCommand("GetRenewedContracts", connection))
@@ -120,7 +120,7 @@ namespace ArtAttack.Model
         {
             return new Contract
             {
-                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                ContractID = reader.GetInt32(reader.GetOrdinal("ID")),
                 OrderID = reader.GetInt32(reader.GetOrdinal("orderID")),
                 ContractStatus = reader.GetString(reader.GetOrdinal("contractStatus")),
                 ContractContent = reader["contractContent"] as string,

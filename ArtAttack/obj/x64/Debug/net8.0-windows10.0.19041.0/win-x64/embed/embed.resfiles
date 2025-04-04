@@ -6,7 +6,7 @@ Views\BorrowProductWindow.xbf
 Views\CardInfo.xbf
 Views\FinalisePurchase.xbf
 Views\MainNotificationWindow.xbf
-Views\OrderHistoryUI.xbf
+Views\OrderHistoryView.xbf
 Views\RenewContractView.xbf
 Views\SecondaryNotificationWindow.xbf
 Views\TrackedOrderBuyerPage.xbf
