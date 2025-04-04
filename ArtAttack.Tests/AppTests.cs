@@ -16,7 +16,7 @@ namespace ArtAttack.Tests
         public void ConfigurationConnectionStringTest()
         {
             // Arrange
-            var expectedConnectionString = "Data Source=DESKTOP-0NIHISS\\SQLEXPRESS;Initial Catalog=PurchaseDatabase;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
+            var expectedConnectionString = "Data Source=RAZVAN\\SQLEXPRESS01;Initial Catalog=PurchaseDatabase;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
 
             // Act
             var actualConnectionString = ArtAttack.Shared.Configuration._CONNECTION_STRING_;

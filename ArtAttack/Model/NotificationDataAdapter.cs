@@ -5,173 +5,129 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-public class NotificationDataAdapter : IDisposable, INotificationDataAdapter
+public class NotificationDataAdapter : IDisposable
 {
-    private SqlConnection _sqlConnection;
+    private SqlConnection _connection;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NotificationDataAdapter"/> class with the specified connection string.
-    /// </summary>
-    /// <param name="connectionString">The connection string to the database.</param>
-    /// <exception cref="SqlException">Thrown when the connection to the database cannot be established.</exception>
     public NotificationDataAdapter(string connectionString)
     {
-        _sqlConnection = new SqlConnection(connectionString);
-        _sqlConnection.Open();
+        _connection = new SqlConnection(connectionString);
+        _connection.Open();
     }
 
-    /// <summary>
-    /// Retrieves a list of notifications for a specific user.
-    /// </summary>
-    /// <param name="recipientId">The ID of the recipient user.</param>
-    /// <returns>A list of <see cref="Notification"/> objects for the specified user.</returns>
-    /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the SQL connection is not open.</exception>
-    /// <precondition>recipientId must be a valid user ID.</precondition>
-    /// <postcondition>A list of notifications for the specified user is returned.</postcondition>
     public List<Notification> GetNotificationsForUser(int recipientId)
     {
-        var notificationList = new List<Notification>();
+        var notifications = new List<Notification>();
 
-        SqlCommand sqlCommand = new SqlCommand("GetNotificationsByRecipient", _sqlConnection);
-        sqlCommand.CommandType = CommandType.StoredProcedure;
+        SqlCommand command = new SqlCommand("GetNotificationsByRecipient", _connection);
+        command.CommandType = CommandType.StoredProcedure;
 
-        sqlCommand.Parameters.AddWithValue("@RecipientId", recipientId);
-        using (var sqlDataReader = sqlCommand.ExecuteReader())
+        command.Parameters.AddWithValue("@RecipientId", recipientId);
+        using (var reader = command.ExecuteReader())
         {
-            while (sqlDataReader.Read())
+            while (reader.Read())
             {
-                notificationList.Add(NotificationFactory.CreateFromDataReader(sqlDataReader));
+                notifications.Add(NotificationFactory.CreateFromDataReader(reader));
             }
         }
-        return notificationList;
+        return notifications;
     }
 
-    /// <summary>
-    /// Marks a notification as read.
-    /// </summary>
-    /// <param name="notificationId">The ID of the notification to mark as read.</param>
-    /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the SQL connection is not open.</exception>
-    /// <precondition>notificationId must be a valid notification ID.</precondition>
-    /// <postcondition>The specified notification is marked as read in the database.</postcondition>
     public void MarkAsRead(int notificationId)
     {
-        using (var sqlCommand = new SqlCommand("MarkNotificationAsRead", _sqlConnection))
+        using (var command = new SqlCommand("MarkNotificationAsRead", _connection))
         {
-            sqlCommand.CommandType = CommandType.StoredProcedure;
-            sqlCommand.Parameters.AddWithValue("@notificationID", notificationId);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@notificationID", notificationId);
 
-            int rowsAffected = sqlCommand.ExecuteNonQuery();
+            int rowsAffected = command.ExecuteNonQuery();
         }
     }
 
-    /// <summary>
-    /// Adds a new notification to the database.
-    /// </summary>
-    /// <param name="notification">The <see cref="Notification"/> object to add.</param>
-    /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when the SQL connection is not open.</exception>
-    /// <exception cref="ArgumentException">Thrown when the notification type is unknown.</exception>
-    /// <precondition>notification must be a valid <see cref="Notification"/> object.</precondition>
-    /// <postcondition>The specified notification is added to the database.</postcondition>
+
     public void AddNotification(Notification notification)
     {
-        using (var sqlCommand = new SqlCommand("AddNotification", _sqlConnection))
+        using (var command = new SqlCommand("AddNotification", _connection))
         {
-            sqlCommand.CommandType = CommandType.StoredProcedure;
+            command.CommandType = CommandType.StoredProcedure;
 
-            sqlCommand.Parameters.AddWithValue("@recipientID", notification.getRecipientID());
-            sqlCommand.Parameters.AddWithValue("@category", notification.getCategory().ToString());
+            // Common parameters
+            command.Parameters.AddWithValue("@recipientID", notification.getRecipientID());
+            command.Parameters.AddWithValue("@category", notification.getCategory().ToString());
 
             switch (notification)
             {
-                case ContractRenewalAnswerNotification contractRenewalAnswerNotification:
-                    sqlCommand.Parameters.AddWithValue("@contractID", contractRenewalAnswerNotification.getContractID());
-                    sqlCommand.Parameters.AddWithValue("@isAccepted", contractRenewalAnswerNotification.getIsAccepted());
+                case ContractRenewalAnswerNotification ans:
+                    command.Parameters.AddWithValue("@contractID", ans.getContractID());
+                    command.Parameters.AddWithValue("@isAccepted", ans.getIsAccepted());
                     break;
 
-                case ContractRenewalWaitlistNotification contractRenewalWaitlistNotification:
-                    sqlCommand.Parameters.AddWithValue("@productID", contractRenewalWaitlistNotification.getProductID());
+                case ContractRenewalWaitlistNotification waitlist:
+                    command.Parameters.AddWithValue("@productID", waitlist.getProductID());
                     break;
 
-                case OutbiddedNotification outbidNotification:
-                    sqlCommand.Parameters.AddWithValue("@productID", outbidNotification.getProductID());
+                case OutbiddedNotification outbid:
+                    command.Parameters.AddWithValue("@productID", outbid.getProductID());
                     break;
 
-                case OrderShippingProgressNotification shippingProgressNotification:
-                    sqlCommand.Parameters.AddWithValue("@orderID", shippingProgressNotification.getOrderID());
-                    sqlCommand.Parameters.AddWithValue("@shippingState", shippingProgressNotification.getShippingState());
-                    sqlCommand.Parameters.AddWithValue("@deliveryDate", shippingProgressNotification.getDeliveryDate());
+                case OrderShippingProgressNotification shipping:
+                    command.Parameters.AddWithValue("@orderID", shipping.getOrderID());
+                    command.Parameters.AddWithValue("@shippingState", shipping.getShippingState());
+                    command.Parameters.AddWithValue("@deliveryDate", shipping.getDeliveryDate());
                     break;
 
-                case PaymentConfirmationNotification paymentConfirmationNotification:
-                    sqlCommand.Parameters.AddWithValue("@orderID", paymentConfirmationNotification.getOrderID());
-                    sqlCommand.Parameters.AddWithValue("@productID", paymentConfirmationNotification.getProductID());
+                case PaymentConfirmationNotification payment:
+                    command.Parameters.AddWithValue("@orderID", payment.getOrderID());
+                    command.Parameters.AddWithValue("@productID", payment.getProductID());
                     break;
 
-                case ProductRemovedNotification productRemovedNotification:
-                    sqlCommand.Parameters.AddWithValue("@productID", productRemovedNotification.getProductID());
+                case ProductRemovedNotification removed:
+                    command.Parameters.AddWithValue("@productID", removed.getProductID());
                     break;
 
-                case ProductAvailableNotification productAvailableNotification:
-                    sqlCommand.Parameters.AddWithValue("@productID", productAvailableNotification.getProductID());
+                case ProductAvailableNotification available:
+                    command.Parameters.AddWithValue("@productID", available.getProductID());
                     break;
 
-                case ContractRenewalRequestNotification contractRenewalRequestNotification:
-                    sqlCommand.Parameters.AddWithValue("@contractID", contractRenewalRequestNotification.getContractID());
+                case ContractRenewalRequestNotification request:
+                    command.Parameters.AddWithValue("@contractID", request.getContractID());
                     break;
 
-                case ContractExpirationNotification contractExpirationNotification:
-                    sqlCommand.Parameters.AddWithValue("@contractID", contractExpirationNotification.getContractID());
-                    sqlCommand.Parameters.AddWithValue("@expirationDate", contractExpirationNotification.getContractID());
+                case ContractExpirationNotification expiration:
+                    command.Parameters.AddWithValue("@contractID", expiration.getContractID());
+                    command.Parameters.AddWithValue("@expirationDate", expiration.getContractID());
                     break;
 
                 default:
                     throw new ArgumentException($"Unknown notification type: {notification.GetType()}");
             }
 
-            SetNullParametersForUnusedFields(sqlCommand, notification);
+            SetNullParametersForUnusedFields(command, notification);
 
-            if (_sqlConnection.State != ConnectionState.Open)
-                _sqlConnection.Open();
+            if (_connection.State != ConnectionState.Open)
+                _connection.Open();
 
-            sqlCommand.ExecuteNonQuery();
+            command.ExecuteNonQuery();
         }
     }
 
-    /// <summary>
-    /// Sets null values for unused fields in the SQL command parameters.
-    /// </summary>
-    /// <param name="command">The SQL command to set parameters for.</param>
-    /// <param name="notification">The notification object to determine which fields are used.</param>
-    /// <precondition>command and notification must be non-null.</precondition>
-    /// <postcondition>Unused fields in the SQL command parameters are set to null.</postcondition>
-    private void SetNullParametersForUnusedFields(SqlCommand sqlCommand, Notification notification)
+    private void SetNullParametersForUnusedFields(SqlCommand command, Notification notification)
     {
-        var unusedFields = new[] { "@contractID", "@isAccepted", "@productID", "@orderID",
+        var allParams = new[] { "@contractID", "@isAccepted", "@productID", "@orderID",
                           "@shippingState", "@deliveryDate", "@expirationDate" };
 
-        foreach (var unusedField in unusedFields)
+        foreach (var param in allParams)
         {
-            if (!sqlCommand.Parameters.Contains(unusedField))
+            if (!command.Parameters.Contains(param))
             {
-                sqlCommand.Parameters.AddWithValue(unusedField, DBNull.Value);
+                command.Parameters.AddWithValue(param, DBNull.Value);
             }
         }
     }
 
-    /// <summary>
-    /// Disposes the SQL connection.
-    /// </summary>
-    /// <postcondition>The SQL connection is closed and disposed.</postcondition>
     public void Dispose()
     {
-        if (_sqlConnection != null)
-        {
-            _sqlConnection.Close();
-            _sqlConnection.Dispose();
-            _sqlConnection = new SqlConnection(); 
-        }
+        _connection?.Close();
+        _connection?.Dispose();
     }
 }

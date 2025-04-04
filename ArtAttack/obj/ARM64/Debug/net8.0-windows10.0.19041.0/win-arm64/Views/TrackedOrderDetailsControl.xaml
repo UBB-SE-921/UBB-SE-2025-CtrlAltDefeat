@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ArtAttack.Views.TrackedOrderDetailsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ArtAttack.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Order Details -->
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
+            <TextBlock Text="Tracked Order Details" FontSize="18" FontWeight="Bold"/>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Tracked Order ID: " FontWeight="Bold"/>
+                <TextBlock Text="{Binding TrackedOrderID}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Attached to Order ID: " FontWeight="Bold"/>
+                <TextBlock Text="{Binding OrderID}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Current Status: " FontWeight="Bold"/>
+                <TextBlock Text="{Binding CurrentStatus}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Estimated Delivery Date: " FontWeight="Bold"/>
+                <TextBlock Text="{Binding EstimatedDeliveryDate}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Delivery Address: " FontWeight="Bold"/>
+                <TextBlock Text="{Binding DeliveryAddress}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Timeline (List of Order Checkpoints) -->
+        <ListView Grid.Row="1" ItemsSource="{Binding Checkpoints}" VerticalAlignment="Bottom">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="10" BorderThickness="1" BorderBrush="Gray" Margin="5">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Status}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Description}" />
+                            <TextBlock Text="{Binding Timestamp}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Location}" Foreground="Gray"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView>
+    </Grid>
+</UserControl>
+

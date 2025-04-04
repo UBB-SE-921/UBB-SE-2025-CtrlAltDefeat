@@ -75,7 +75,17 @@ namespace ArtAttack.Domain
         public override string Subtitle => $"You have received an answer on the renewal request for contract: {contractID}.";
 
     }
+<<<<<<< HEAD
         
+=======
+
+<<<<<<< HEAD
+=======
+    public class ContractRenewalWaitlistNotification : Notification
+    {
+        private readonly int _productID;
+>>>>>>> e34dd40ddaa927d127659c5ca3192e87d5fb05ad
+>>>>>>> dca4db32a07f838e24cde235cfc533b44427b396
 
     public class ContractRenewalWaitlistNotification : Notification
     {

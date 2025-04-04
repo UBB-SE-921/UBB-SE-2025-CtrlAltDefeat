@@ -1,0 +1,15 @@
+App.xbf
+MainWindow.xbf
+Views\BillingInfo.xbf
+Views\BillingInfoWindow.xbf
+Views\BorrowProductWindow.xbf
+Views\CardInfo.xbf
+Views\FinalisePurchase.xbf
+Views\MainNotificationWindow.xbf
+Views\OrderHistoryUI.xbf
+Views\RenewContractView.xbf
+Views\SecondaryNotificationWindow.xbf
+Views\TrackedOrderBuyerPage.xbf
+Views\TrackedOrderControlPage.xbf
+Views\TrackedOrderDetailsControl.xbf
+Views\TrackedOrderWindow.xbf
