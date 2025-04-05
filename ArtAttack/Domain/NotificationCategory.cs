@@ -12,5 +12,4 @@ namespace ArtAttack.Domain
         CONTRACT_RENEWAL_ANS,
         CONTRACT_RENEWAL_WAITLIST,
     }
-
 }

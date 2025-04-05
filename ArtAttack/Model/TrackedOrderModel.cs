@@ -1,13 +1,13 @@
-﻿using ArtAttack.Domain;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 using System.Data;
+using Microsoft.Data.SqlClient;
+using ArtAttack.Domain;
 
 namespace ArtAttack.Model
 {
-    class TrackedOrderModel
+    public class TrackedOrderModel
     {
         private readonly string connectionString;
 
@@ -40,7 +40,9 @@ namespace ArtAttack.Model
 
                     int newID = (int)cmd.Parameters["@newCheckpointID"].Value;
                     if (newID < 0)
+                    {
                         throw new Exception("Unexpected error when trying to add the OrderCheckpoint");
+                    }
                     return newID;
                 }
             }
@@ -69,7 +71,9 @@ namespace ArtAttack.Model
 
                     int newID = (int)cmd.Parameters["@newTrackedOrderID"].Value;
                     if (newID < 0)
+                    {
                         throw new Exception("Unexpected error when trying to add the TrackedOrder");
+                    }
                     return newID;
                 }
             }

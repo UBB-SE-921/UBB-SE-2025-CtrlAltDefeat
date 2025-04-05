@@ -1,31 +1,29 @@
+using System;
+using System.Data;
+using System.Threading.Tasks;
 using ArtAttack.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Data;
 using ArtAttack.Services;
 using ArtAttack.ViewModel;
-
-using System.Threading.Tasks;
 
 namespace ArtAttack
 {
     public sealed partial class BorrowProductWindow : Window
     {
-        private readonly string _connectionString;
-        private readonly int _currentProductId;
-        private readonly WaitListViewModel _waitListViewModel;
-        private readonly NotificationViewModel _notificationVM;
-
+        private readonly string connectionString;
+        private readonly int currentProductId;
+        private readonly WaitListViewModel waitListViewModel;
+        private readonly NotificationViewModel notificationVM;
 
         public BorrowProductWindow(string connectionString, int productId)
         {
             InitializeComponent();
-            _connectionString = connectionString;
-            _currentProductId = productId;
-            _waitListViewModel = new WaitListViewModel(connectionString);
-            _notificationVM = new NotificationViewModel(GetCurrentUserId());
+            this.connectionString = connectionString;
+            currentProductId = productId;
+            waitListViewModel = new WaitListViewModel(connectionString);
+            notificationVM = new NotificationViewModel(GetCurrentUserId());
             this.Activated += Window_Activated;
         }
 
@@ -39,14 +37,14 @@ namespace ArtAttack
         {
             try
             {
-                var product = await _waitListViewModel.GetDummyProductByIdAsync(_currentProductId);
+                var product = await waitListViewModel.GetDummyProductByIdAsync(currentProductId);
                 if (product != null)
                 {
-                    string sellerName = await _waitListViewModel.GetSellerNameAsync(product.SellerID);
+                    string sellerName = await waitListViewModel.GetSellerNameAsync(product.SellerID);
                     DisplayProduct(product, sellerName);
 
                     int currentUserId = GetCurrentUserId();
-                    bool isOnWaitlist = _waitListViewModel.IsUserInWaitlist(currentUserId, _currentProductId);
+                    bool isOnWaitlist = waitListViewModel.IsUserInWaitlist(currentUserId, currentProductId);
 
                     UpdateWaitlistUI(isOnWaitlist);
                 }
@@ -106,13 +104,13 @@ namespace ArtAttack
             await dialog.ShowAsync();
         }
 
-        private async void btnJoinWaitList_Click(object sender, RoutedEventArgs e)
+        private async void BtnJoinWaitList_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 int currentUserId = GetCurrentUserId();
 
-                _waitListViewModel.AddUserToWaitlist(currentUserId, _currentProductId);
+                waitListViewModel.AddUserToWaitlist(currentUserId, currentProductId);
 
                 UpdateWaitlistUI(true);
 
@@ -129,13 +127,13 @@ namespace ArtAttack
             return 1;
         }
 
-        private async void btnLeaveWaitList_Click(object sender, RoutedEventArgs e)
+        private async void BtnLeaveWaitList_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 int currentUserId = GetCurrentUserId();
 
-                _waitListViewModel.RemoveUserFromWaitlist(currentUserId, _currentProductId);
+                waitListViewModel.RemoveUserFromWaitlist(currentUserId, currentProductId);
 
                 UpdateWaitlistUI(false);
 
@@ -147,12 +145,12 @@ namespace ArtAttack
             }
         }
 
-        private async void btnViewPosition_Click(object sender, RoutedEventArgs e)
+        private async void BtnViewPosition_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 int currentUserId = GetCurrentUserId();
-                int position = _waitListViewModel.GetUserWaitlistPosition(currentUserId, _currentProductId);
+                int position = waitListViewModel.GetUserWaitlistPosition(currentUserId, currentProductId);
 
                 if (position > 0)
                 {
@@ -170,7 +168,7 @@ namespace ArtAttack
             }
         }
 
-        private async void btnNotifications_Click(object sender, RoutedEventArgs e)
+        private async void BtnNotifications_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -184,7 +182,7 @@ namespace ArtAttack
                         {
                             Children =
                     {
-                        new TextBlock { Text = _notificationVM.unReadNotificationsCountText },
+                        new TextBlock { Text = notificationVM.UnReadNotificationsCountText },
                         // Add more notification items here if needed
                     }
                         }

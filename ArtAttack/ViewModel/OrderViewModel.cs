@@ -1,21 +1,20 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using ArtAttack.Shared;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using ArtAttack.Model;
+using ArtAttack.Shared;
+using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.ViewModel
 {
-
     public class OrderViewModel : IOrderViewModel
     {
-        private readonly IOrderModel _model;
-        private readonly string _connectionString;
-        private readonly IDatabaseProvider _databaseProvider;
+        private readonly IOrderModel model;
+        private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
         public OrderViewModel(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
@@ -24,69 +23,69 @@ namespace ArtAttack.ViewModel
 
         public OrderViewModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            _databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
-            _model = new OrderModel(connectionString, databaseProvider);
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            model = new OrderModel(connectionString, databaseProvider);
         }
 
         public async Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate)
         {
-            await _model.AddOrderAsync(productId, buyerId, productType, paymentMethod, orderSummaryId, orderDate);
+            await model.AddOrderAsync(productId, buyerId, productType, paymentMethod, orderSummaryId, orderDate);
         }
 
         public async Task UpdateOrderAsync(int orderId, int productType, string paymentMethod, DateTime orderDate)
         {
-            await _model.UpdateOrderAsync(orderId, productType, paymentMethod, orderDate);
+            await model.UpdateOrderAsync(orderId, productType, paymentMethod, orderDate);
         }
 
         public async Task DeleteOrderAsync(int orderId)
         {
-            await _model.DeleteOrderAsync(orderId);
+            await model.DeleteOrderAsync(orderId);
         }
 
         public async Task<List<Order>> GetBorrowedOrderHistoryAsync(int buyerId)
         {
-            return await _model.GetBorrowedOrderHistoryAsync(buyerId);
+            return await model.GetBorrowedOrderHistoryAsync(buyerId);
         }
 
         public async Task<List<Order>> GetNewOrUsedOrderHistoryAsync(int buyerId)
         {
-            return await _model.GetNewOrUsedOrderHistoryAsync(buyerId);
+            return await model.GetNewOrUsedOrderHistoryAsync(buyerId);
         }
 
         public async Task<List<Order>> GetOrdersFromLastThreeMonthsAsync(int buyerId)
         {
-            return await Task.Run(() => _model.GetOrdersFromLastThreeMonths(buyerId));
+            return await Task.Run(() => model.GetOrdersFromLastThreeMonths(buyerId));
         }
 
         public async Task<List<Order>> GetOrdersFromLastSixMonthsAsync(int buyerId)
         {
-            return await Task.Run(() => _model.GetOrdersFromLastSixMonths(buyerId));
+            return await Task.Run(() => model.GetOrdersFromLastSixMonths(buyerId));
         }
 
         public async Task<List<Order>> GetOrdersFrom2024Async(int buyerId)
         {
-            return await Task.Run(() => _model.GetOrdersFrom2024(buyerId));
+            return await Task.Run(() => model.GetOrdersFrom2024(buyerId));
         }
 
         public async Task<List<Order>> GetOrdersFrom2025Async(int buyerId)
         {
-            return await Task.Run(() => _model.GetOrdersFrom2025(buyerId));
+            return await Task.Run(() => model.GetOrdersFrom2025(buyerId));
         }
 
         public async Task<List<Order>> GetOrdersByNameAsync(int buyerId, string text)
         {
-            return await Task.Run(() => _model.GetOrdersByName(buyerId, text));
+            return await Task.Run(() => model.GetOrdersByName(buyerId, text));
         }
 
         public async Task<List<Order>> GetOrdersFromOrderHistoryAsync(int orderHistoryId)
         {
-            return await _model.GetOrdersFromOrderHistoryAsync(orderHistoryId);
+            return await model.GetOrdersFromOrderHistoryAsync(orderHistoryId);
         }
 
         public async Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId)
         {
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -111,8 +110,8 @@ namespace ArtAttack.ViewModel
                                 PhoneNumber = reader.GetString(reader.GetOrdinal("PhoneNumber")),
                                 Address = reader.GetString(reader.GetOrdinal("Address")),
                                 PostalCode = reader.GetString(reader.GetOrdinal("PostalCode")),
-                                AdditionalInfo = reader.IsDBNull(reader.GetOrdinal("AdditionalInfo")) ? "" : reader.GetString(reader.GetOrdinal("AdditionalInfo")),
-                                ContractDetails = reader.IsDBNull(reader.GetOrdinal("ContractDetails")) ? "" : reader.GetString(reader.GetOrdinal("ContractDetails"))
+                                AdditionalInfo = reader.IsDBNull(reader.GetOrdinal("AdditionalInfo")) ? string.Empty : reader.GetString(reader.GetOrdinal("AdditionalInfo")),
+                                ContractDetails = reader.IsDBNull(reader.GetOrdinal("ContractDetails")) ? string.Empty : reader.GetString(reader.GetOrdinal("ContractDetails"))
                             };
                         }
                     }
@@ -123,18 +122,22 @@ namespace ArtAttack.ViewModel
 
         public async Task<Order> GetOrderByIdAsync(int orderId)
         {
-            var borrowedOrders = await _model.GetBorrowedOrderHistoryAsync(0);
+            var borrowedOrders = await model.GetBorrowedOrderHistoryAsync(0);
             foreach (var order in borrowedOrders)
             {
                 if (order.OrderID == orderId)
+                {
                     return order;
+                }
             }
 
-            var newUsedOrders = await _model.GetNewOrUsedOrderHistoryAsync(0);
+            var newUsedOrders = await model.GetNewOrUsedOrderHistoryAsync(0);
             foreach (var order in newUsedOrders)
             {
                 if (order.OrderID == orderId)
+                {
                     return order;
+                }
             }
 
             return null;
@@ -147,21 +150,21 @@ namespace ArtAttack.ViewModel
             switch (timePeriodFilter.ToLower())
             {
                 case "3months":
-                    orders = _model.GetOrdersFromLastThreeMonths(buyerId);
+                    orders = model.GetOrdersFromLastThreeMonths(buyerId);
                     break;
                 case "6months":
-                    orders = _model.GetOrdersFromLastSixMonths(buyerId);
+                    orders = model.GetOrdersFromLastSixMonths(buyerId);
                     break;
                 case "2024":
-                    orders = _model.GetOrdersFrom2024(buyerId);
+                    orders = model.GetOrdersFrom2024(buyerId);
                     break;
                 case "2025":
-                    orders = _model.GetOrdersFrom2025(buyerId);
+                    orders = model.GetOrdersFrom2025(buyerId);
                     break;
                 case "all":
                 default:
-                    var borrowedOrders = await _model.GetBorrowedOrderHistoryAsync(buyerId);
-                    var newUsedOrders = await _model.GetNewOrUsedOrderHistoryAsync(buyerId);
+                    var borrowedOrders = await model.GetBorrowedOrderHistoryAsync(buyerId);
+                    var newUsedOrders = await model.GetNewOrUsedOrderHistoryAsync(buyerId);
                     orders.AddRange(borrowedOrders);
                     orders.AddRange(newUsedOrders);
                     break;
@@ -186,12 +189,14 @@ namespace ArtAttack.ViewModel
         public async Task<List<OrderDisplayInfo>> GetOrdersWithProductInfoAsync(int userId, string searchText = null, string timePeriod = null)
         {
             if (userId <= 0)
+            {
                 throw new ArgumentException("User ID must be positive", nameof(userId));
+            }
 
             List<OrderDisplayInfo> orderDisplayInfos = new List<OrderDisplayInfo>();
             Dictionary<int, string> productCategoryTypes = new Dictionary<int, string>();
 
-            using (var connection = _databaseProvider.CreateConnection(_connectionString))
+            using (var connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -208,19 +213,29 @@ namespace ArtAttack.ViewModel
                     WHERE o.BuyerID = @UserId";
 
                     if (!string.IsNullOrEmpty(searchText))
+                    {
                         query += " AND p.name LIKE @SearchText";
+                    }
 
                     if (timePeriod == "Last 3 Months")
+                    {
                         query += " AND o.OrderDate >= DATEADD(month, -3, GETDATE())";
+                    }
                     else if (timePeriod == "Last 6 Months")
+                    {
                         query += " AND o.OrderDate >= DATEADD(month, -6, GETDATE())";
+                    }
                     else if (timePeriod == "This Year")
+                    {
                         query += " AND YEAR(o.OrderDate) = YEAR(GETDATE())";
+                    }
 
                     command.CommandText = query;
                     command.Parameters.AddWithValue("@UserId", userId);
                     if (!string.IsNullOrEmpty(searchText))
+                    {
                         command.Parameters.AddWithValue("@SearchText", $"%{searchText}%");
+                    }
 
                     await connection.OpenAsync();
                     using (var reader = await command.ExecuteReaderAsync())
@@ -280,11 +295,13 @@ namespace ArtAttack.ViewModel
         public async Task<Dictionary<int, string>> GetProductCategoryTypesAsync(int userId)
         {
             if (userId <= 0)
+            {
                 throw new ArgumentException("User ID must be positive", nameof(userId));
+            }
 
             Dictionary<int, string> productCategoryTypes = new Dictionary<int, string>();
 
-            using (var connection = _databaseProvider.CreateConnection(_connectionString))
+            using (var connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (var command = connection.CreateCommand())
                 {

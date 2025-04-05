@@ -110,7 +110,7 @@
         </StackPanel>
 
 
-        <Button Content="Finalize Purchase" Click="onFinalizeButtonClickedAsync"  Grid.Row="4" Grid.Column="1" Background="#cccaca" Foreground="Black" Width="200px" HorizontalAlignment="Center"/>
+        <Button Content="Finalize Purchase" Click="OnFinalizeButtonClickedAsync"  Grid.Row="4" Grid.Column="1" Background="#cccaca" Foreground="Black" Width="200px" HorizontalAlignment="Center"/>
 
     </Grid>
 

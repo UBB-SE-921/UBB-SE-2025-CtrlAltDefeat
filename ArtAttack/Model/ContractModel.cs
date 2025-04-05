@@ -1,19 +1,19 @@
-﻿using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.Model
 {
     public class ContractModel : IContractModel
     {
-        private readonly string _connectionString;
+        private readonly string connectionString;
 
         public ContractModel(string connectionString)
         {
-            _connectionString = connectionString;
+            this.connectionString = connectionString;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace ArtAttack.Model
         public async Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
             IPredefinedContract predefinedContract = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetPredefinedContractByID", conn))
                 {
@@ -57,7 +57,7 @@ namespace ArtAttack.Model
         public async Task<IContract> GetContractByIdAsync(long contractId)
         {
             IContract contract = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractByID", conn))
                 {
@@ -98,7 +98,7 @@ namespace ArtAttack.Model
         public async Task<List<IContract>> GetAllContractsAsync()
         {
             var contracts = new List<IContract>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetAllContracts", conn))
                 {
@@ -129,7 +129,7 @@ namespace ArtAttack.Model
                     }
                 }
             }
-            return contracts ;
+            return contracts;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace ArtAttack.Model
         public async Task<List<IContract>> GetContractHistoryAsync(long contractId)
         {
             var history = new List<IContract>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractHistory", conn))
                 {
@@ -184,7 +184,7 @@ namespace ArtAttack.Model
         public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
             IContract newContract = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("AddContract", conn))
                 {
@@ -196,17 +196,25 @@ namespace ArtAttack.Model
                     cmd.Parameters.AddWithValue("@RenewalCount", contract.RenewalCount);
 
                     if (contract.PredefinedContractID.HasValue)
+                    {
                         cmd.Parameters.AddWithValue("@PredefinedContractID", contract.PredefinedContractID.Value);
+                    }
                     else
+                    {
                         cmd.Parameters.AddWithValue("@PredefinedContractID", DBNull.Value);
+                    }
 
                     cmd.Parameters.AddWithValue("@PDFID", contract.PDFID);
                     cmd.Parameters.AddWithValue("@PDFFile", pdfFile);
 
                     if (contract.RenewedFromContractID.HasValue)
+                    {
                         cmd.Parameters.AddWithValue("@RenewedFromContractID", contract.RenewedFromContractID.Value);
+                    }
                     else
+                    {
                         cmd.Parameters.AddWithValue("@RenewedFromContractID", DBNull.Value);
+                    }
 
                     await conn.OpenAsync();
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -232,7 +240,6 @@ namespace ArtAttack.Model
                     }
                     await cmd.ExecuteNonQueryAsync();
                 }
-
             }
             return newContract ?? new Contract();
         }
@@ -245,7 +252,7 @@ namespace ArtAttack.Model
         public async Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId)
         {
             (int SellerID, string SellerName) sellerInfo = (0, string.Empty);
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractSeller", conn))
                 {
@@ -259,8 +266,7 @@ namespace ArtAttack.Model
                         {
                             sellerInfo = (
                                 SellerID: reader.GetInt32(reader.GetOrdinal("SellerID")),
-                                SellerName: reader.GetString(reader.GetOrdinal("SellerName"))
-                            );
+                                SellerName: reader.GetString(reader.GetOrdinal("SellerName")));
                         }
                     }
                 }
@@ -276,7 +282,7 @@ namespace ArtAttack.Model
         public async Task<(int BuyerID, string BuyerName)> GetContractBuyerAsync(long contractId)
         {
             (int BuyerID, string BuyerName) buyerInfo = (0, string.Empty);
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractBuyer", conn))
                 {
@@ -290,8 +296,7 @@ namespace ArtAttack.Model
                         {
                             buyerInfo = (
                                 BuyerID: reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                BuyerName: reader.GetString(reader.GetOrdinal("BuyerName"))
-                            );
+                                BuyerName: reader.GetString(reader.GetOrdinal("BuyerName")));
                         }
                     }
                 }
@@ -307,7 +312,7 @@ namespace ArtAttack.Model
         public async Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId)
         {
             var orderSummary = new Dictionary<string, object>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetOrderSummaryInformation", conn))
                 {
@@ -345,7 +350,7 @@ namespace ArtAttack.Model
         /// <returns type="(DateTime StartDate, DateTime EndDate, double price, string name)?">The product details.</returns>
         public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetProductDetailsByContractID", conn))
                 {
@@ -366,7 +371,6 @@ namespace ArtAttack.Model
                     }
                 }
             }
-            //return null; dont return null
             return default;
         }
 
@@ -378,7 +382,7 @@ namespace ArtAttack.Model
         public async Task<List<IContract>> GetContractsByBuyerAsync(int buyerId)
         {
             var contracts = new List<IContract>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetContractsByBuyer", conn))
                 {
@@ -418,7 +422,7 @@ namespace ArtAttack.Model
         public async Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
             (string PaymentMethod, DateTime OrderDate) details = (null, default);
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetOrderDetails", conn))
                 {
@@ -447,7 +451,7 @@ namespace ArtAttack.Model
         public async Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId)
         {
             DateTime? deliveryDate = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetDeliveryDateByContractID", conn))
                 {
@@ -475,11 +479,11 @@ namespace ArtAttack.Model
         /// Asynchronously retrieves the PDF file for a given contract using the GetPdfByContractID stored procedure.
         /// </summary>
         /// <param name="contractId" type="long">The ID of the contract to retrieve the PDF file for.</param>
-        /// <returns type="Task<byte[]>">The PDF file.</returns>    
+        /// <returns type="Task<byte[]>">The PDF file.</returns>
         public async Task<byte[]> GetPdfByContractIdAsync(long contractId)
         {
             byte[] pdfFile = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("GetPdfByContractID", conn))
                 {
@@ -498,7 +502,5 @@ namespace ArtAttack.Model
             }
             return pdfFile;
         }
-
-
     }
 }

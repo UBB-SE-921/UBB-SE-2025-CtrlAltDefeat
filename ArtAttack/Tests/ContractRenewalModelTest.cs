@@ -1,23 +1,23 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Moq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ArtAttack.Model;
 using ArtAttack.Domain;
-using System;
-using System.Collections.Generic;
-using Microsoft.Data.SqlClient; // Updated namespace
-using Moq;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 [TestClass]
 public class ContractRenewalModelTests
 {
-    private Mock<SqlConnection> _mockConnection;
-    private ContractRenewalModel _model;
+    private Mock<SqlConnection> mockConnection;
+    private ContractRenewalModel model;
 
     [TestInitialize]
     public void Setup()
     {
-        _mockConnection = new Mock<SqlConnection>();
-        _model = new ContractRenewalModel("YourConnectionString");
+        mockConnection = new Mock<SqlConnection>();
+        model = new ContractRenewalModel("YourConnectionString");
     }
 
     [TestMethod]
@@ -29,7 +29,7 @@ public class ContractRenewalModelTests
         var mockCommand = new Mock<SqlCommand>();
 
         // Act
-        await _model.AddRenewedContractAsync(contract, pdfFile);
+        await model.AddRenewedContractAsync(contract, pdfFile);
 
         // Assert
         mockCommand.Verify(c => c.ExecuteNonQueryAsync(), Times.Once);
@@ -44,7 +44,7 @@ public class ContractRenewalModelTests
         mockCommand.Setup(c => c.ExecuteScalarAsync()).ReturnsAsync((int?)1); // Updated line
 
         // Act
-        var result = await _model.HasContractBeenRenewedAsync(contractId);
+        var result = await model.HasContractBeenRenewedAsync(contractId);
 
         // Assert
         Assert.IsTrue(result);
@@ -68,7 +68,7 @@ public class ContractRenewalModelTests
         mockCommand.Setup(c => c.ExecuteReaderAsync()).ReturnsAsync(mockReader.Object);
 
         // Act
-        var contracts = await _model.GetRenewedContractsAsync();
+        var contracts = await model.GetRenewedContractsAsync();
 
         // Assert
         Assert.IsNotNull(contracts);

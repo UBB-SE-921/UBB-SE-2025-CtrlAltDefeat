@@ -1,18 +1,18 @@
-using ArtAttack.Domain;
-using ArtAttack.Shared;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
     public class OrderModel : IOrderModel
     {
-        private readonly string _connectionString;
-        private readonly IDatabaseProvider _databaseProvider;
+        private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
-        public string ConnectionString => _connectionString;
+        public string ConnectionString => connectionString;
 
         public OrderModel(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
@@ -21,13 +21,13 @@ namespace ArtAttack.Model
 
         public OrderModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            _connectionString = connectionString;
-            _databaseProvider = databaseProvider;
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
         }
 
         public async Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate)
         {
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -48,7 +48,7 @@ namespace ArtAttack.Model
 
         public async Task UpdateOrderAsync(int orderId, int productType, string paymentMethod, DateTime orderDate)
         {
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -67,7 +67,7 @@ namespace ArtAttack.Model
 
         public async Task DeleteOrderAsync(int orderId)
         {
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -84,7 +84,7 @@ namespace ArtAttack.Model
         public async Task<List<Order>> GetBorrowedOrderHistoryAsync(int buyerId)
         {
             List<Order> orders = new List<Order>();
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -119,7 +119,7 @@ namespace ArtAttack.Model
         public async Task<List<Order>> GetNewOrUsedOrderHistoryAsync(int buyerId)
         {
             List<Order> orders = new List<Order>();
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -154,7 +154,7 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersFromLastThreeMonths(int buyerId)
         {
             List<Order> orders = new List<Order>();
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -189,7 +189,7 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersFromLastSixMonths(int buyerId)
         {
             List<Order> orders = new List<Order>();
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -224,7 +224,7 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersFrom2025(int buyerId)
         {
             List<Order> orders = new List<Order>();
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -259,7 +259,7 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersFrom2024(int buyerId)
         {
             List<Order> orders = new List<Order>();
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -294,7 +294,7 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersByName(int buyerId, string text)
         {
             List<Order> orders = new List<Order>();
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {
@@ -331,7 +331,7 @@ namespace ArtAttack.Model
         {
             List<Order> orders = new List<Order>();
 
-            using (IDbConnection conn = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand cmd = conn.CreateCommand())
                 {

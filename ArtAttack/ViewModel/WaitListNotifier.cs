@@ -1,15 +1,13 @@
-﻿using ArtAttack.Domain;
+﻿using System;
+using System.Linq;
+using ArtAttack.Domain;
 using ArtAttack.Model;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Linq;
-
-
 public class WaitListNotifier
 {
-    private readonly IWaitListModel _waitListModel;
-    private readonly NotificationDataAdapter _notificationAdapter;
-    private readonly string _connectionString;
+    private readonly IWaitListModel waitListModel;
+    private readonly NotificationDataAdapter notificationAdapter;
+    private readonly string connectionString;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WaitListNotifier"/> class with the specified connection string.
@@ -18,9 +16,9 @@ public class WaitListNotifier
     /// <exception cref="ArgumentNullException">Thrown when the connection string is null or empty.</exception>
     public WaitListNotifier(string connectionString)
     {
-        _waitListModel = new WaitListModel(connectionString);
-        _notificationAdapter = new NotificationDataAdapter(connectionString);
-        _connectionString = connectionString;
+        waitListModel = new WaitListModel(connectionString);
+        notificationAdapter = new NotificationDataAdapter(connectionString);
+        this.connectionString = connectionString;
     }
 
     /// <summary>
@@ -34,21 +32,24 @@ public class WaitListNotifier
     public void ScheduleRestockAlerts(int productId, DateTime restockDate)
     {
         int waitlistProductId = GetWaitlistProductId(productId);
-        if (waitlistProductId <= 0) return;
+        if (waitlistProductId <= 0)
+        {
+            return;
+        }
 
-        var waitlistUsers = _waitListModel.GetUsersInWaitlist(waitlistProductId)
-                     .OrderBy(u => u.positionInQueue)
+        var waitlistUsers = waitListModel.GetUsersInWaitlist(waitlistProductId)
+                     .OrderBy(u => u.PositionInQueue)
                      .ToList();
 
         for (int userIndex = 0; userIndex < waitlistUsers.Count; userIndex++)
         {
             var notification = new ProductAvailableNotification(
-                recipientId: waitlistUsers[userIndex].userID,
+                recipientId: waitlistUsers[userIndex].UserID,
                 timestamp: CalculateNotifyTime(restockDate, userIndex),
                 productId: productId,
                 isRead: false)
             { };
-            _notificationAdapter.AddNotification(notification);
+            notificationAdapter.AddNotification(notification);
         }
     }
 
@@ -62,7 +63,7 @@ public class WaitListNotifier
     /// <postcondition>The waitlist product ID is returned, or -1 if not found.</postcondition>
     private int GetWaitlistProductId(int productId)
     {
-        using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+        using (SqlConnection sqlConnection = new SqlConnection(connectionString))
         using (SqlCommand sqlCommand = new SqlCommand(
             "SELECT WaitListProductID FROM WaitListProduct WHERE ProductID = @ProductId",
             sqlConnection))
@@ -95,7 +96,7 @@ public class WaitListNotifier
         {
             0 => restockDate.AddHours(-48), // First in queue
             1 => restockDate.AddHours(-24), // Second in queue
-            _ => restockDate.AddHours(-12)  // Everyone else
+            _ => restockDate.AddHours(-12) // Everyone else
         };
     }
 
