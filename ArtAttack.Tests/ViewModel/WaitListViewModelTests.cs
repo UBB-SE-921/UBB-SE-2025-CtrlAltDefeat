@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.ViewModel
 {
     [TestClass]
     public class WaitListViewModelTests

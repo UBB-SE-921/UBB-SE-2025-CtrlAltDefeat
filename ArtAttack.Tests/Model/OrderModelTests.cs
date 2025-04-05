@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.Model
 {
     [TestClass]
     public class OrderModelTests
@@ -773,7 +773,7 @@ namespace ArtAttack.Tests
             var model = new OrderModel(_testConnectionString);
 
             // Assert - using reflection to access private field
-            var field = typeof(OrderModel).GetField("_connectionString",
+            var field = typeof(OrderModel).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var value = field.GetValue(model);
 
