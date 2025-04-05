@@ -182,7 +182,7 @@ namespace ArtAttack.ViewModel
             fieldReplacements ??= new Dictionary<string, string>();
 
             // Replace format variables in the content.
-            string content = predefinedContract.ContractContent;
+            string content = predefinedContract.Content;
             foreach (var pair in fieldReplacements)
             {
                 content = content.Replace("{" + pair.Key + "}", pair.Value);

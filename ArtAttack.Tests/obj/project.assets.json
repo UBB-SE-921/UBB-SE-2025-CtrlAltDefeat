@@ -197,6 +197,10 @@
       "Microsoft.Data.SqlClient.SNI.runtime/6.0.2": {
         "type": "package",
         "runtimeTargets": {
+          "runtimes/win-arm64/native/Microsoft.Data.SqlClient.SNI.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
           "runtimes/win-x64/native/Microsoft.Data.SqlClient.SNI.dll": {
             "assetType": "native",
             "rid": "win-x64"
@@ -1003,6 +1007,10 @@
           "buildTransitive/Microsoft.Web.WebView2.targets": {}
         },
         "runtimeTargets": {
+          "runtimes/win-arm64/native/WebView2Loader.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
           "runtimes/win-x64/native/WebView2Loader.dll": {
             "assetType": "native",
             "rid": "win-x64"
@@ -1135,6 +1143,22 @@
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
         },
         "runtimeTargets": {
+          "runtimes/win-arm64/native/Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-arm64/native/Microsoft.WindowsAppRuntime.Bootstrap.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-arm64ec/native/Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll": {
+            "assetType": "native",
+            "rid": "win-arm64ec"
+          },
+          "runtimes/win-arm64ec/native/Microsoft.WindowsAppRuntime.Bootstrap.dll": {
+            "assetType": "native",
+            "rid": "win-arm64ec"
+          },
           "runtimes/win-x64/native/Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll": {
             "assetType": "native",
             "rid": "win-x64"
@@ -1256,7 +1280,7 @@
           }
         }
       },
-      "QuestPDF/2025.1.7": {
+      "QuestPDF/2025.1.6": {
         "type": "package",
         "compile": {
           "lib/net8.0/QuestPDF.dll": {
@@ -1324,27 +1348,11 @@
             "assetType": "native",
             "rid": "osx-arm64"
           },
-          "runtimes/osx-arm64/native/libcrypto.dylib": {
-            "assetType": "native",
-            "rid": "osx-arm64"
-          },
-          "runtimes/osx-arm64/native/libjpeg.dylib": {
-            "assetType": "native",
-            "rid": "osx-arm64"
-          },
           "runtimes/osx-arm64/native/libqpdf.dylib": {
             "assetType": "native",
             "rid": "osx-arm64"
           },
           "runtimes/osx-x64/native/libQuestPdfSkia.dylib": {
-            "assetType": "native",
-            "rid": "osx-x64"
-          },
-          "runtimes/osx-x64/native/libcrypto.dylib": {
-            "assetType": "native",
-            "rid": "osx-x64"
-          },
-          "runtimes/osx-x64/native/libjpeg.dylib": {
             "assetType": "native",
             "rid": "osx-x64"
           },
@@ -1638,6 +1646,7 @@
           "Microsoft.Data.SqlClient": "6.0.1",
           "Microsoft.Windows.SDK.BuildTools": "10.0.26100.1742",
           "Microsoft.WindowsAppSDK": "1.7.250310001",
+          "Moq": "4.20.72",
           "QuestPDF": "2025.1.6"
         },
         "compile": {
@@ -1830,7 +1839,10 @@
         }
       },
       "Microsoft.Data.SqlClient.SNI.runtime/6.0.2": {
-        "type": "package"
+        "type": "package",
+        "native": {
+          "runtimes/win-arm64/native/Microsoft.Data.SqlClient.SNI.dll": {}
+        }
       },
       "Microsoft.Extensions.Caching.Abstractions/8.0.0": {
         "type": "package",
@@ -2624,6 +2636,9 @@
       },
       "Microsoft.Web.WebView2/1.0.2903.40": {
         "type": "package",
+        "native": {
+          "runtimes/win-arm64/native/WebView2Loader.dll": {}
+        },
         "build": {
           "buildTransitive/Microsoft.Web.WebView2.targets": {}
         }
@@ -2745,6 +2760,10 @@
           },
           "lib/net6.0-windows10.0.18362.0/Microsoft.WindowsAppRuntime.Bootstrap.Net.dll": {}
         },
+        "native": {
+          "runtimes/win-arm64/native/Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll": {},
+          "runtimes/win-arm64/native/Microsoft.WindowsAppRuntime.Bootstrap.dll": {}
+        },
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
@@ -2853,7 +2872,7 @@
           }
         }
       },
-      "QuestPDF/2025.1.7": {
+      "QuestPDF/2025.1.6": {
         "type": "package",
         "compile": {
           "lib/net8.0/QuestPDF.dll": {
@@ -3098,6 +3117,7 @@
           "Microsoft.Data.SqlClient": "6.0.1",
           "Microsoft.Windows.SDK.BuildTools": "10.0.26100.1742",
           "Microsoft.WindowsAppSDK": "1.7.250310001",
+          "Moq": "4.20.72",
           "QuestPDF": "2025.1.6"
         },
         "compile": {
@@ -4323,7 +4343,7 @@
           }
         }
       },
-      "QuestPDF/2025.1.7": {
+      "QuestPDF/2025.1.6": {
         "type": "package",
         "compile": {
           "lib/net8.0/QuestPDF.dll": {
@@ -4575,6 +4595,7 @@
           "Microsoft.Data.SqlClient": "6.0.1",
           "Microsoft.Windows.SDK.BuildTools": "10.0.26100.1742",
           "Microsoft.WindowsAppSDK": "1.7.250310001",
+          "Moq": "4.20.72",
           "QuestPDF": "2025.1.6"
         },
         "compile": {
@@ -5800,7 +5821,7 @@
           }
         }
       },
-      "QuestPDF/2025.1.7": {
+      "QuestPDF/2025.1.6": {
         "type": "package",
         "compile": {
           "lib/net8.0/QuestPDF.dll": {
@@ -6052,6 +6073,7 @@
           "Microsoft.Data.SqlClient": "6.0.1",
           "Microsoft.Windows.SDK.BuildTools": "10.0.26100.1742",
           "Microsoft.WindowsAppSDK": "1.7.250310001",
+          "Moq": "4.20.72",
           "QuestPDF": "2025.1.6"
         },
         "compile": {
@@ -8634,10 +8656,10 @@
         "packageIcon.png"
       ]
     },
-    "QuestPDF/2025.1.7": {
-      "sha512": "dHkeKzFb9l3Znkqf6nK34/Z+9ML3pf54v92t3uekLoV3DuYn7//GIChzZa0TeYlH7uTBADwQZ8ixXlhel7BLEQ==",
+    "QuestPDF/2025.1.6": {
+      "sha512": "ynhzEtx2iEtkqIC4i3JWH+5ce5FCeJajPrsjAivNYo60jhd09kFnGmvvUwPksszXG6AzYD06dzS5XiBqPTRNdg==",
       "type": "package",
-      "path": "questpdf/2025.1.7",
+      "path": "questpdf/2025.1.6",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -8690,7 +8712,7 @@
         "lib/net8.0/QuestPDF.xml",
         "lib/netstandard2.0/QuestPDF.dll",
         "lib/netstandard2.0/QuestPDF.xml",
-        "questpdf.2025.1.7.nupkg.sha512",
+        "questpdf.2025.1.6.nupkg.sha512",
         "questpdf.nuspec",
         "runtimes/linux-arm64/native/libQuestPdfSkia.so",
         "runtimes/linux-arm64/native/libcrypto.so",
@@ -8705,12 +8727,8 @@
         "runtimes/linux-x64/native/libjpeg.so.8",
         "runtimes/linux-x64/native/libqpdf.so",
         "runtimes/osx-arm64/native/libQuestPdfSkia.dylib",
-        "runtimes/osx-arm64/native/libcrypto.dylib",
-        "runtimes/osx-arm64/native/libjpeg.dylib",
         "runtimes/osx-arm64/native/libqpdf.dylib",
         "runtimes/osx-x64/native/libQuestPdfSkia.dylib",
-        "runtimes/osx-x64/native/libcrypto.dylib",
-        "runtimes/osx-x64/native/libjpeg.dylib",
         "runtimes/osx-x64/native/libqpdf.dylib",
         "runtimes/win-x64/native/QuestPdfSkia.dll",
         "runtimes/win-x64/native/libgcc_s_seh-1.dll",
@@ -9159,10 +9177,7 @@
     "net8.0-windows10.0.19041": [
       "ArtAttack >= 1.0.0",
       "MSTest.TestAdapter >= 3.8.3",
-      "MSTest.TestFramework >= 3.8.3",
-      "Microsoft.NET.Test.Sdk >= 17.13.0",
-      "Moq >= 4.20.72",
-      "QuestPDF >= 2025.1.7"
+      "Microsoft.NET.Test.Sdk >= 17.13.0"
     ]
   },
   "packageFolders": {
@@ -9172,11 +9187,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
       "projectName": "ArtAttack.Tests",
-      "projectPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
+      "projectPath": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
       "packagesPath": "C:\\Users\\alexe\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\obj\\",
+      "outputPath": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -9197,8 +9212,8 @@
         "net8.0-windows10.0.19041": {
           "targetAlias": "net8.0-windows10.0.19041.0",
           "projectReferences": {
-            "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj": {
-              "projectPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj"
+            "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj": {
+              "projectPath": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj"
             }
           }
         }
@@ -9223,21 +9238,9 @@
             "target": "Package",
             "version": "[3.8.3, )"
           },
-          "MSTest.TestFramework": {
-            "target": "Package",
-            "version": "[3.8.3, )"
-          },
           "Microsoft.NET.Test.Sdk": {
             "target": "Package",
             "version": "[17.13.0, )"
-          },
-          "Moq": {
-            "target": "Package",
-            "version": "[4.20.72, )"
-          },
-          "QuestPDF": {
-            "target": "Package",
-            "version": "[2025.1.7, )"
           }
         },
         "imports": [

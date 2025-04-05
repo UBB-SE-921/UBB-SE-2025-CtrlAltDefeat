@@ -39,7 +39,6 @@ namespace ArtAttack.Model
                         {
                             predefinedContract = new PredefinedContract
                             {
-
                                 ContractID = reader.GetInt32("ID"),
                                 ContractContent = reader["content"] as string
                             };
@@ -47,7 +46,16 @@ namespace ArtAttack.Model
                     }
                 }
             }
-            return predefinedContract ?? new PredefinedContract { Content = string.Empty };
+            // If the contract is null, return a new instance with an empty content.
+            if (predefinedContract == null)
+            {
+                predefinedContract = new PredefinedContract
+                {
+                    ContractID = 0,
+                    ContractContent = string.Empty
+                };
+            }
+            return predefinedContract;
         }
 
         /// <summary>

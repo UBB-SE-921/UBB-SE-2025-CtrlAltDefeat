@@ -1,9 +1,0 @@
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\bin\Debug\net8.0-windows10.0.19041.0\.msCoverageSourceRootsMapping_ArtAttack.Tests
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.csproj.AssemblyReference.cache
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.gentestingplatformentrypointinputcache.cache
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.genautoregisteredextensionsinputcache.cache
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.GeneratedMSBuildEditorConfig.editorconfig
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.AssemblyInfoInputs.cache
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.AssemblyInfo.cs
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.csproj.CoreCompileInputs.cache
-D:\UBB\Anul_2\Semestrul_II\ISS\ArtAttack\ArtAttack.Tests\obj\Debug\net8.0-windows10.0.19041.0\ArtAttack.Tests.sourcelink.json

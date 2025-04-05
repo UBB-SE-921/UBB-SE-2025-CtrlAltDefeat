@@ -26,7 +26,6 @@ namespace ArtAttack
             contract = new Contract();
             contractViewModel = new ContractViewModel(Configuration.CONNECTION_STRING);
             trackedOrderViewModel = new TrackedOrderViewModel(Configuration.CONNECTION_STRING);
-            CurrentProductId = 2;
         }
 
         // This event handler is called when the Grid (root element) is loaded.
@@ -82,7 +81,7 @@ namespace ArtAttack
         {
             if (contract != null)
             {
-                await contractViewModel.GenerateAndSaveContractAsync(contract, PredefinedContractType.Borrowing);
+                await contractViewModel.GenerateAndSaveContractAsync(contract, PredefinedContractType.BorrowContract);
 
                 // Optionally, show a success dialog after generating the contract.
                 var successDialog = new ContentDialog
@@ -117,7 +116,7 @@ namespace ArtAttack
         {
             try
             {
-                CurrentProductId = 2;
+                int productId = 2;
 
                 var borrowWindow = new BorrowProductWindow(Configuration.CONNECTION_STRING, productId);
                 borrowWindow.Activate();

@@ -10,34 +10,34 @@
     <PackageArchitecture>x64</PackageArchitecture>
     <PackageIdentityName>9d221516-0e84-4aea-b02e-19c92e0d2407</PackageIdentityName>
     <PackageIdentityPublisher>CN=User</PackageIdentityPublisher>
-    <IntermediateOutputPath>C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\</IntermediateOutputPath>
     <RemoteDeploymentType>CopyToDevice</RemoteDeploymentType>
     <PackageRegistrationPath></PackageRegistrationPath>
     <RemoveNonLayoutFiles>false</RemoveNonLayoutFiles>
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
-    <LayoutDir>C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppX</LayoutDir>
+    <LayoutDir>C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppX</LayoutDir>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
       <PackagePath>ArtAttack.runtimeconfig.json</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
       <PackagePath>ArtAttack.dll</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
       <PackagePath>ArtAttack.dll.config</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
       <PackagePath>ArtAttack.exe</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.6\LatoFont\Lato-Black.ttf">
@@ -655,6 +655,9 @@
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\azure.identity\1.11.4\lib\netstandard2.0\Azure.Identity.dll">
       <PackagePath>Azure.Identity.dll</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\castle.core\5.1.1\lib\net6.0\Castle.Core.dll">
+      <PackagePath>Castle.Core.dll</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\microsoft.bcl.asyncinterfaces\1.1.1\lib\netstandard2.1\Microsoft.Bcl.AsyncInterfaces.dll">
       <PackagePath>Microsoft.Bcl.AsyncInterfaces.dll</PackagePath>
     </AppxPackagedFile>
@@ -769,6 +772,9 @@
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\microsoft.windowsappsdk\1.7.250310001\lib\net6.0-windows10.0.18362.0\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll">
       <PackagePath>Microsoft.WindowsAppRuntime.Bootstrap.Net.dll</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\moq\4.20.72\lib\net6.0\Moq.dll">
+      <PackagePath>Moq.dll</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testframework\3.8.3\lib\net8.0\Microsoft.VisualStudio.TestPlatform.TestFramework.dll">
       <PackagePath>Microsoft.VisualStudio.TestPlatform.TestFramework.dll</PackagePath>
     </AppxPackagedFile>
@@ -850,13 +856,8 @@
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testframework\3.8.3\lib\net8.0\fr\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll">
       <PackagePath>fr\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll</PackagePath>
     </AppxPackagedFile>
-<<<<<<< HEAD
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
-      <PackagePath>ArtAttack.deps.json</PackagePath>
-=======
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testframework\3.8.3\lib\net8.0\it\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll">
       <PackagePath>it\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll</PackagePath>
->>>>>>> updated project for tests
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testframework\3.8.3\lib\net8.0\ja\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll">
       <PackagePath>ja\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll</PackagePath>
@@ -927,117 +928,28 @@
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testframework\3.8.3\buildTransitive\net6.0\winui\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml">
       <PackagePath>Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml</PackagePath>
     </AppxPackagedFile>
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
-      <PackagePath>ArtAttack.exe</PackagePath>
-=======
-    <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
-=======
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
->>>>>>> dca4db32a07f838e24cde235cfc533b44427b396
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
       <PackagePath>ArtAttack.deps.json</PackagePath>
->>>>>>> updated project for tests
     </AppxPackagedFile>
-<<<<<<< HEAD
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\LockScreenLogo.scale-200.png">
-=======
-<<<<<<< HEAD
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\microsoft.testplatform.testhost\17.13.0\build\netcoreapp3.1\x64\testhost.exe">
-      <PackagePath>testhost.exe</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-Black.ttf">
-      <PackagePath>LatoFont\Lato-Black.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-BlackItalic.ttf">
-      <PackagePath>LatoFont\Lato-BlackItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-Bold.ttf">
-      <PackagePath>LatoFont\Lato-Bold.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-BoldItalic.ttf">
-      <PackagePath>LatoFont\Lato-BoldItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-ExtraBold.ttf">
-      <PackagePath>LatoFont\Lato-ExtraBold.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-ExtraBoldItalic.ttf">
-      <PackagePath>LatoFont\Lato-ExtraBoldItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-ExtraLight.ttf">
-      <PackagePath>LatoFont\Lato-ExtraLight.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-ExtraLightItalic.ttf">
-      <PackagePath>LatoFont\Lato-ExtraLightItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-Italic.ttf">
-      <PackagePath>LatoFont\Lato-Italic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-Light.ttf">
-      <PackagePath>LatoFont\Lato-Light.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-LightItalic.ttf">
-      <PackagePath>LatoFont\Lato-LightItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-Medium.ttf">
-      <PackagePath>LatoFont\Lato-Medium.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-MediumItalic.ttf">
-      <PackagePath>LatoFont\Lato-MediumItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-Regular.ttf">
-      <PackagePath>LatoFont\Lato-Regular.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-SemiBold.ttf">
-      <PackagePath>LatoFont\Lato-SemiBold.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-SemiBoldItalic.ttf">
-      <PackagePath>LatoFont\Lato-SemiBoldItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-Thin.ttf">
-      <PackagePath>LatoFont\Lato-Thin.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\Lato-ThinItalic.ttf">
-      <PackagePath>LatoFont\Lato-ThinItalic.ttf</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.7\LatoFont\OFL.txt">
-      <PackagePath>LatoFont\OFL.txt</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testadapter\3.8.3\buildTransitive\net8.0\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll">
-      <PackagePath>Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testadapter\3.8.3\buildTransitive\net6.0\winui\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll">
-      <PackagePath>Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testadapter\3.8.3\buildTransitive\net8.0\Microsoft.TestPlatform.AdapterUtilities.dll">
-      <PackagePath>Microsoft.TestPlatform.AdapterUtilities.dll</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
-      <PackagePath>ArtAttack.exe</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\LockScreenLogo.scale-200.png">
-=======
-    <AppxPackagedFile Include="D:\Faculty\CtrlAltDefeatMarketplace\ArtAttack\Assets\LockScreenLogo.scale-200.png">
->>>>>>> e34dd40ddaa927d127659c5ca3192e87d5fb05ad
->>>>>>> dca4db32a07f838e24cde235cfc533b44427b396
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
     </AppxPackagedFile>
   </ItemGroup>

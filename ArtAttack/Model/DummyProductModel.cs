@@ -84,7 +84,7 @@ namespace ArtAttack.Model
         /// <returns> string or null.</returns>
         internal async Task<string?> GetSellerNameAsync(int? sellerId)
         {
-            using (SqlConnection connection = new SqlConnection(this._connectionString))
+            using (SqlConnection connection = new SqlConnection(this.connectionString))
             {
                 using (SqlCommand command = new SqlCommand("GetSellerById", connection))
                 {
@@ -120,7 +120,7 @@ namespace ArtAttack.Model
         /// <returns> string or null.</returns>
         internal async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
         {
-            using (SqlConnection connection = new SqlConnection(this._connectionString))
+            using (SqlConnection connection = new SqlConnection(this.connectionString))
             {
                 using (SqlCommand command = new SqlCommand("GetDummyProductByID", connection))
                 {
@@ -151,6 +151,16 @@ namespace ArtAttack.Model
                     }
                 }
             }
+        }
+
+        Task<string> IDummyProductModel.GetSellerNameAsync(int? sellerId)
+        {
+            return GetSellerNameAsync(sellerId);
+        }
+
+        Task<DummyProduct> IDummyProductModel.GetDummyProductByIdAsync(int productId)
+        {
+            return GetDummyProductByIdAsync(productId);
         }
     }
 }

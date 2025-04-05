@@ -1,15 +1,13 @@
-namespace ArtAttack
-{
-    using System;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
-    using ArtAttack.Domain;
-    using ArtAttack.Services;
-    using ArtAttack.ViewModel;
-    using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Data;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Data.SqlClient;
+using ArtAttack.Domain;
+using ArtAttack.Services;
+using ArtAttack.ViewModel;
 
 namespace ArtAttack
 {
@@ -17,7 +15,7 @@ namespace ArtAttack
     {
         private readonly string connectionString;
         private readonly int currentProductId;
-        private readonly WaitListViewModel waitListViewModel;
+        private readonly IWaitListViewModel waitListViewModel;
         private readonly NotificationViewModel notificationVM;
 
         public BorrowProductWindow(string connectionString, int productId)
@@ -63,7 +61,7 @@ namespace ArtAttack
 
         private void UpdateWaitlistUI(bool isOnWaitlist)
         {
-            this.btnJoinWaitList.Visibility = isOnWaitlist ? Visibility.Collapsed : Visibility.Visible;
+            this.ButtonJoinWaitList.Visibility = isOnWaitlist ? Visibility.Collapsed : Visibility.Visible;
             this.waitlistActionsPanel.Visibility = isOnWaitlist ? Visibility.Visible : Visibility.Collapsed;
             this.txtPositionInQueue.Visibility = Visibility.Collapsed;
         }
@@ -83,14 +81,14 @@ namespace ArtAttack
                     ? "Availability: Now"
                     : $"Available after: {product.StartDate:yyyy-MM-dd}";
 
-                this.btnBorrow.Visibility = Visibility.Visible;
-                this.btnJoinWaitList.Visibility = Visibility.Collapsed;
+                this.ButtonBorrow.Visibility = Visibility.Visible;
+                this.ButtonJoinWaitList.Visibility = Visibility.Collapsed;
             }
             else
             {
                 this.txtDates.Text = $"Unavailable until: {product.EndDate:yyyy-MM-dd}";
-                this.btnBorrow.Visibility = Visibility.Collapsed;
-                this.btnJoinWaitList.Visibility = Visibility.Visible;
+                this.ButtonBorrow.Visibility = Visibility.Collapsed;
+                this.ButtonJoinWaitList.Visibility = Visibility.Visible;
             }
         }
 
@@ -120,7 +118,7 @@ namespace ArtAttack
             }
         }
 
-        private async void BtnJoinWaitList_Click(object sender, RoutedEventArgs e)
+        private async void ButtonJoinWaitList_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -143,7 +141,7 @@ namespace ArtAttack
             return 1;
         }
 
-        private async void BtnLeaveWaitList_Click(object sender, RoutedEventArgs e)
+        private async void ButtonLeaveWaitList_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -161,7 +159,7 @@ namespace ArtAttack
             }
         }
 
-        private async void BtnViewPosition_Click(object sender, RoutedEventArgs e)
+        private async void ButtonViewPosition_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -197,9 +195,9 @@ namespace ArtAttack
                         Content = new StackPanel
                         {
                             Children =
-                    {
-                        new TextBlock { Text = this.notificationVM.unReadNotificationsCountText },
-                    },
+                {
+                    new TextBlock { Text = this.notificationVM.UnReadNotificationsCountText },
+                },
                         },
                     },
                     CloseButtonText = "Close",

@@ -4,6 +4,8 @@
     {
         public int ContractID { get; set; }
         public required string ContractContent { get; set; }
+        public string Content { get; set; }
+        public int ID { get; set; }
     }
 
     /// <summary>
@@ -13,6 +15,6 @@
     {
         BuyingContract = 1,
         SellingContract = 2,
-        BorrowingContract = 3
+        BorrowContract = 3
     }
 }

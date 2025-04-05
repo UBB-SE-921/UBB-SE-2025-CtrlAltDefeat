@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)questpdf\2025.1.7\buildTransitive\QuestPDF.targets" Condition="Exists('$(NuGetPackageRoot)questpdf\2025.1.7\buildTransitive\QuestPDF.targets')" />
+    <Import Project="$(NuGetPackageRoot)questpdf\2025.1.6\buildTransitive\QuestPDF.targets" Condition="Exists('$(NuGetPackageRoot)questpdf\2025.1.6\buildTransitive\QuestPDF.targets')" />
     <Import Project="$(NuGetPackageRoot)mstest.analyzers\3.8.3\buildTransitive\MSTest.Analyzers.targets" Condition="Exists('$(NuGetPackageRoot)mstest.analyzers\3.8.3\buildTransitive\MSTest.Analyzers.targets')" />
     <Import Project="$(NuGetPackageRoot)mstest.testframework\3.8.3\buildTransitive\net8.0\MSTest.TestFramework.targets" Condition="Exists('$(NuGetPackageRoot)mstest.testframework\3.8.3\buildTransitive\net8.0\MSTest.TestFramework.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.testing.platform\1.6.3\buildTransitive\net8.0\Microsoft.Testing.Platform.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.testing.platform\1.6.3\buildTransitive\net8.0\Microsoft.Testing.Platform.targets')" />

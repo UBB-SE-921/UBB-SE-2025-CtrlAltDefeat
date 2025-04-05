@@ -9,11 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtAttack.Tests", "..\ArtAttack.Tests\ArtAttack.Tests.csproj", "{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "..\test\test.csproj", "{4D676725-637D-487B-984D-07CF487198D7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3} = {F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -54,18 +49,6 @@ Global
 		{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}.Release|x64.Build.0 = Release|Any CPU
 		{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}.Release|x86.ActiveCfg = Release|Any CPU
 		{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}.Release|x86.Build.0 = Release|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Debug|x64.ActiveCfg = Debug|x64
-		{4D676725-637D-487B-984D-07CF487198D7}.Debug|x64.Build.0 = Debug|x64
-		{4D676725-637D-487B-984D-07CF487198D7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Debug|x86.Build.0 = Debug|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Release|ARM64.Build.0 = Release|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Release|x64.ActiveCfg = Release|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Release|x64.Build.0 = Release|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Release|x86.ActiveCfg = Release|Any CPU
-		{4D676725-637D-487B-984D-07CF487198D7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

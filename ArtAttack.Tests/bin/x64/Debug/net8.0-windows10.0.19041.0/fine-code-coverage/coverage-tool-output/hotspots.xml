@@ -1,2 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Hotspots />
+<Hotspots>
+  <Hotspot>
+    <Assembly>ArtAttack</Assembly>
+    <Class>ArtAttack.Shared.DbExtensions</Class>
+    <MethodName>AddWithValue(...)</MethodName>
+    <ShortName />
+    <Line>148</Line>
+    <FileIndex>0</FileIndex>
+    <Metrics>
+      <Metric>
+        <Name>Cyclomatic complexity</Name>
+        <Exceeded>true</Exceeded>
+        <Value>36</Value>
+      </Metric>
+    </Metrics>
+  </Hotspot>
+</Hotspots>
