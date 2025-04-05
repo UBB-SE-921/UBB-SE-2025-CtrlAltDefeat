@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.Model
 {
     [TestClass]
     public class WaitListModelTests
@@ -59,8 +59,8 @@ namespace ArtAttack.Tests
             var model = new WaitListModel(_testConnectionString);
 
             // Assert - using reflection to access private field
-            var field = typeof(WaitListModel).GetField("_connectionString",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var field = typeof(WaitListModel).GetField("connectionString",
+                BindingFlags.NonPublic | BindingFlags.Instance);
             var value = field.GetValue(model);
 
             Assert.AreEqual(_testConnectionString, value);
