@@ -1,25 +1,25 @@
-using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.Model
 {
     public class OrderSummaryModel
     {
-        private readonly string _connectionString;
+        private readonly string connectionString;
 
         public OrderSummaryModel(string connectionString)
         {
-            _connectionString = connectionString;
+            this.connectionString = connectionString;
         }
 
         public async Task AddOrderSummaryAsync(float subtotal, float warrantyTax, float deliveryFee, float finalTotal,
                                     string fullName, string email, string phoneNumber, string address,
                                     string postalCode, string additionalInfo, string contractDetails)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("AddOrderSummary", conn))
                 {
@@ -46,7 +46,7 @@ namespace ArtAttack.Model
                                        string fullName, string email, string phoneNumber, string address,
                                        string postalCode, string additionalInfo, string contractDetails)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("UpdateOrderSummary", conn))
                 {
@@ -72,7 +72,7 @@ namespace ArtAttack.Model
 
         public async Task DeleteOrderSummaryAsync(int id)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("DeleteOrderSummary", conn))
                 {
@@ -87,7 +87,7 @@ namespace ArtAttack.Model
 
         public async Task<OrderSummary> GetOrderSummaryByIDAsync(int orderSummaryID)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("select * from [OrderSummary] where [ID] = @ID", conn))
                 {

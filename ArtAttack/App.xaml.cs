@@ -18,7 +18,6 @@ using Microsoft.UI.Xaml.Shapes;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace ArtAttack
 {
     /// <summary>
@@ -41,24 +40,24 @@ namespace ArtAttack
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            //var bp = new BillingInfo();
-            //var ci = new CardInfo();
-            //var fp = new FinalisePurchase();
+            window = new MainWindow();
+            // var bp = new BillingInfo();
+            // var ci = new CardInfo();
+            // var fp = new FinalisePurchase();
 
-            //m_window.Content = fp; // For testing the gui
-            m_window.Activate();
+            // m_window.Content = fp; // For testing the gui
+            window.Activate();
         }
 
-        private Window? m_window;
+        private Window? window;
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        //[STAThread]
-        //public static void Main(string[] args)
-        //{
-        //    Application.Start(p => new App());
-        //}
+        // [STAThread]
+        // public static void Main(string[] args)
+        // {
+        //     Application.Start(p => new App());
+        // }
     }
 }

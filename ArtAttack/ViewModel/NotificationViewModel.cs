@@ -1,21 +1,21 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Shared;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ArtAttack.Domain;
+using ArtAttack.Shared;
 
 namespace ArtAttack.ViewModel
 {
     public class NotificationViewModel : INotifyPropertyChanged
     {
-        private readonly NotificationDataAdapter _dataAdapter;
-        private ObservableCollection<Notification> _notifications;
-        private int _unreadCount;
-        private bool _isLoading;
+        private readonly NotificationDataAdapter dataAdapter;
+        private ObservableCollection<Notification> notifications;
+        private int unreadCount;
+        private bool isLoading;
         private int currentUserId;
         public event Action<string> ShowPopup;
 
@@ -23,7 +23,7 @@ namespace ArtAttack.ViewModel
 
         public NotificationViewModel(int currentUserId)
         {
-            _dataAdapter = new NotificationDataAdapter(Configuration._CONNECTION_STRING_);
+            dataAdapter = new NotificationDataAdapter(Configuration.CONNECTION_STRING);
             Notifications = new ObservableCollection<Notification>();
             this.currentUserId = currentUserId;
             MarkAsReadCommand = new NotificationRelayCommand<int>(async (id) => await MarkAsReadAsync(id));
@@ -32,31 +32,31 @@ namespace ArtAttack.ViewModel
 
         public ObservableCollection<Notification> Notifications
         {
-            get => _notifications;
+            get => notifications;
             set
             {
-                _notifications = value;
+                notifications = value;
                 OnPropertyChanged();
             }
         }
 
         public int UnreadCount
         {
-            get => _unreadCount;
+            get => unreadCount;
             set
             {
-                _unreadCount = value;
+                unreadCount = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(unReadNotificationsCountText));
+                OnPropertyChanged(nameof(UnReadNotificationsCountText));
             }
         }
 
         public bool IsLoading
         {
-            get => _isLoading;
+            get => isLoading;
             set
             {
-                _isLoading = value;
+                isLoading = value;
                 OnPropertyChanged();
             }
         }
@@ -67,10 +67,10 @@ namespace ArtAttack.ViewModel
             try
             {
                 IsLoading = true;
-                var notifications = await Task.Run(() => _dataAdapter.GetNotificationsForUser(recipientId));
+                var notifications = await Task.Run(() => dataAdapter.GetNotificationsForUser(recipientId));
 
                 Notifications = new ObservableCollection<Notification>(notifications);
-                UnreadCount = Notifications.Count(n => !n.getIsRead());
+                UnreadCount = Notifications.Count(n => !n.IsRead);
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                await Task.Run(() => _dataAdapter.MarkAsRead(notificationId));
+                await Task.Run(() => dataAdapter.MarkAsRead(notificationId));
             }
             catch (Exception ex)
             {
@@ -97,13 +97,15 @@ namespace ArtAttack.ViewModel
         public async Task AddNotificationAsync(Notification notification)
         {
             if (notification == null)
+            {
                 throw new ArgumentNullException(nameof(notification));
+            }
 
             try
             {
-                await Task.Run(() => _dataAdapter.AddNotification(notification));
+                await Task.Run(() => dataAdapter.AddNotification(notification));
 
-                if (notification.getRecipientID() == currentUserId)
+                if (notification.RecipientID == currentUserId)
                 {
                     Notifications.Insert(0, notification);
                     UnreadCount++;
@@ -120,16 +122,15 @@ namespace ArtAttack.ViewModel
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public string unReadNotificationsCountText
+        public string UnReadNotificationsCountText
         {
-            get => "You've got #" + _unreadCount + " unread notifications.";
+            get => "You've got #" + unreadCount + " unread notifications.";
         }
 
         private void UpdateUnreadCount()
         {
-            UnreadCount = Notifications.Count(n => !n.getIsRead());
-            OnPropertyChanged(nameof(unReadNotificationsCountText));
+            UnreadCount = Notifications.Count(n => !n.IsRead);
+            OnPropertyChanged(nameof(UnReadNotificationsCountText));
         }
-
     }
 }

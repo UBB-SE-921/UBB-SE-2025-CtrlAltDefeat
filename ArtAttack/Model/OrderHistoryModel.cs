@@ -1,24 +1,24 @@
-﻿using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
     public class OrderHistoryModel : IOrderHistoryModel
     {
-        private readonly string _connectionString;
-        private readonly IDatabaseProvider _databaseProvider;
+        private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
         /// <summary>
         /// Default constructor for OrderHistoryModel.
         /// </summary>
         /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
         /// <remarks>
-        /// Initializes a new instance of the OrderHistoryModel class with the specified connection string 
+        /// Initializes a new instance of the OrderHistoryModel class with the specified connection string
         /// and a default SqlDatabaseProvider. This constructor is typically used in production code.
         /// </remarks>
         public OrderHistoryModel(string connectionString)
@@ -37,8 +37,8 @@ namespace ArtAttack.Model
         /// </remarks>
         public OrderHistoryModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            _connectionString = connectionString;
-            _databaseProvider = databaseProvider;
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace ArtAttack.Model
         {
             List<DummyProduct> dummyProducts = new List<DummyProduct>();
 
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 await connection.OpenAsync();
                 using (IDbCommand command = connection.CreateCommand())

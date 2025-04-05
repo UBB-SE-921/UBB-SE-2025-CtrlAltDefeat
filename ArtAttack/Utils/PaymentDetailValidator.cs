@@ -11,7 +11,9 @@ namespace ArtAttack.Services
             int numberOfDigits = cardNumber.Length;
 
             if (!cardNumber.All(char.IsAsciiDigit) || numberOfDigits != 16)
+            {
                 return false;
+            }
 
             int nSum = 0;
             bool isSecond = false;
@@ -20,7 +22,9 @@ namespace ArtAttack.Services
                 int d = cardNumber[i] - '0';
 
                 if (isSecond == true)
+                {
                     d = d * 2;
+                }
 
                 // adding in case the doubling results in a 2 digit number
                 nSum += d / 10;
@@ -49,7 +53,9 @@ namespace ArtAttack.Services
         public bool ValidateExpiryDate(string month, string year)
         {
             if (!ValidateMonth(month) || !ValidateYear(year))
+            {
                 return false;
+            }
 
             int currentYear = DateTime.Now.Year % 100;
             int currentMonth = DateTime.Now.Month;

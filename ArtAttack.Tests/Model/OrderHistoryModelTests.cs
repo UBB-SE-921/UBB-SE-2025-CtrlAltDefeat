@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using System.Data;  // Use System.Data interfaces
-using System.Threading;  // For CancellationToken
+using System.Threading;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.Model
 {
     [TestClass]
     public class OrderHistoryModelTests
@@ -58,7 +58,7 @@ namespace ArtAttack.Tests
             var model = new OrderHistoryModel(_testConnectionString);
 
             // Assert - using reflection to access private field
-            var field = typeof(OrderHistoryModel).GetField("_connectionString",
+            var field = typeof(OrderHistoryModel).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var value = field.GetValue(model);
 

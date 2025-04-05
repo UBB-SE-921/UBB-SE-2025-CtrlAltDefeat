@@ -1,33 +1,33 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using Microsoft.Data.SqlClient;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using ArtAttack.Model;
+using Microsoft.Data.SqlClient;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 
 namespace ArtAttack.ViewModel
 {
     public class ContractRenewViewModel
     {
-        private readonly IContractModel _contractModel;
-        private readonly IContractRenewalModel _renewalModel;
-        private readonly NotificationDataAdapter _notificationAdapter;
-        private readonly string _connectionString;
+        private readonly IContractModel contractModel;
+        private readonly IContractRenewalModel renewalModel;
+        private readonly NotificationDataAdapter notificationAdapter;
+        private readonly string connectionString;
 
         public List<IContract> BuyerContracts { get; private set; }
         public IContract SelectedContract { get; private set; } = null!;
 
         public ContractRenewViewModel(string connectionString)
         {
-            _contractModel = new ContractModel(connectionString);
-            _renewalModel = new ContractRenewalModel(connectionString);
-            _notificationAdapter = new NotificationDataAdapter(connectionString);
-            _connectionString = connectionString;
+            contractModel = new ContractModel(connectionString);
+            renewalModel = new ContractRenewalModel(connectionString);
+            notificationAdapter = new NotificationDataAdapter(connectionString);
+            this.connectionString = connectionString;
             BuyerContracts = new List<IContract>();
         }
 
@@ -39,7 +39,7 @@ namespace ArtAttack.ViewModel
         public async Task LoadContractsForBuyerAsync(int buyerID)
         {
             // Load all contracts for the buyer
-            var allContracts = await _contractModel.GetContractsByBuyerAsync(buyerID);
+            var allContracts = await contractModel.GetContractsByBuyerAsync(buyerID);
 
             // Filter the contracts to include only those with status "ACTIVE" or "RENEWED"
             BuyerContracts = allContracts.Where(c => c.ContractStatus == "ACTIVE" || c.ContractStatus == "RENEWED").ToList();
@@ -52,7 +52,7 @@ namespace ArtAttack.ViewModel
         /// <returns >A task representing the asynchronous operation.</returns>
         public async Task SelectContractAsync(long contractID)
         {
-            SelectedContract = await _contractModel.GetContractByIdAsync(contractID);
+            SelectedContract = await contractModel.GetContractByIdAsync(contractID);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace ArtAttack.ViewModel
         /// </summary>
         public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
-            return await _contractModel.GetProductDetailsByContractIdAsync(contractId);
+            return await contractModel.GetProductDetailsByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -70,15 +70,16 @@ namespace ArtAttack.ViewModel
         public async Task<bool> IsRenewalPeriodValidAsync()
         {
             var dates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
-            if (dates == null) return false;
-
+            if (dates == null)
+            {
+                return false;
+            }
             DateTime oldEndDate = dates.Value.EndDate;
             DateTime currentDate = DateTime.Now.Date;
             int daysUntilEnd = (oldEndDate - currentDate).Days;
 
             return daysUntilEnd <= 7 && daysUntilEnd >= 2;
         }
-
 
         /// <summary>
         /// Simulates a check to determine if a product is available.
@@ -89,7 +90,6 @@ namespace ArtAttack.ViewModel
         {
             return true;
         }
-
 
         /// <summary>
         /// Simulates a check to determine if the seller can approve a renewal based on the renewal count.
@@ -108,7 +108,7 @@ namespace ArtAttack.ViewModel
         /// <returns >The ID of the newly inserted PDF.</returns>
         private async Task<int> InsertPdfAsync(byte[] fileBytes)
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = new SqlConnection(connectionString))
             using (var cmd = new SqlCommand("INSERT INTO PDF ([file]) OUTPUT INSERTED.ID VALUES (@file)", conn))
             {
                 cmd.Parameters.AddWithValue("@file", fileBytes);
@@ -123,7 +123,7 @@ namespace ArtAttack.ViewModel
         /// <returns >True if the contract has been renewed; false otherwise.</returns>
         public async Task<bool> HasContractBeenRenewedAsync()
         {
-            return await _renewalModel.HasContractBeenRenewedAsync(SelectedContract.ContractID);
+            return await renewalModel.HasContractBeenRenewedAsync(SelectedContract.ContractID);
         }
 
         /// <summary>
@@ -164,32 +164,46 @@ namespace ArtAttack.ViewModel
             {
                 // Ensure a contract is selected before proceeding
                 if (SelectedContract == null)
+                {
                     return (false, "No contract selected.");
+                }
 
                 // Check if the contract was already renewed
                 if (await HasContractBeenRenewedAsync())
+                {
                     return (false, "This contract has already been renewed.");
+                }
 
                 // Validate the current date is within the renewal window (2 to 7 days before end)
                 if (!await IsRenewalPeriodValidAsync())
+                {
                     return (false, "Contract is not in a valid renewal period (between 2 and 7 days before end date).");
+                }
 
                 // Get the current contract's product dates
                 var oldDates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
                 if (!oldDates.HasValue)
+                {
                     return (false, "Could not retrieve current contract dates.");
+                }
 
                 // Ensure the new end date is after the old one
                 if (newEndDate <= oldDates.Value.EndDate)
+                {
                     return (false, "New end date must be after the current end date.");
+                }
 
                 // Check if product is available for renewal
                 if (!IsProductAvailable(productID))
+                {
                     return (false, "Product is not available.");
+                }
 
                 // Check if seller allows renewal (based on renewal count)
                 if (!CanSellerApproveRenewal(SelectedContract.RenewalCount))
+                {
                     return (false, "Renewal not allowed: seller limit exceeded.");
+                }
 
                 // Build the updated contract content text
                 string contractContent = $"Renewed Contract for Order {SelectedContract.OrderID}.\nOriginal Contract ID: {SelectedContract.ContractID}.\nNew End Date: {newEndDate:dd/MM/yyyy}";
@@ -218,13 +232,13 @@ namespace ArtAttack.ViewModel
                     RenewedFromContractID = SelectedContract.ContractID
                 };
 
-                await _renewalModel.AddRenewedContractAsync(updatedContract, pdfBytes);
+                await renewalModel.AddRenewedContractAsync(updatedContract, pdfBytes);
 
                 // Send notifications to seller, buyer, and waitlist
                 var now = DateTime.Now;
-                _notificationAdapter.AddNotification(new ContractRenewalRequestNotification(sellerID, now, (int)SelectedContract.ContractID));
-                _notificationAdapter.AddNotification(new ContractRenewalAnswerNotification(buyerID, now, (int)SelectedContract.ContractID, true));
-                _notificationAdapter.AddNotification(new ContractRenewalWaitlistNotification(999, now, productID));
+                notificationAdapter.AddNotification(new ContractRenewalRequestNotification(sellerID, now, (int)SelectedContract.ContractID));
+                notificationAdapter.AddNotification(new ContractRenewalAnswerNotification(buyerID, now, (int)SelectedContract.ContractID, true));
+                notificationAdapter.AddNotification(new ContractRenewalWaitlistNotification(999, now, productID));
 
                 return (true, "Contract renewed successfully!");
             }
@@ -234,6 +248,6 @@ namespace ArtAttack.ViewModel
                 return (false, $"Unexpected error: {ex.Message}");
             }
         }
-
     }
 }
+

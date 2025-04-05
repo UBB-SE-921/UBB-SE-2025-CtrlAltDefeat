@@ -2,38 +2,18 @@
 
 namespace ArtAttack.Domain
 {
-    //public interface INotification
-    //{
-    //    int NotificationID { get; }
-    //    string Content { get; }
-    //    bool IsNotRead { get; }
-    //    string Subtitle { get; }
-    //    DateTime Timestamp { get; set; }
-    //    string Title { get; }
-    //    NotificationCategory Category { get; }
+    public interface INotification
+    {
+        int NotificationID { get; set; }
+        int RecipientID { get; set; }
+        NotificationCategory Category { get; set; }
+        bool IsRead { get; set; }
+        string Title { get; }
+        string Subtitle { get; }
+        string Content { get; }
+        DateTime Timestamp { get; }
+        bool IsNotRead { get; set; }
 
-    //    NotificationCategory getCategory();
-    //    bool getIsRead();
-    //    int getNotificationID();
-    //    int getRecipientID();
-    //    //void MarkAsRead();
-    //    void SetIsRead(bool value);
-    //    int RecipientID { get; }
-    //    bool IsRead { get; set; }
-
-    //}
-    //public interface INotification
-    //{
-    //    int NotificationID { get; }
-    //    int RecipientID { get; }
-    //    NotificationCategory Category { get; }
-    //    bool IsRead { get; set; }
-    //    string Title { get; }
-    //    string Subtitle { get; }
-    //    string Content { get; }
-    //    DateTime Timestamp { get; set; }
-    //    bool IsNotRead { get; }
-
-    //    void MarkAsRead();
-    //}
+        void MarkAsRead();
+    }
 }

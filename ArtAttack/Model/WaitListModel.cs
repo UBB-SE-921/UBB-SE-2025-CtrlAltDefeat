@@ -1,27 +1,26 @@
-﻿using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 using ArtAttack.Shared;
-
 
 namespace ArtAttack.Model
 {
     public class WaitListModel : IWaitListModel
     {
-        private readonly string _connectionString;
-        private readonly IDatabaseProvider _databaseProvider;
+        private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
         /// <summary>
         /// Default constructor for WaitListModel.
         /// </summary>
         /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
         /// <remarks>
-        /// Initializes a new instance of the WaitListModel class with the specified connection string 
+        /// Initializes a new instance of the WaitListModel class with the specified connection string
         /// and a default SqlDatabaseProvider. This constructor is typically used in production code.
         /// </remarks>
         public WaitListModel(string connectionString)
@@ -35,14 +34,14 @@ namespace ArtAttack.Model
         /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
         /// <param name="databaseProvider">The database provider implementation to use for database operations. Cannot be null.</param>
         /// <remarks>
-        /// Initializes a new instance of the WaitListModel class with the specified connection string 
-        /// and database provider. This constructor enables dependency injection and is primarily used for testing 
+        /// Initializes a new instance of the WaitListModel class with the specified connection string
+        /// and database provider. This constructor enables dependency injection and is primarily used for testing
         /// with mock database providers.
         /// </remarks>
         public WaitListModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            _connectionString = connectionString;
-            _databaseProvider = databaseProvider;
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
         }
 
         /// <summary>
@@ -53,7 +52,7 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void AddUserToWaitlist(int userId, int productWaitListId)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -77,7 +76,6 @@ namespace ArtAttack.Model
             }
         }
 
-
         /// <summary>
         /// Removes a user from the waitlist and adjusts the queue positions.
         /// </summary>
@@ -86,7 +84,7 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void RemoveUserFromWaitlist(int userId, int productWaitListId)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -120,7 +118,7 @@ namespace ArtAttack.Model
         {
             var usersInWaitList = new List<UserWaitList>();
 
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -139,9 +137,9 @@ namespace ArtAttack.Model
                         {
                             var userWaitListEntry = new UserWaitList
                             {
-                                userID = reader.GetInt32(reader.GetOrdinal("userID")),
-                                positionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
-                                joinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
+                                UserID = reader.GetInt32(reader.GetOrdinal("userID")),
+                                PositionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
+                                JoinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
                             };
                             usersInWaitList.Add(userWaitListEntry);
                         }
@@ -163,7 +161,7 @@ namespace ArtAttack.Model
         {
             var userWaitlists = new List<UserWaitList>();
 
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -182,10 +180,10 @@ namespace ArtAttack.Model
                         {
                             var userWaitlist = new UserWaitList
                             {
-                                userID = userId,
-                                productWaitListID = reader.GetInt32(reader.GetOrdinal("productWaitListID")),
-                                positionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
-                                joinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
+                                UserID = userId,
+                                ProductWaitListID = reader.GetInt32(reader.GetOrdinal("productWaitListID")),
+                                PositionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
+                                JoinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
                             };
 
                             userWaitlists.Add(userWaitlist);
@@ -206,7 +204,7 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetWaitlistSize(int productWaitListId)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -246,7 +244,7 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public bool IsUserInWaitlist(int userId, int productId)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -280,7 +278,7 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetUserWaitlistPosition(int userId, int productId)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -326,7 +324,7 @@ namespace ArtAttack.Model
         {
             var orderedWaitlistUsers = new List<UserWaitList>();
 
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -345,10 +343,10 @@ namespace ArtAttack.Model
                         {
                             var waitListUser = new UserWaitList
                             {
-                                productWaitListID = reader.GetInt32(reader.GetOrdinal("productWaitListID")),
-                                userID = reader.GetInt32(reader.GetOrdinal("userID")),
-                                joinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime")),
-                                positionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue"))
+                                ProductWaitListID = reader.GetInt32(reader.GetOrdinal("productWaitListID")),
+                                UserID = reader.GetInt32(reader.GetOrdinal("userID")),
+                                JoinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime")),
+                                PositionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue"))
                             };
                             orderedWaitlistUsers.Add(waitListUser);
                         }

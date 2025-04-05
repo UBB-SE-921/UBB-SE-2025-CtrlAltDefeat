@@ -1,10 +1,10 @@
+using System;
+using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Threading.Tasks;
 
 namespace ArtAttack
 {
@@ -27,7 +27,7 @@ namespace ArtAttack
             this.InitializeComponent();
             ContractDetailsPanel.Visibility = Visibility.Collapsed;
 
-            string connectionString = Configuration._CONNECTION_STRING_;
+            string connectionString = Configuration.CONNECTION_STRING;
             viewModel = new ContractRenewViewModel(connectionString);
 
             _ = LoadContractsAsync();

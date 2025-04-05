@@ -1,23 +1,23 @@
-﻿using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Data;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.Model
 {
     public class DummyProductModel : IDummyProductModel
     {
-        private readonly string _connectionString;
+        private readonly string connectionString;
 
         public DummyProductModel(string connectionString)
-        {   
-            _connectionString = connectionString;
+        {
+            this.connectionString = connectionString;
         }
 
         public async Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("AddDummyProduct", conn))
                 {
@@ -40,7 +40,7 @@ namespace ArtAttack.Model
         /// </summary>
         public async Task UpdateDummyProductAsync(int id, string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("UpdateDummyProduct", conn))
                 {
@@ -64,7 +64,7 @@ namespace ArtAttack.Model
         /// </summary>
         public async Task DeleteDummyProduct(int id)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("DeleteDummyProduct", conn))
                 {

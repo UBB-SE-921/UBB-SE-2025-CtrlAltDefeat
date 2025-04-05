@@ -5,8 +5,8 @@ namespace ArtAttack.ViewModel
 {
     public class NotificationRelayCommand : ICommand
     {
-        private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
+        private readonly Action execute;
+        private readonly Func<bool> canExecute;
 
         public event EventHandler CanExecuteChanged;
 
@@ -17,18 +17,18 @@ namespace ArtAttack.ViewModel
 
         public NotificationRelayCommand(Action execute, Func<bool> canExecute)
         {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
+            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            this.canExecute = canExecute;
         }
 
         public bool CanExecute(object parameter)
         {
-            return _canExecute == null || _canExecute();
+            return canExecute == null || canExecute();
         }
 
         public void Execute(object parameter)
         {
-            _execute();
+            execute();
         }
 
         public void RaiseCanExecuteChanged()
@@ -39,8 +39,8 @@ namespace ArtAttack.ViewModel
 
     public class NotificationRelayCommand<T> : ICommand
     {
-        private readonly Action<T> _execute;
-        private readonly Func<T, bool> _canExecute;
+        private readonly Action<T> execute;
+        private readonly Func<T, bool> canExecute;
 
         public event EventHandler CanExecuteChanged;
 
@@ -51,18 +51,18 @@ namespace ArtAttack.ViewModel
 
         public NotificationRelayCommand(Action<T> execute, Func<T, bool> canExecute)
         {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
+            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            this.canExecute = canExecute;
         }
 
         public bool CanExecute(object parameter)
         {
-            return _canExecute == null || _canExecute((T)parameter);
+            return canExecute == null || canExecute((T)parameter);
         }
 
         public void Execute(object parameter)
         {
-            _execute((T)parameter);
+            execute((T)parameter);
         }
 
         public void RaiseCanExecuteChanged()

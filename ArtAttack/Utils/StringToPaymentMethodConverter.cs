@@ -1,5 +1,5 @@
-﻿using Microsoft.UI.Xaml.Data;
-using System;
+﻿using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace ArtAttack.Utils
 {
@@ -7,7 +7,10 @@ namespace ArtAttack.Utils
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value == null || parameter == null) return false;
+            if (value == null || parameter == null)
+            {
+                return false;
+            }
             return value.ToString() == parameter.ToString();
         }
 

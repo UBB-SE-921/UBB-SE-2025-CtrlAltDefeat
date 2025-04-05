@@ -102,7 +102,7 @@
                 </StackPanel>
             </Grid>
             
-            <Button Foreground="Black" Background="#cccaca" Margin="0, 30, 0, 0" HorizontalAlignment="Center" Click="onPayButtonClickedAsync" Width="90">Pay</Button>
+            <Button Foreground="Black" Background="#cccaca" Margin="0, 30, 0, 0" HorizontalAlignment="Center" Click="OnPayButtonClickedAsync" Width="90">Pay</Button>
 
         </StackPanel>
     </Grid>

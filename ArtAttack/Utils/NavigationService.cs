@@ -1,26 +1,26 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using System;
+﻿using System;
+using Microsoft.UI.Xaml.Controls;
 
 namespace ArtAttack.Utils
 {
     public class NavigationService
     {
-        private Frame _mainFrame;
+        private Frame mainFrame;
 
         public NavigationService(Frame mainFrame)
         {
-            _mainFrame = mainFrame;
+            this.mainFrame = mainFrame;
         }
 
         public void NavigateTo(string pageName, object parameter = null)
         {
-            if (_mainFrame != null)
+            if (mainFrame != null)
             {
                 Type pageType = Type.GetType($"ArtAttack.Views.{pageName}");
 
                 if (pageType != null)
                 {
-                    _mainFrame.Navigate(pageType, parameter);
+                    mainFrame.Navigate(pageType, parameter);
                 }
             }
         }

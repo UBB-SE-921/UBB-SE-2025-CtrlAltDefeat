@@ -2,7 +2,7 @@
 
 namespace ArtAttack.Domain
 {
-    internal enum OrderStatus
+    public enum OrderStatus
     {
         PROCESSING,
         SHIPPED,
@@ -11,8 +11,7 @@ namespace ArtAttack.Domain
         OUT_FOR_DELIVERY,
         DELIVERED
     }
-
-    internal class OrderCheckpoint
+    public class OrderCheckpoint
     {
         public int CheckpointID { get; set; }
         public DateTime Timestamp { get; set; }
@@ -20,6 +19,5 @@ namespace ArtAttack.Domain
         public string Description { get; set; }
         public OrderStatus Status { get; set; }
         public int TrackedOrderID { get; set; }
-
     }
 }

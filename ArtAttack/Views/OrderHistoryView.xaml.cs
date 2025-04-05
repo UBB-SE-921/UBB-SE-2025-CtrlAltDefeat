@@ -1,22 +1,22 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Text;
-using System.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ArtAttack
 {
     public sealed partial class OrderHistoryUI : Window
     {
-        private readonly int _userId;
-        private IOrderViewModel _orderViewModel;
-        private IContractViewModel _contractViewModel;
+        private readonly int userId;
+        private IOrderViewModel orderViewModel;
+        private IContractViewModel contractViewModel;
         private Dictionary<int, string> orderProductCategoryTypes = new Dictionary<int, string>();
 
         /// <summary>
@@ -29,9 +29,9 @@ namespace ArtAttack
         public OrderHistoryUI(string connectionString, int userId)
         {
             InitializeComponent();
-            _userId = userId;
-            _orderViewModel = new OrderViewModel(connectionString);
-            _contractViewModel = new ContractViewModel(connectionString);
+            this.userId = userId;
+            orderViewModel = new OrderViewModel(connectionString);
+            contractViewModel = new ContractViewModel(connectionString);
             this.Activated += Window_Activated;
         }
 
@@ -59,7 +59,7 @@ namespace ArtAttack
                 var selectedPeriod = (TimePeriodComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
 
                 // Use the view model to get orders with product info
-                var orderDisplayInfos = await _orderViewModel.GetOrdersWithProductInfoAsync(_userId, searchText, selectedPeriod);
+                var orderDisplayInfos = await orderViewModel.GetOrdersWithProductInfoAsync(userId, searchText, selectedPeriod);
 
                 // Extract the product category types for use in showing contract details
                 foreach (var orderInfo in orderDisplayInfos)
@@ -100,7 +100,9 @@ namespace ArtAttack
                             $"No orders found containing '{searchText}'";
 
                         if (selectedPeriod != "All Orders")
+                        {
                             NoResultsText.Text += $" in {selectedPeriod}";
+                        }
                     }
                 });
             }
@@ -151,7 +153,7 @@ namespace ArtAttack
 
                 try
                 {
-                    var orderSummary = await _orderViewModel.GetOrderSummaryAsync(orderSummaryId);
+                    var orderSummary = await orderViewModel.GetOrderSummaryAsync(orderSummaryId);
                     if (orderSummary == null)
                     {
                         await ShowCustomMessageAsync("Error", "Order summary not found.");
@@ -218,14 +220,18 @@ namespace ArtAttack
                         AddDetailRowToPanel(orderDetailsPanel, "Postal Code:", orderSummary.PostalCode);
 
                         if (!string.IsNullOrEmpty(orderSummary.AdditionalInfo))
+                        {
                             AddDetailRowToPanel(orderDetailsPanel, "Additional Info:", orderSummary.AdditionalInfo);
+                        }
 
                         if (orderProductCategoryTypes.TryGetValue(orderSummary.ID, out string productType) && productType == "borrowed")
                         {
                             AddDetailRowToPanel(orderDetailsPanel, "Warranty Tax:", orderSummary.WarrantyTax.ToString("C"));
 
                             if (!string.IsNullOrEmpty(orderSummary.ContractDetails))
+                            {
                                 AddDetailRowToPanel(orderDetailsPanel, "Contract Details:", orderSummary.ContractDetails);
+                            }
 
                             var viewContractButton = new Button
                             {
@@ -267,7 +273,7 @@ namespace ArtAttack
                             Content = scrollViewer,
                             CloseButtonText = "Close",
                             DefaultButton = ContentDialogButton.Close,
-                            XamlRoot = Content.XamlRoot 
+                            XamlRoot = Content.XamlRoot
                         };
 
                         errorContentDialog.ShowAsync();
@@ -299,7 +305,7 @@ namespace ArtAttack
         {
             try
             {
-                var contract = await _contractViewModel.GetContractByIdAsync(orderSummary.ID);
+                var contract = await contractViewModel.GetContractByIdAsync(orderSummary.ID);
 
                 var contractTypeValues = Enum.GetValues(typeof(PredefinedContractType));
                 PredefinedContractType firstContractType = default;
@@ -308,18 +314,17 @@ namespace ArtAttack
                     firstContractType = (PredefinedContractType)contractTypeValues.GetValue(0);
                 }
 
-                var predefinedContract = await _contractViewModel
+                var predefinedContract = await contractViewModel
                     .GetPredefinedContractByPredefineContractTypeAsync(firstContractType);
 
                 var fieldReplacements = new Dictionary<string, string>
                 {
-                    {"CustomerName", orderSummary.FullName},
-                    {"ProductName", "Borrowed Product"},
-                    {"StartDate", DateTime.Now.ToString("yyyy-MM-dd")},
-                    {"EndDate", DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd")},
-                    {"Price", orderSummary.FinalTotal.ToString("C")}
+                    { "CustomerName", orderSummary.FullName },
+                    { "ProductName", "Borrowed Product" },
+                    { "StartDate", DateTime.Now.ToString("yyyy-MM-dd") },
+                    { "EndDate", DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd") },
+                    { "Price", orderSummary.FinalTotal.ToString("C") }
                 };
-
             }
             catch (Exception exception)
             {
@@ -412,7 +417,13 @@ namespace ArtAttack
 
             await pdfDialog.ShowAsync();
 
-            try { File.Delete(contractFilePath); } catch { }
+            try
+            {
+                File.Delete(contractFilePath);
+            }
+            catch
+            {
+            }
         }
 
         /// <summary>

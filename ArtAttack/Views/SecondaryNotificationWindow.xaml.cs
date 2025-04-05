@@ -12,15 +12,6 @@ namespace ArtAttack
             this.InitializeComponent();
             this.AppWindow.MoveAndResize(new Windows.Graphics.RectInt32(400, 200, 1080, 600));
             this.SelectedNotification = notification;
-            //contractFileButton.IsEnabled = SelectedNotification.getCategory().Equals(NotificationCategory.PAYMENT_CONFIRMATION);
-            //if (!contractFileButton.IsEnabled)
-            //{
-            //    if (SelectedNotification.getCategory().Equals(NotificationCategory.CONTRACT_RENEWAL_ANS))
-            //    {
-            //        var contractRenewalAnswerNotification = (ContractRenewalAnswerNotification)SelectedNotification;
-            //        contractFileButton.IsEnabled = contractRenewalAnswerNotification.getIsAccepted();
-            //    }
-            //}
             contractFileButton.IsEnabled = false;
             this.Populate();
         }

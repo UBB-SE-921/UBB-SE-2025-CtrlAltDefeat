@@ -93,7 +93,7 @@
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Grid.Row="3">
-            <Button x:Name="continueShoppingButton"  VerticalAlignment="Bottom" Foreground="Black" Background="#cccaca" Click="onContinueShopping_Clicked">Continue Shopping</Button>
+            <Button x:Name="continueShoppingButton"  VerticalAlignment="Bottom" Foreground="Black" Background="#cccaca" Click="OnContinueShopping_Clicked">Continue Shopping</Button>
         </StackPanel>
 
     </Grid>

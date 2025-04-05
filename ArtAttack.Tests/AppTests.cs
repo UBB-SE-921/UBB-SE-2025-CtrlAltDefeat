@@ -19,7 +19,7 @@ namespace ArtAttack.Tests
             var expectedConnectionString = "Data Source=RAZVAN\\SQLEXPRESS01;Initial Catalog=PurchaseDatabase;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
 
             // Act
-            var actualConnectionString = ArtAttack.Shared.Configuration._CONNECTION_STRING_;
+            var actualConnectionString = ArtAttack.Shared.Configuration.CONNECTION_STRING;
 
             // Assert
             Assert.AreEqual(expectedConnectionString, actualConnectionString, "The connection string should match the expected value.");

@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.Model
 {
     [TestClass]
     public class WaitListModelTests
@@ -59,8 +59,8 @@ namespace ArtAttack.Tests
             var model = new WaitListModel(_testConnectionString);
 
             // Assert - using reflection to access private field
-            var field = typeof(WaitListModel).GetField("_connectionString",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var field = typeof(WaitListModel).GetField("connectionString",
+                BindingFlags.NonPublic | BindingFlags.Instance);
             var value = field.GetValue(model);
 
             Assert.AreEqual(_testConnectionString, value);
@@ -287,14 +287,14 @@ namespace ArtAttack.Tests
             Assert.AreEqual(2, result.Count);
 
             // First user
-            Assert.AreEqual(1, result[0].userID);
-            Assert.AreEqual(1, result[0].positionInQueue);
-            Assert.AreEqual(today, result[0].joinedTime);
+            Assert.AreEqual(1, result[0].UserID);
+            Assert.AreEqual(1, result[0].PositionInQueue);
+            Assert.AreEqual(today, result[0].JoinedTime);
 
             // Second user
-            Assert.AreEqual(2, result[1].userID);
-            Assert.AreEqual(2, result[1].positionInQueue);
-            Assert.AreEqual(today.AddDays(-1), result[1].joinedTime);
+            Assert.AreEqual(2, result[1].UserID);
+            Assert.AreEqual(2, result[1].PositionInQueue);
+            Assert.AreEqual(today.AddDays(-1), result[1].JoinedTime);
         }
 
 
@@ -455,16 +455,16 @@ namespace ArtAttack.Tests
             Assert.AreEqual(2, result.Count);
 
             // First waitlist
-            Assert.AreEqual(userId, result[0].userID);
-            Assert.AreEqual(101, result[0].productWaitListID);
-            Assert.AreEqual(1, result[0].positionInQueue);  // Fix here - It should be 1, not 101
-            Assert.AreEqual(today, result[0].joinedTime);
+            Assert.AreEqual(userId, result[0].UserID);
+            Assert.AreEqual(101, result[0].ProductWaitListID);
+            Assert.AreEqual(1, result[0].PositionInQueue);  // Fix here - It should be 1, not 101
+            Assert.AreEqual(today, result[0].JoinedTime);
 
             // Second waitlist
-            Assert.AreEqual(userId, result[1].userID);
-            Assert.AreEqual(102, result[1].productWaitListID);
-            Assert.AreEqual(3, result[1].positionInQueue);
-            Assert.AreEqual(today.AddDays(-2), result[1].joinedTime);
+            Assert.AreEqual(userId, result[1].UserID);
+            Assert.AreEqual(102, result[1].ProductWaitListID);
+            Assert.AreEqual(3, result[1].PositionInQueue);
+            Assert.AreEqual(today.AddDays(-2), result[1].JoinedTime);
         }
 
 
@@ -703,16 +703,16 @@ namespace ArtAttack.Tests
             Assert.AreEqual(2, result.Count);
 
             // First user
-            Assert.AreEqual(1, result[0].userID);
-            Assert.AreEqual(101, result[0].productWaitListID);
-            Assert.AreEqual(1, result[0].positionInQueue);
-            Assert.AreEqual(today, result[0].joinedTime);
+            Assert.AreEqual(1, result[0].UserID);
+            Assert.AreEqual(101, result[0].ProductWaitListID);
+            Assert.AreEqual(1, result[0].PositionInQueue);
+            Assert.AreEqual(today, result[0].JoinedTime);
 
             // Second user
-            Assert.AreEqual(2, result[1].userID);
-            Assert.AreEqual(101, result[1].productWaitListID);
-            Assert.AreEqual(2, result[1].positionInQueue);
-            Assert.AreEqual(today.AddDays(-1), result[1].joinedTime);
+            Assert.AreEqual(2, result[1].UserID);
+            Assert.AreEqual(101, result[1].ProductWaitListID);
+            Assert.AreEqual(2, result[1].PositionInQueue);
+            Assert.AreEqual(today.AddDays(-1), result[1].JoinedTime);
         }
 
 

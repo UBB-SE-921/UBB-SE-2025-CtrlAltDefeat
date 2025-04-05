@@ -1,12 +1,12 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using ArtAttack.Shared;
-using ArtAttack.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using ArtAttack.Model;
+using ArtAttack.Shared;
+using ArtAttack.Utils;
 
 namespace ArtAttack.ViewModel
 {
@@ -20,49 +20,49 @@ namespace ArtAttack.ViewModel
 
         private int orderHistoryID;
 
-        private bool _isWalletEnabled;
-        private bool _isCashEnabled;
-        private bool _isCardEnabled;
+        private bool isWalletEnabled;
+        private bool isCashEnabled;
+        private bool isCardEnabled;
 
-        private string _selectedPaymentMethod;
+        private string selectedPaymentMethod;
 
-        private string _fullName;
-        private string _email;
-        private string _phoneNumber;
-        private string _address;
-        private string _zipCode;
-        private string _additionalInfo;
+        private string fullName;
+        private string email;
+        private string phoneNumber;
+        private string address;
+        private string zipCode;
+        private string additionalInfo;
 
-        private DateTime _startDate;
-        private DateTime _endDate;
+        private DateTime startDate;
+        private DateTime endDate;
 
-        private float _subtotal;
-        private float _deliveryFee;
-        private float _total;
-        private float _warrantyTax;
+        private float subtotal;
+        private float deliveryFee;
+        private float total;
+        private float warrantyTax;
 
         public ObservableCollection<DummyProduct> ProductList { get; set; }
-        public List<DummyProduct> dummyProducts;
+        public List<DummyProduct> DummyProducts;
 
         public BillingInfoModelView(int orderHistoryID)
         {
-            orderHistoryModel = new OrderHistoryModel(Configuration._CONNECTION_STRING_);
-            orderModel = new OrderModel(Configuration._CONNECTION_STRING_);
-            orderSummaryModel = new OrderSummaryModel(Configuration._CONNECTION_STRING_);
-            dummyWalletModel = new DummyWalletModel(Configuration._CONNECTION_STRING_);
-            dummyProductModel = new DummyProductModel(Configuration._CONNECTION_STRING_);
+            orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
+            orderModel = new OrderModel(Configuration.CONNECTION_STRING);
+            orderSummaryModel = new OrderSummaryModel(Configuration.CONNECTION_STRING);
+            dummyWalletModel = new DummyWalletModel(Configuration.CONNECTION_STRING);
+            dummyProductModel = new DummyProductModel(Configuration.CONNECTION_STRING);
 
             this.orderHistoryID = orderHistoryID;
 
             _ = InitializeViewModelAsync();
 
-            _warrantyTax = 0;
+            warrantyTax = 0;
         }
 
         public async Task InitializeViewModelAsync()
         {
-            dummyProducts = await GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
-            ProductList = new ObservableCollection<DummyProduct>(dummyProducts);
+            DummyProducts = await GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
+            ProductList = new ObservableCollection<DummyProduct>(DummyProducts);
 
             OnPropertyChanged(nameof(ProductList));
 
@@ -73,40 +73,32 @@ namespace ArtAttack.ViewModel
 
         public void SetVisibilityRadioButtons()
         {
-
             if (ProductList.Count > 0)
             {
-                // For simplicity, assume that products won in a bid can only be bought separately. 
-                // Same for wallet refills
+                string firstProductType = ProductList[0].ProductType;
 
-                // Based on the type of the first product in the list, we set the visibility
-                // of the payment method choices
-
-                string FirstProductType = ProductList[0].ProductType;
-
-                if (FirstProductType == "new" || FirstProductType == "used" || FirstProductType == "borrowed")
+                if (firstProductType == "new" || firstProductType == "used" || firstProductType == "borrowed")
                 {
                     IsCardEnabled = true;
                     IsCashEnabled = true;
                     IsWalletEnabled = false;
                 }
-                else if (FirstProductType == "bid")
+                else if (firstProductType == "bid")
                 {
                     IsCardEnabled = false;
                     IsCashEnabled = false;
                     IsWalletEnabled = true;
                 }
-                else if (FirstProductType == "refill")
+                else if (firstProductType == "refill")
                 {
                     IsCardEnabled = true;
                     IsCashEnabled = false;
                     IsWalletEnabled = false;
                 }
-
             }
         }
 
-        public async Task onFinalizeButtonClickedAsync()
+        public async Task OnFinalizeButtonClickedAsync()
         {
             string paymentMethod = SelectedPaymentMethod;
 
@@ -119,14 +111,14 @@ namespace ArtAttack.ViewModel
             }
 
             // Currently, an order summary has the same ID as the order history for simplicity
-            await orderSummaryModel.UpdateOrderSummaryAsync(orderHistoryID, Subtotal, _warrantyTax, DeliveryFee, Total, FullName, Email, PhoneNumber, Address, ZipCode, AdditionalInfo, null);
+            await orderSummaryModel.UpdateOrderSummaryAsync(orderHistoryID, Subtotal, warrantyTax, DeliveryFee, Total, FullName, Email, PhoneNumber, Address, ZipCode, AdditionalInfo, null);
 
-            await openNextWindowAsync(SelectedPaymentMethod);
+            await OpenNextWindowAsync(SelectedPaymentMethod);
         }
 
-        public async Task openNextWindowAsync(string SelectedPaymentMethod)
+        public async Task OpenNextWindowAsync(string selectedPaymentMethod)
         {
-            if (SelectedPaymentMethod == "card")
+            if (selectedPaymentMethod == "card")
             {
                 var b_window = new BillingInfoWindow();
                 var cardInfoPage = new CardInfo(orderHistoryID);
@@ -135,12 +127,13 @@ namespace ArtAttack.ViewModel
                 b_window.Activate();
 
                 // This is just a workaround until I figure out how to switch between pages
-
             }
             else
             {
-                if (SelectedPaymentMethod == "wallet")
-                    await processWalletRefillAsync();
+                if (selectedPaymentMethod == "wallet")
+                {
+                    await ProcessWalletRefillAsync();
+                }
                 var b_window = new BillingInfoWindow();
                 var finalisePurchasePage = new FinalisePurchase(orderHistoryID);
                 b_window.Content = finalisePurchasePage;
@@ -149,10 +142,9 @@ namespace ArtAttack.ViewModel
             }
         }
 
-        private async Task processWalletRefillAsync()
+        private async Task ProcessWalletRefillAsync()
         {
             // There is only one wallet, with the ID 1
-
             float walletBalance = await dummyWalletModel.GetWalletBalanceAsync(1);
 
             float newBalance = walletBalance - Total;
@@ -166,25 +158,26 @@ namespace ArtAttack.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-
         public void CalculateOrderTotal(int orderHistoryID)
         {
             float subtotalProducts = 0;
-            foreach (var product in dummyProducts)
+            foreach (var product in DummyProducts)
+            {
                 subtotalProducts += product.Price;
+            }
 
             // For orders over 200 RON, a fixed delivery fee of 13.99 will be added
             // (this is only for orders of new, used or borrowed products)
-
             Subtotal = subtotalProducts;
-            if (subtotalProducts >= 200 || dummyProducts[0].ProductType == "refill" || dummyProducts[0].ProductType == "bid")
+            if (subtotalProducts >= 200 || DummyProducts[0].ProductType == "refill" || DummyProducts[0].ProductType == "bid")
+            {
                 Total = subtotalProducts;
+            }
             else
             {
                 Total = subtotalProducts + 13.99f;
                 DeliveryFee = 13.99f;
             }
-
         }
 
         public async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
@@ -192,31 +185,36 @@ namespace ArtAttack.ViewModel
             return await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
         }
 
-
         public async Task ApplyBorrowedTax(DummyProduct dummyProduct)
         {
             if (dummyProduct == null || dummyProduct.ProductType != "borrowed")
+            {
                 return;
+            }
             if (StartDate > EndDate)
+            {
                 return;
+            }
             int monthsBorrowed = ((EndDate.Year - StartDate.Year) * 12) + EndDate.Month - StartDate.Month;
             if (monthsBorrowed <= 0)
+            {
                 monthsBorrowed = 1;
+            }
 
             float warrantyTaxAmount = 0.2f;
 
             float finalPrice = dummyProduct.Price * monthsBorrowed;
 
-            _warrantyTax += finalPrice * warrantyTaxAmount;
+            warrantyTax += finalPrice * warrantyTaxAmount;
 
-            WarrantyTax = _warrantyTax;
+            WarrantyTax = warrantyTax;
 
             dummyProduct.Price = finalPrice;
 
             CalculateOrderTotal(orderHistoryID);
 
-            DateTime newStartDate = _startDate.Date;
-            DateTime newEndDate = _endDate.Date;
+            DateTime newStartDate = startDate.Date;
+            DateTime newEndDate = endDate.Date;
 
             dummyProduct.StartDate = newStartDate;
             dummyProduct.EndDate = newEndDate;
@@ -226,119 +224,172 @@ namespace ArtAttack.ViewModel
 
         internal void UpdateStartDate(DateTimeOffset date)
         {
-            _startDate = date.DateTime;
+            startDate = date.DateTime;
             StartDate = date.DateTime;
         }
 
         internal void UpdateEndDate(DateTimeOffset date)
         {
-            _endDate = date.DateTime;
+            endDate = date.DateTime;
             EndDate = date.DateTime;
         }
 
         public string SelectedPaymentMethod
         {
-            get => _selectedPaymentMethod;
+            get => selectedPaymentMethod;
             set
             {
-                _selectedPaymentMethod = value;
+                selectedPaymentMethod = value;
                 OnPropertyChanged(nameof(SelectedPaymentMethod));
             }
         }
 
         public string FullName
         {
-            get => _fullName;
-            set { _fullName = value; OnPropertyChanged(nameof(FullName)); }
+            get => fullName;
+            set
+            {
+                fullName = value;
+                OnPropertyChanged(nameof(FullName));
+            }
         }
 
         public string Email
         {
-            get => _email;
-            set { _email = value; OnPropertyChanged(nameof(Email)); }
+            get => email;
+            set
+            {
+                email = value;
+                OnPropertyChanged(nameof(Email));
+            }
         }
 
         public string PhoneNumber
         {
-            get => _phoneNumber;
-            set { _phoneNumber = value; OnPropertyChanged(nameof(PhoneNumber)); }
+            get => phoneNumber;
+            set
+            {
+                phoneNumber = value;
+                OnPropertyChanged(nameof(PhoneNumber));
+            }
         }
         public string Address
         {
-            get => _address;
-            set { _address = value; OnPropertyChanged(nameof(Address)); }
+            get => address;
+            set
+            {
+                address = value;
+                OnPropertyChanged(nameof(Address));
+            }
         }
 
         public string ZipCode
         {
-            get => _zipCode;
-            set { _zipCode = value; OnPropertyChanged(nameof(ZipCode)); }
+            get => zipCode;
+            set
+            {
+                zipCode = value;
+                OnPropertyChanged(nameof(ZipCode));
+            }
         }
 
         public string AdditionalInfo
         {
-            get => _additionalInfo;
-            set { _additionalInfo = value; OnPropertyChanged(nameof(AdditionalInfo)); }
+            get => additionalInfo;
+            set
+            {
+                additionalInfo = value;
+                OnPropertyChanged(nameof(AdditionalInfo));
+            }
         }
 
         public bool IsWalletEnabled
         {
-            get => _isWalletEnabled;
-            set { _isWalletEnabled = value; OnPropertyChanged(nameof(IsWalletEnabled)); }
+            get => isWalletEnabled;
+            set
+            {
+                isWalletEnabled = value;
+                OnPropertyChanged(nameof(IsWalletEnabled));
+            }
         }
 
         public bool IsCashEnabled
         {
-            get => _isCashEnabled;
-            set { _isCashEnabled = value; OnPropertyChanged(nameof(IsCashEnabled)); }
+            get => isCashEnabled;
+            set
+            {
+                isCashEnabled = value;
+                OnPropertyChanged(nameof(IsCashEnabled));
+            }
         }
 
         public bool IsCardEnabled
         {
-            get => _isCardEnabled;
-            set { _isCardEnabled = value; OnPropertyChanged(nameof(IsCardEnabled)); }
+            get => isCardEnabled;
+            set
+            {
+                isCardEnabled = value;
+                OnPropertyChanged(nameof(IsCardEnabled));
+            }
         }
 
         public float Subtotal
         {
-            get => _subtotal;
-            set { _subtotal = value; OnPropertyChanged(nameof(Subtotal)); }
+            get => subtotal;
+            set
+            {
+                subtotal = value;
+                OnPropertyChanged(nameof(Subtotal));
+            }
         }
 
         public float DeliveryFee
         {
-            get => _deliveryFee;
-            set { _deliveryFee = value; OnPropertyChanged(nameof(DeliveryFee)); }
+            get => deliveryFee;
+            set
+            {
+                deliveryFee = value;
+                OnPropertyChanged(nameof(DeliveryFee));
+            }
         }
 
         public float Total
         {
-            get => _total;
-            set { _total = value; OnPropertyChanged(nameof(Total)); }
+            get => total;
+            set
+            {
+                total = value;
+                OnPropertyChanged(nameof(Total));
+            }
         }
         public float WarrantyTax
         {
-            get => _warrantyTax;
-            set { _warrantyTax = value; OnPropertyChanged(nameof(_warrantyTax)); }
+            get => warrantyTax;
+            set
+            {
+                warrantyTax = value;
+                OnPropertyChanged(nameof(warrantyTax));
+            }
         }
 
         public DateTime StartDate
         {
-            get => _startDate;
-            set { 
-                _startDate = value; OnPropertyChanged(nameof(StartDate));
+            get => startDate;
+            set
+            {
+                startDate = value;
+                OnPropertyChanged(nameof(StartDate));
             }
         }
 
         public DateTime EndDate
         {
-            get => _endDate;
+            get => endDate;
             set
             {
-                _endDate = value; OnPropertyChanged(nameof(EndDate));
+                endDate = value;
+                OnPropertyChanged(nameof(EndDate));
             }
         }
-
-
     }
 }

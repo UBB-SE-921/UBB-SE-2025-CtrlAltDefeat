@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.ViewModel
 {
     [TestClass]
     public class ContractRenewViewModelTests
@@ -81,9 +81,23 @@ namespace ArtAttack.Tests
                 .ReturnsAsync(productDetails);
         }
 
+        // In ContractRenewViewModelTests.cs
+
+        // Field name changes:
+        // Change _contractModel to contractModel
+        // Change _renewalModel to renewalModel
+        // Change _notificationAdapter to notificationAdapter
+
+        // Example update:
         private void SetPrivateField(object instance, string fieldName, object value)
         {
-            var fieldInfo = instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            // Update field names to match the refactored class
+            string actualFieldName = fieldName;
+            if (fieldName == "_contractModel") actualFieldName = "contractModel";
+            if (fieldName == "_renewalModel") actualFieldName = "renewalModel";
+            if (fieldName == "_notificationAdapter") actualFieldName = "notificationAdapter";
+
+            var fieldInfo = instance.GetType().GetField(actualFieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             fieldInfo?.SetValue(instance, value);
         }
 
@@ -208,7 +222,7 @@ namespace ArtAttack.Tests
         }
 
         [TestMethod]
-        public void CanSellerApproveRenewal_WhenRenewalCountOne_ShouldReturnFalse()
+            public void CanSellerApproveRenewal_WhenRenewalCountOne_ShouldReturnFalse()
         {
             // Act
             bool result = _viewModel.CanSellerApproveRenewal(1);
@@ -638,7 +652,7 @@ namespace ArtAttack.Tests
             var mockParameter = new Mock<SqlParameter>();
 
             // Setup for ExecuteScalarAsync to return a value
-            mockCommand.Setup(c => c.ExecuteScalarAsync(It.IsAny<System.Threading.CancellationToken>()))
+            mockCommand.Setup(c => c.ExecuteScalarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(42); // Mock PDF ID return value
 
             // Setup the command parameters
@@ -655,7 +669,7 @@ namespace ArtAttack.Tests
                 byte[] testPdf = new byte[] { 1, 2, 3, 4, 5 };
 
                 // Invoke the method (but this will try to use a real connection)
-                var result = await Task.FromResult((int)InvokePrivateMethod<int>(_viewModel, "InsertPdfAsync", testPdf));
+                var result = await Task.FromResult(InvokePrivateMethod<int>(_viewModel, "InsertPdfAsync", testPdf));
 
                 // If we somehow get here without an exception, verify the result
                 Assert.IsTrue(result > 0);
@@ -828,9 +842,9 @@ namespace ArtAttack.Tests
                 Assert.AreEqual(3, capturedNotifications.Count);
 
                 // Verify notification recipients
-                var buyerNotification = capturedNotifications.FirstOrDefault(n => n.getRecipientID() == 42);
-                var sellerNotification = capturedNotifications.FirstOrDefault(n => n.getRecipientID() == 123);
-                var waitlistNotification = capturedNotifications.FirstOrDefault(n => n.getRecipientID() == 999);
+                var buyerNotification = capturedNotifications.FirstOrDefault(n => n.RecipientID == 42);
+                var sellerNotification = capturedNotifications.FirstOrDefault(n => n.RecipientID == 123);
+                var waitlistNotification = capturedNotifications.FirstOrDefault(n => n.RecipientID == 999);
 
                 Assert.IsNotNull(buyerNotification);
                 Assert.IsNotNull(sellerNotification);
