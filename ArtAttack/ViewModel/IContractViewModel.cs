@@ -1,13 +1,12 @@
-﻿using ArtAttack.Domain;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
 
 namespace ArtAttack.ViewModel
 {
     public interface IContractViewModel
     {
-        //ADD HERE
         Task<IContract> GetContractByIdAsync(long contractId);
         Task<List<IContract>> GetAllContractsAsync();
         Task<List<IContract>> GetContractHistoryAsync(long contractId);

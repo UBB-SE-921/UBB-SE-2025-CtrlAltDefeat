@@ -28,14 +28,14 @@ namespace ArtAttack
                 await ViewModel.LoadNotificationsAsync(CurrentUserId);
             }
         }
-        private async void notificationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void NotificationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (notificationList.SelectedItem is Notification selectedNotification)
             {
                 var secondaryWindow = new SecondaryNotificationWindow(selectedNotification);
                 secondaryWindow.Activate();
 
-                await ViewModel.MarkAsReadAsync(selectedNotification.getNotificationID());
+                await ViewModel.MarkAsReadAsync(selectedNotification.NotificationID);
 
                 notificationList.SelectedItem = null;
             }
@@ -44,7 +44,7 @@ namespace ArtAttack
         }
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            //Need to create main Window and activate it;
+            // Need to create main Window and activate it;
             this.Close();
         }
     }

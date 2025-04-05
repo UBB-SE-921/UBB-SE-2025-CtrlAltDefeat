@@ -17,10 +17,9 @@ namespace ArtAttack
             DataContext = viewModel;
         }
 
-        private void onContinueShopping_Clicked(object sender, RoutedEventArgs e)
+        private void OnContinueShopping_Clicked(object sender, RoutedEventArgs e)
         {
             viewModel.HandleFinish();
         }
-
     }
 }

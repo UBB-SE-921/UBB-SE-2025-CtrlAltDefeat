@@ -1,9 +1,9 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using ArtAttack.Model;
 
 namespace ArtAttack.ViewModel
 {
@@ -51,7 +51,7 @@ namespace ArtAttack.ViewModel
             try
             {
                 int returnedID = await model.AddTrackedOrderAsync(trackedOrder);
-                OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
+                OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration.CONNECTION_STRING);
                 try
                 {
                     Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
@@ -61,7 +61,6 @@ namespace ArtAttack.ViewModel
                 }
                 catch (Exception)
                 {
-                    //throw new Exception("Notification could not be sent");
                 }
                 return returnedID;
             }
@@ -69,7 +68,6 @@ namespace ArtAttack.ViewModel
             {
                 throw new Exception("Error adding TrackedOrder\n" + ex.ToString());
             }
-
         }
 
         public async Task<int> AddOrderCheckpointAsync(OrderCheckpoint checkpoint)
@@ -83,7 +81,7 @@ namespace ArtAttack.ViewModel
                 {
                     try
                     {
-                        OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
+                        OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration.CONNECTION_STRING);
                         Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
                         NotificationViewModel buyerNotificationViewModel = new NotificationViewModel(order.BuyerID);
                         Notification placedOrderNotification = new OrderShippingProgressNotification(order.BuyerID, DateTime.Now, trackedOrder.TrackedOrderID, trackedOrder.CurrentStatus.ToString(), trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));
@@ -91,7 +89,6 @@ namespace ArtAttack.ViewModel
                     }
                     catch (Exception)
                     {
-                        //throw new Exception("Notification could not be sent");
                     }
                 }
                 return returnedID;
@@ -117,7 +114,6 @@ namespace ArtAttack.ViewModel
             {
                 throw new Exception("Error updating OrderCheckpoint\n" + ex.ToString());
             }
-
         }
 
         public async Task UpdateTrackedOrderAsync(int trackedOrderID, DateOnly estimatedDeliveryDate, OrderStatus currentStatus)
@@ -130,7 +126,7 @@ namespace ArtAttack.ViewModel
                 {
                     try
                     {
-                        OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration._CONNECTION_STRING_);
+                        OrderViewModel orderViewModel = new OrderViewModel(Shared.Configuration.CONNECTION_STRING);
                         Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
                         NotificationViewModel buyerNotificationViewModel = new NotificationViewModel(order.BuyerID);
                         Notification placedOrderNotification = new OrderShippingProgressNotification(order.BuyerID, DateTime.Now, trackedOrder.TrackedOrderID, trackedOrder.CurrentStatus.ToString(), trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));
@@ -138,7 +134,6 @@ namespace ArtAttack.ViewModel
                     }
                     catch (Exception)
                     {
-                        //throw new Exception("Notification could not be sent");
                     }
                 }
             }
@@ -152,7 +147,9 @@ namespace ArtAttack.ViewModel
         {
             int initialNrOfCheckpoints = await GetNumberOfCheckpoints(order);
             if (initialNrOfCheckpoints <= 1)
+            {
                 throw new Exception("Cannot revert further");
+            }
 
             var lastCheckpoint = await GetLastCheckpoint(order);
             if (lastCheckpoint != null)
@@ -163,13 +160,16 @@ namespace ArtAttack.ViewModel
                 {
                     OrderCheckpoint newLastCheckpoint = (OrderCheckpoint)await GetLastCheckpoint(order);
                     await UpdateTrackedOrderAsync(order.TrackedOrderID, order.EstimatedDeliveryDate, newLastCheckpoint.Status);
-
                 }
                 else
+                {
                     throw new Exception("Unexpected error when trying to delete the current checkpoint");
+                }
             }
             else
+            {
                 throw new Exception("Unexpected error when trying to revert to the previous checkpoint");
+            }
         }
 
         public async Task<OrderCheckpoint?> GetLastCheckpoint(TrackedOrder order)

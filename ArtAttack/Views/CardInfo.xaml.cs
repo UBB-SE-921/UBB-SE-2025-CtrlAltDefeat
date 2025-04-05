@@ -14,14 +14,12 @@ namespace ArtAttack
             viewModel = new CardInfoViewModel(orderHistoryID);
             DataContext = viewModel;
         }
-        private async void onPayButtonClickedAsync(object sender, RoutedEventArgs e)
+        private async void OnPayButtonClickedAsync(object sender, RoutedEventArgs e)
         {
             if (DataContext is CardInfoViewModel viewModel)
             {
-                await viewModel.onPayButtonClickedAsync();
-
+                await viewModel.OnPayButtonClickedAsync();
             }
         }
-
     }
 }

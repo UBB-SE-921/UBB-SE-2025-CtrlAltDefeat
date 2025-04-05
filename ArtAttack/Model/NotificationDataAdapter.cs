@@ -1,25 +1,25 @@
-using ArtAttack.Domain;
-using ArtAttack.Model;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using ArtAttack.Domain;
+using ArtAttack.Model;
+using Microsoft.Data.SqlClient;
 
 public class NotificationDataAdapter : IDisposable
 {
-    private SqlConnection _connection;
+    private SqlConnection connection;
 
     public NotificationDataAdapter(string connectionString)
     {
-        _connection = new SqlConnection(connectionString);
-        _connection.Open();
+        connection = new SqlConnection(connectionString);
+        connection.Open();
     }
 
     public List<Notification> GetNotificationsForUser(int recipientId)
     {
         var notifications = new List<Notification>();
 
-        SqlCommand command = new SqlCommand("GetNotificationsByRecipient", _connection);
+        SqlCommand command = new SqlCommand("GetNotificationsByRecipient", connection);
         command.CommandType = CommandType.StoredProcedure;
 
         command.Parameters.AddWithValue("@RecipientId", recipientId);
@@ -35,7 +35,7 @@ public class NotificationDataAdapter : IDisposable
 
     public void MarkAsRead(int notificationId)
     {
-        using (var command = new SqlCommand("MarkNotificationAsRead", _connection))
+        using (var command = new SqlCommand("MarkNotificationAsRead", connection))
         {
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@notificationID", notificationId);
@@ -44,58 +44,57 @@ public class NotificationDataAdapter : IDisposable
         }
     }
 
-
     public void AddNotification(Notification notification)
     {
-        using (var command = new SqlCommand("AddNotification", _connection))
+        using (var command = new SqlCommand("AddNotification", connection))
         {
             command.CommandType = CommandType.StoredProcedure;
 
             // Common parameters
-            command.Parameters.AddWithValue("@recipientID", notification.getRecipientID());
-            command.Parameters.AddWithValue("@category", notification.getCategory().ToString());
+            command.Parameters.AddWithValue("@recipientID", notification.RecipientID);
+            command.Parameters.AddWithValue("@category", notification.RecipientID.ToString());
 
             switch (notification)
             {
                 case ContractRenewalAnswerNotification ans:
-                    command.Parameters.AddWithValue("@contractID", ans.getContractID());
-                    command.Parameters.AddWithValue("@isAccepted", ans.getIsAccepted());
+                    command.Parameters.AddWithValue("@contractID", ans.GetContractID());
+                    command.Parameters.AddWithValue("@isAccepted", ans.GetIsAccepted());
                     break;
 
                 case ContractRenewalWaitlistNotification waitlist:
-                    command.Parameters.AddWithValue("@productID", waitlist.getProductID());
+                    command.Parameters.AddWithValue("@productID", waitlist.GetProductID());
                     break;
 
                 case OutbiddedNotification outbid:
-                    command.Parameters.AddWithValue("@productID", outbid.getProductID());
+                    command.Parameters.AddWithValue("@productID", outbid.GetProductID());
                     break;
 
                 case OrderShippingProgressNotification shipping:
-                    command.Parameters.AddWithValue("@orderID", shipping.getOrderID());
-                    command.Parameters.AddWithValue("@shippingState", shipping.getShippingState());
-                    command.Parameters.AddWithValue("@deliveryDate", shipping.getDeliveryDate());
+                    command.Parameters.AddWithValue("@orderID", shipping.GetOrderID());
+                    command.Parameters.AddWithValue("@shippingState", shipping.GetShippingState());
+                    command.Parameters.AddWithValue("@deliveryDate", shipping.GetDeliveryDate());
                     break;
 
                 case PaymentConfirmationNotification payment:
-                    command.Parameters.AddWithValue("@orderID", payment.getOrderID());
-                    command.Parameters.AddWithValue("@productID", payment.getProductID());
+                    command.Parameters.AddWithValue("@orderID", payment.GetOrderID());
+                    command.Parameters.AddWithValue("@productID", payment.GetProductID());
                     break;
 
                 case ProductRemovedNotification removed:
-                    command.Parameters.AddWithValue("@productID", removed.getProductID());
+                    command.Parameters.AddWithValue("@productID", removed.GetProductID());
                     break;
 
                 case ProductAvailableNotification available:
-                    command.Parameters.AddWithValue("@productID", available.getProductID());
+                    command.Parameters.AddWithValue("@productID", available.GetProductID());
                     break;
 
                 case ContractRenewalRequestNotification request:
-                    command.Parameters.AddWithValue("@contractID", request.getContractID());
+                    command.Parameters.AddWithValue("@contractID", request.GetContractID());
                     break;
 
                 case ContractExpirationNotification expiration:
-                    command.Parameters.AddWithValue("@contractID", expiration.getContractID());
-                    command.Parameters.AddWithValue("@expirationDate", expiration.getContractID());
+                    command.Parameters.AddWithValue("@contractID", expiration.GetContractID());
+                    command.Parameters.AddWithValue("@expirationDate", expiration.GetContractID());
                     break;
 
                 default:
@@ -104,8 +103,10 @@ public class NotificationDataAdapter : IDisposable
 
             SetNullParametersForUnusedFields(command, notification);
 
-            if (_connection.State != ConnectionState.Open)
-                _connection.Open();
+            if (connection.State != ConnectionState.Open)
+            {
+                connection.Open();
+            }
 
             command.ExecuteNonQuery();
         }
@@ -113,8 +114,7 @@ public class NotificationDataAdapter : IDisposable
 
     private void SetNullParametersForUnusedFields(SqlCommand command, Notification notification)
     {
-        var allParams = new[] { "@contractID", "@isAccepted", "@productID", "@orderID",
-                          "@shippingState", "@deliveryDate", "@expirationDate" };
+        var allParams = new[] { "@contractID", "@isAccepted", "@productID", "@orderID", "@shippingState", "@deliveryDate", "@expirationDate" };
 
         foreach (var param in allParams)
         {
@@ -127,7 +127,7 @@ public class NotificationDataAdapter : IDisposable
 
     public void Dispose()
     {
-        _connection?.Close();
-        _connection?.Dispose();
+        connection?.Close();
+        connection?.Dispose();
     }
 }

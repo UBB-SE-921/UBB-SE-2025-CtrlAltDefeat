@@ -39,7 +39,7 @@
                       Width="Auto"
                       Margin="80,0,0,0">
                 <ListView x:Name="notificationList" 
-                          SelectionChanged="notificationList_SelectionChanged"
+                          SelectionChanged="NotificationList_SelectionChanged"
                          ItemsSource="{Binding Notifications}"
                          SelectionMode="Single"
                          Margin="0,0,140,0">

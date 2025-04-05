@@ -75,8 +75,8 @@ namespace ArtAttack.Tests
             int waitListProductId = 101;
             var expectedUsers = new List<UserWaitList>
             {
-                new UserWaitList { userID = 1, productWaitListID = waitListProductId, positionInQueue = 1 },
-                new UserWaitList { userID = 2, productWaitListID = waitListProductId, positionInQueue = 2 }
+                new UserWaitList { UserID = 1, ProductWaitListID = waitListProductId, PositionInQueue = 1 },
+                new UserWaitList { UserID = 2, ProductWaitListID = waitListProductId, PositionInQueue = 2 }
             };
 
             _mockWaitListModel.Setup(m => m.GetUsersInWaitlist(waitListProductId))
@@ -89,9 +89,9 @@ namespace ArtAttack.Tests
             Assert.AreEqual(expectedUsers.Count, result.Count);
             for (int i = 0; i < expectedUsers.Count; i++)
             {
-                Assert.AreEqual(expectedUsers[i].userID, result[i].userID);
-                Assert.AreEqual(expectedUsers[i].productWaitListID, result[i].productWaitListID);
-                Assert.AreEqual(expectedUsers[i].positionInQueue, result[i].positionInQueue);
+                Assert.AreEqual(expectedUsers[i].UserID, result[i].UserID);
+                Assert.AreEqual(expectedUsers[i].ProductWaitListID, result[i].ProductWaitListID);
+                Assert.AreEqual(expectedUsers[i].PositionInQueue, result[i].PositionInQueue);
             }
             _mockWaitListModel.Verify(m => m.GetUsersInWaitlist(waitListProductId), Times.Once);
         }
@@ -103,8 +103,8 @@ namespace ArtAttack.Tests
             int userId = 42;
             var expectedWaitlists = new List<UserWaitList>
             {
-                new UserWaitList { userID = userId, productWaitListID = 101, positionInQueue = 1 },
-                new UserWaitList { userID = userId, productWaitListID = 102, positionInQueue = 3 }
+                new UserWaitList { UserID = userId, ProductWaitListID = 101, PositionInQueue = 1 },
+                new UserWaitList { UserID = userId, ProductWaitListID = 102, PositionInQueue = 3 }
             };
 
             _mockWaitListModel.Setup(m => m.GetUserWaitlists(userId))
@@ -117,9 +117,9 @@ namespace ArtAttack.Tests
             Assert.AreEqual(expectedWaitlists.Count, result.Count);
             for (int i = 0; i < expectedWaitlists.Count; i++)
             {
-                Assert.AreEqual(expectedWaitlists[i].userID, result[i].userID);
-                Assert.AreEqual(expectedWaitlists[i].productWaitListID, result[i].productWaitListID);
-                Assert.AreEqual(expectedWaitlists[i].positionInQueue, result[i].positionInQueue);
+                Assert.AreEqual(expectedWaitlists[i].UserID, result[i].UserID);
+                Assert.AreEqual(expectedWaitlists[i].ProductWaitListID, result[i].ProductWaitListID);
+                Assert.AreEqual(expectedWaitlists[i].PositionInQueue, result[i].PositionInQueue);
             }
             _mockWaitListModel.Verify(m => m.GetUserWaitlists(userId), Times.Once);
         }

@@ -147,13 +147,19 @@ namespace ArtAttack.Shared
         public static IDbDataParameter AddWithValue(this IDataParameterCollection parameters, string parameterName, object value)
         {
             if (parameters == null)
+            {
                 throw new ArgumentNullException(nameof(parameters));
+            }
 
             if (parameterName == null)
+            {
                 throw new ArgumentNullException(nameof(parameterName));
+            }
 
             if (parameterName.Length == 0)
+            {
                 throw new ArgumentException("Parameter name cannot be empty", nameof(parameterName));
+            }
 
             // Handle SQL Server parameter collection natively
             if (parameters is SqlParameterCollection sqlParameters)
@@ -202,7 +208,10 @@ namespace ArtAttack.Shared
                             field.Name == "_command")
                         {
                             command = field.GetValue(parameters);
-                            if (command != null) break;
+                            if (command != null)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -233,7 +242,6 @@ namespace ArtAttack.Shared
             return genericParam;
         }
 
-
         /// <summary>
         /// A generic implementation of IDbDataParameter for testing purposes
         /// </summary>
@@ -250,6 +258,5 @@ namespace ArtAttack.Shared
             public byte Scale { get; set; }
             public int Size { get; set; }
         }
-
     }
 }

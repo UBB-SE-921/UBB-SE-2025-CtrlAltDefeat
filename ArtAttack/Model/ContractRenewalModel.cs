@@ -1,15 +1,15 @@
-﻿using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.Model
 {
     public class ContractRenewalModel : IContractRenewalModel
     {
-        private readonly string _connectionString;
+        private readonly string connectionString;
 
         /// <summary>
         /// Initializes a new instance of the ContractRenewalModel class.
@@ -17,7 +17,7 @@ namespace ArtAttack.Model
         /// <param name="connectionString" >The connection string to the database.</param>
         public ContractRenewalModel(string connectionString)
         {
-            _connectionString = connectionString;
+            this.connectionString = connectionString;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace ArtAttack.Model
         /// <returns >A task representing the asynchronous operation.</returns>
         public async Task AddRenewedContractAsync(IContract contract, byte[] pdfFile)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand("AddRenewedContract", connection))
                 {
@@ -54,15 +54,15 @@ namespace ArtAttack.Model
         }
 
         /// <summary>
-        /// Asynchronously checks whether a contract has already been renewed by verifying 
-        /// if there exists any contract in the database with the given contract ID 
+        /// Asynchronously checks whether a contract has already been renewed by verifying
+        /// if there exists any contract in the database with the given contract ID
         /// as its RenewedFromContractID.
         /// </summary>
         /// <param name="contractId" >The ID of the contract to check.</param>
         /// <returns >A task representing the asynchronous operation. The task result is true if the contract has been renewed; otherwise, false.</returns>
         public async Task<bool> HasContractBeenRenewedAsync(long contractId)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 const string query = "SELECT COUNT(*) FROM Contract WHERE RenewedFromContractID = @ContractID";
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -82,11 +82,8 @@ namespace ArtAttack.Model
         public async Task<List<IContract>> GetRenewedContractsAsync()
         {
             var contracts = new List<IContract>();
-<<<<<<< HEAD
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-=======
-            using (SqlConnection connection = new SqlConnection(_connectionString))
->>>>>>> dca4db32a07f838e24cde235cfc533b44427b396
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand("GetRenewedContracts", connection))
                 {

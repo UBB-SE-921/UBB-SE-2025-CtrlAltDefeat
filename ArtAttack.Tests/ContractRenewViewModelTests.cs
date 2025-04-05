@@ -828,9 +828,9 @@ namespace ArtAttack.Tests
                 Assert.AreEqual(3, capturedNotifications.Count);
 
                 // Verify notification recipients
-                var buyerNotification = capturedNotifications.FirstOrDefault(n => n.getRecipientID() == 42);
-                var sellerNotification = capturedNotifications.FirstOrDefault(n => n.getRecipientID() == 123);
-                var waitlistNotification = capturedNotifications.FirstOrDefault(n => n.getRecipientID() == 999);
+                var buyerNotification = capturedNotifications.FirstOrDefault(n => n.GetRecipientID() == 42);
+                var sellerNotification = capturedNotifications.FirstOrDefault(n => n.GetRecipientID() == 123);
+                var waitlistNotification = capturedNotifications.FirstOrDefault(n => n.GetRecipientID() == 999);
 
                 Assert.IsNotNull(buyerNotification);
                 Assert.IsNotNull(sellerNotification);

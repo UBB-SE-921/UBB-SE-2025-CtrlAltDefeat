@@ -1,15 +1,13 @@
-﻿using ArtAttack.Domain;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
 
 namespace ArtAttack.ViewModel
 {
-    interface ICardInfoViewModel
+    internal interface ICardInfoViewModel
     {
         Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID);
 
         Task ProcessCardPaymentAsync();
-
-
     }
 }

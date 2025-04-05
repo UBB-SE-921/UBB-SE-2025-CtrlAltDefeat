@@ -1,12 +1,12 @@
-﻿using ArtAttack.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using ArtAttack.Domain;
 using ArtAttack.Model;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.System;
 
@@ -14,7 +14,7 @@ namespace ArtAttack.ViewModel
 {
     public class ContractViewModel : IContractViewModel
     {
-        private readonly IContractModel _model;
+        private readonly IContractModel model;
 
         /// <summary>
         /// Constructor for the ContractViewModel
@@ -22,7 +22,7 @@ namespace ArtAttack.ViewModel
         /// <param name="connectionString" type="string">The connection string to the database</param>
         public ContractViewModel(string connectionString)
         {
-            _model = new ContractModel(connectionString);
+            model = new ContractModel(connectionString);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace ArtAttack.ViewModel
         /// <returns The contract with the given ID></returns>
         public async Task<IContract> GetContractByIdAsync(long contractId)
         {
-            return await _model.GetContractByIdAsync(contractId);
+            return await model.GetContractByIdAsync(contractId);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace ArtAttack.ViewModel
         /// <returns The list of contracts></returns>
         public async Task<List<IContract>> GetAllContractsAsync()
         {
-            return await _model.GetAllContractsAsync();
+            return await model.GetAllContractsAsync();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace ArtAttack.ViewModel
         /// <returns The list of contracts that are related to the given contract></returns>
         public async Task<List<IContract>> GetContractHistoryAsync(long contractId)
         {
-            return await _model.GetContractHistoryAsync(contractId);
+            return await model.GetContractHistoryAsync(contractId);
         }
 
         /// <summary>
@@ -59,10 +59,10 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contract" type="Contract">The contract to add</param>
         /// <param name="pdfFile" type="byte[]">The PDF file of the contract</param>
-        /// <returns The added contract></returns>  
+        /// <returns The added contract></returns>
         public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
-            return await _model.AddContractAsync(contract, pdfFile);
+            return await model.AddContractAsync(contract, pdfFile);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace ArtAttack.ViewModel
         /// <returns The ID and name of the seller></returns>
         public async Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId)
         {
-            return await _model.GetContractSellerAsync(contractId);
+            return await model.GetContractSellerAsync(contractId);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace ArtAttack.ViewModel
         /// <returns The ID and name of the buyer></returns>
         public async Task<(int BuyerID, string BuyerName)> GetContractBuyerAsync(long contractId)
         {
-            return await _model.GetContractBuyerAsync(contractId);
+            return await model.GetContractBuyerAsync(contractId);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace ArtAttack.ViewModel
         /// <returns The order summary information></returns>
         public async Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId)
         {
-            return await _model.GetOrderSummaryInformationAsync(contractId);
+            return await model.GetOrderSummaryInformationAsync(contractId);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ArtAttack.ViewModel
         /// <returns The product details></returns>
         public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
-            return await _model.GetProductDetailsByContractIdAsync(contractId);
+            return await model.GetProductDetailsByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace ArtAttack.ViewModel
         /// <returns The list of contracts of the buyer></returns>
         public async Task<List<IContract>> GetContractsByBuyerAsync(int buyerId)
         {
-            return await _model.GetContractsByBuyerAsync(buyerId);
+            return await model.GetContractsByBuyerAsync(buyerId);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace ArtAttack.ViewModel
         /// <returns The predefined contract with the given type></returns>
         public async Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
-            return await _model.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
+            return await model.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace ArtAttack.ViewModel
         /// <returns The payment method and order date></returns>
         public async Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
-            return await _model.GetOrderDetailsAsync(contractId);
+            return await model.GetOrderDetailsAsync(contractId);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace ArtAttack.ViewModel
         /// <returns The delivery date></returns>
         public async Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId)
         {
-            return await _model.GetDeliveryDateByContractIdAsync(contractId);
+            return await model.GetDeliveryDateByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace ArtAttack.ViewModel
         /// <returns The PDF of the contract></returns>
         public async Task<byte[]> GetPdfByContractIdAsync(long contractId)
         {
-            return await _model.GetPdfByContractIdAsync(contractId);
+            return await model.GetPdfByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -163,16 +163,20 @@ namespace ArtAttack.ViewModel
         /// <param name="fieldReplacements" type="Dictionary<string, string>">The field replacements for the contract</param>
         /// <returns The task></returns>
         /// <exception cref="ArgumentNullException" throws on="contract == null">Thrown when the contract is null</exception>
-        private byte[] _GenerateContractPdf(
+        private byte[] GenerateContractPdf(
                 IContract contract,
                 IPredefinedContract predefinedContract,
                 Dictionary<string, string> fieldReplacements)
         {
             // Validate inputs.
             if (contract == null)
+            {
                 throw new ArgumentNullException(nameof(contract));
+            }
             if (predefinedContract == null)
+            {
                 throw new ArgumentNullException(nameof(predefinedContract));
+            }
 
             // Ensure fieldReplacements is not null.
             fieldReplacements ??= new Dictionary<string, string>();
@@ -231,10 +235,9 @@ namespace ArtAttack.ViewModel
                             {
                                 column.Item()
                                       .Text(content);
-                                //.TextAlignment(TextAlignment.Justify);
+                                // .TextAlignment(TextAlignment.Justify);
                             });
                     });
-
 
                     // Footer section with generation date and page numbers.
                     page.Footer().Element(footer =>
@@ -264,9 +267,7 @@ namespace ArtAttack.ViewModel
                                        text.Span(" of ");
                                        text.TotalPages();
                                    });
-
                             }));
-
                     });
                 });
             });
@@ -280,7 +281,7 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contract" type="Contract">The contract to get the field replacements for</param>
         /// <returns The field replacements></returns>
-        private async Task<Dictionary<string, string>> _GetFieldReplacements(IContract contract)
+        private async Task<Dictionary<string, string>> GetFieldReplacements(IContract contract)
         {
             var fieldReplacements = new Dictionary<string, string>();
 
@@ -294,21 +295,21 @@ namespace ArtAttack.ViewModel
 
             if (productDetails.HasValue)
             {
-                DateTime StartDate = productDetails.Value.StartDate;
-                DateTime EndDate = productDetails.Value.EndDate;
-                var LoanPeriod = (EndDate - StartDate).TotalDays;
+                DateTime startDate = productDetails.Value.StartDate;
+                DateTime endDate = productDetails.Value.EndDate;
+                var loanPeriod = (endDate - startDate).TotalDays;
 
-                fieldReplacements["StartDate"] = StartDate.ToShortDateString();
-                fieldReplacements["EndDate"] = EndDate.ToShortDateString();
-                fieldReplacements["LoanPeriod"] = LoanPeriod.ToString();
+                fieldReplacements["StartDate"] = startDate.ToShortDateString();
+                fieldReplacements["EndDate"] = endDate.ToShortDateString();
+                fieldReplacements["LoanPeriod"] = loanPeriod.ToString();
                 fieldReplacements["ProductDescription"] = productDetails.Value.name;
                 fieldReplacements["Price"] = productDetails.Value.price.ToString();
                 fieldReplacements["BuyerName"] = buyerDetails.BuyerName;
                 fieldReplacements["SellerName"] = sellerDetails.SellerName;
                 fieldReplacements["PaymentMethod"] = orderDetails.PaymentMethod;
-                fieldReplacements["AgreementDate"] = StartDate.ToShortDateString();
+                fieldReplacements["AgreementDate"] = startDate.ToShortDateString();
                 fieldReplacements["LateFee"] = orderSummaryData["warrantyTax"].ToString();
-                fieldReplacements["DueDate"] = EndDate.ToShortDateString();
+                fieldReplacements["DueDate"] = endDate.ToShortDateString();
             }
             else
             {
@@ -336,14 +337,12 @@ namespace ArtAttack.ViewModel
         /// <returns The task></returns>
         public async Task GenerateAndSaveContractAsync(IContract contract, PredefinedContractType contractType)
         {
-
             var predefinedContract = await GetPredefinedContractByPredefineContractTypeAsync(contractType);
 
-
-            var fieldReplacements = await _GetFieldReplacements(contract);
+            var fieldReplacements = await GetFieldReplacements(contract);
 
             // Generate the PDF (synchronously) using the generated replacements.
-            var pdfBytes = _GenerateContractPdf(contract, predefinedContract, fieldReplacements);
+            var pdfBytes = GenerateContractPdf(contract, predefinedContract, fieldReplacements);
 
             // Determine the Downloads folder path.
             string downloadsPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
@@ -367,17 +366,16 @@ namespace ArtAttack.ViewModel
         /// <exception cref="Exception" throws on="File already exists">Thrown when the file already exists</exception>
         public async Task GeneratePDFAndAddContract(IContract contract, PredefinedContractType contractType)
         {
-            if(await GetPdfByContractIdAsync(contract.ContractID) != null)
+            if (await GetPdfByContractIdAsync(contract.ContractID) != null)
             {
                 throw new Exception("File already exists");
             }
 
             var predefinedContract = await GetPredefinedContractByPredefineContractTypeAsync(contractType);
 
+            var fieldReplacements = await GetFieldReplacements(contract);
 
-            var fieldReplacements = await _GetFieldReplacements(contract);
-
-            var pdfBytes = _GenerateContractPdf(contract, predefinedContract, fieldReplacements);
+            var pdfBytes = GenerateContractPdf(contract, predefinedContract, fieldReplacements);
 
             await AddContractAsync(contract, pdfBytes);
         }

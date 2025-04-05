@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
-using System;
 
 namespace ArtAttack.Utils
 {
-    class BorrowedToVisibilityConverter : IValueConverter
+    partial class BorrowedToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

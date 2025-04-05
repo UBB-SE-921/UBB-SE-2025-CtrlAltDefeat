@@ -1,5 +1,5 @@
-﻿using ArtAttack.Domain;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ArtAttack.Domain;
 
 namespace ArtAttack.Model
 {

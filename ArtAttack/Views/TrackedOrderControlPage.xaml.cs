@@ -1,14 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace ArtAttack.Views
 {
     /// <summary>
@@ -125,8 +124,8 @@ namespace ArtAttack.Views
                 finally
                 {
                     LoadOrderData();
-                    deliveryCalendarDatePicker.Visibility=Visibility.Collapsed;
-                    confirmChangeEstimatedDeliveryDateButton.Visibility=Visibility.Collapsed;
+                    deliveryCalendarDatePicker.Visibility = Visibility.Collapsed;
+                    confirmChangeEstimatedDeliveryDateButton.Visibility = Visibility.Collapsed;
                     deliveryCalendarDatePicker.Date = null;
                 }
             }
@@ -135,9 +134,13 @@ namespace ArtAttack.Views
         private void AddNewCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
             if (AddDetails.Visibility == Visibility.Collapsed)
+            {
                 AddDetails.Visibility = Visibility.Visible;
+            }
             else
+            {
                 AddDetails.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void ConfirmAddNewCheckpointButton_Clicked(object sender, RoutedEventArgs e)
@@ -173,8 +176,8 @@ namespace ArtAttack.Views
             {
                 LoadOrderData();
                 AddDetails.Visibility = Visibility.Collapsed;
-                LocationTextBoxAdd.Text = "";
-                DescriptionTextBoxAdd.Text = "";
+                LocationTextBoxAdd.Text = string.Empty;
+                DescriptionTextBoxAdd.Text = string.Empty;
                 StatusComboBoxAdd.SelectedIndex = -1;
             }
         }
@@ -216,15 +219,21 @@ namespace ArtAttack.Views
             TimestampDatePicker.MaxDate = lastCheckpoint.Timestamp.Date;
 
             if (UpdateDetails.Visibility == Visibility.Collapsed)
+            {
                 UpdateDetails.Visibility = Visibility.Visible;
+            }
             else
+            {
                 UpdateDetails.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void ManualTimestampRadio_Checked(object sender, RoutedEventArgs e)
         {
             if (DateTimePickers != null)
+            {
                 DateTimePickers.Visibility = Visibility.Visible;
+            }
         }
 
         private void AutoTimestampRadio_Checked(object sender, RoutedEventArgs e)
@@ -277,8 +286,7 @@ namespace ArtAttack.Views
                     timestamp,
                     location,
                     description,
-                    Enum.Parse<OrderStatus>(status)
-                );
+                    Enum.Parse<OrderStatus>(status));
 
                 await ShowSuccessDialog("Checkpoint updated successfully.");
             }
@@ -293,8 +301,8 @@ namespace ArtAttack.Views
                 UpdateDetails.Visibility = Visibility.Collapsed;
                 TimestampDatePicker.Date = null;
                 TimestampTimePicker.Time = DateTime.Now.TimeOfDay;
-                LocationTextBoxUpdate.Text = "";
-                DescriptionTextBoxUpdate.Text = "";
+                LocationTextBoxUpdate.Text = string.Empty;
+                DescriptionTextBoxUpdate.Text = string.Empty;
                 StatusComboBoxUpdate.SelectedIndex = -1;
             }
         }

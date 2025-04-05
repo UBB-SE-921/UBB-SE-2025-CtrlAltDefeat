@@ -1,17 +1,21 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
-using System;
 
 namespace ArtAttack.Utils
 {
-    class SellerToVisibilityConverter : IValueConverter
+    partial class SellerToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value != null)
+            {
                 return Visibility.Visible;
+            }
             else
+            {
                 return Visibility.Collapsed;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

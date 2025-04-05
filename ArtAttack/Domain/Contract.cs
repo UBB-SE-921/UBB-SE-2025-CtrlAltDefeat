@@ -1,6 +1,6 @@
 ﻿namespace ArtAttack.Domain
 {
-    public class Contract :IContract
+    public class Contract : IContract
     {
         // Unique identifier for the contract (Identity field in the database)
         public long ContractID { get; set; }
