@@ -26,6 +26,7 @@ namespace ArtAttack
             contract = new Contract();
             contractViewModel = new ContractViewModel(Configuration.CONNECTION_STRING);
             trackedOrderViewModel = new TrackedOrderViewModel(Configuration.CONNECTION_STRING);
+            CurrentProductId = 2;
         }
 
         // This event handler is called when the Grid (root element) is loaded.
@@ -116,7 +117,7 @@ namespace ArtAttack
         {
             try
             {
-                int productId = 2;
+                CurrentProductId = 2;
 
                 var borrowWindow = new BorrowProductWindow(Configuration.CONNECTION_STRING, productId);
                 borrowWindow.Activate();

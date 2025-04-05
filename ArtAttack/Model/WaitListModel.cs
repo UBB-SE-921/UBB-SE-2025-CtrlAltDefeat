@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -245,6 +246,7 @@ namespace ArtAttack.Model
         public bool IsUserInWaitlist(int userId, int productId)
         {
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
+            Debug.WriteLine($"IsUserInWaitlist: UserID: {userId}, ProductID: {productId}");
             {
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
@@ -278,6 +280,7 @@ namespace ArtAttack.Model
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetUserWaitlistPosition(int userId, int productId)
         {
+            Debug.WriteLine($"GetUserWaitlistPosition: UserID: {userId}, ProductID: {productId}");
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 connection.Open();

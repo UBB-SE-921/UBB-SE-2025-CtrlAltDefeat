@@ -84,7 +84,7 @@
                FontWeight="SemiBold"
                HorizontalAlignment="Right"/>
         </StackPanel>
-        <Button x:Name="btnNotifications" 
+        <Button x:Name="ButtonNotifications" 
                 Content="🔔 Notifications" 
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"

@@ -1,12 +1,15 @@
-using System;
+namespace ArtAttack
+{
+    using System;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
+    using ArtAttack.Domain;
+    using ArtAttack.Services;
+    using ArtAttack.ViewModel;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
 using System.Data;
-using System.Threading.Tasks;
-using ArtAttack.Domain;
 using Microsoft.Data.SqlClient;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using ArtAttack.Services;
-using ArtAttack.ViewModel;
 
 namespace ArtAttack
 {
@@ -19,106 +22,119 @@ namespace ArtAttack
 
         public BorrowProductWindow(string connectionString, int productId)
         {
-            InitializeComponent();
+            this.InitializeComponent();
             this.connectionString = connectionString;
-            currentProductId = productId;
-            waitListViewModel = new WaitListViewModel(connectionString);
-            notificationVM = new NotificationViewModel(GetCurrentUserId());
-            this.Activated += Window_Activated;
+            this.currentProductId = productId;
+            this.waitListViewModel = new WaitListViewModel(connectionString);
+            this.notificationVM = new NotificationViewModel(this.GetCurrentUserId());
+            this.Activated += this.Window_Activated;
         }
 
         private async void Window_Activated(object sender, WindowActivatedEventArgs args)
         {
-            this.Activated -= Window_Activated;
-            await LoadProductDetails();
+            await this.LoadProductDetails();
         }
 
         private async Task LoadProductDetails()
         {
             try
             {
-                var product = await waitListViewModel.GetDummyProductByIdAsync(currentProductId);
+                var product = await this.waitListViewModel.GetDummyProductByIdAsync(this.currentProductId);
                 if (product != null)
                 {
-                    string sellerName = await waitListViewModel.GetSellerNameAsync(product.SellerID);
-                    DisplayProduct(product, sellerName);
+                    string sellerName = await this.waitListViewModel.GetSellerNameAsync(product.SellerID);
+                    this.DisplayProduct(product, sellerName);
 
-                    int currentUserId = GetCurrentUserId();
-                    bool isOnWaitlist = waitListViewModel.IsUserInWaitlist(currentUserId, currentProductId);
+                    int currentUserId = this.GetCurrentUserId();
+                    bool isOnWaitlist = this.waitListViewModel.IsUserInWaitlist(currentUserId, this.currentProductId);
 
-                    UpdateWaitlistUI(isOnWaitlist);
+                    this.UpdateWaitlistUI(isOnWaitlist);
                 }
                 else
                 {
-                    await ShowMessageAsync("Error", "Product not found");
+                    await this.ShowMessageAsync("Error", "Product not found");
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageAsync("Error", $"Failed to load product: {ex.Message}");
+                await this.ShowMessageAsync("Error", $"Failed to load product: {ex.Message}");
             }
         }
 
         private void UpdateWaitlistUI(bool isOnWaitlist)
         {
-            btnJoinWaitList.Visibility = isOnWaitlist ? Visibility.Collapsed : Visibility.Visible;
-            waitlistActionsPanel.Visibility = isOnWaitlist ? Visibility.Visible : Visibility.Collapsed;
-            txtPositionInQueue.Visibility = Visibility.Collapsed;
+            this.btnJoinWaitList.Visibility = isOnWaitlist ? Visibility.Collapsed : Visibility.Visible;
+            this.waitlistActionsPanel.Visibility = isOnWaitlist ? Visibility.Visible : Visibility.Collapsed;
+            this.txtPositionInQueue.Visibility = Visibility.Collapsed;
         }
 
         private void DisplayProduct(DummyProduct product, string sellerName)
         {
-            txtProductName.Text = product.Name;
-            txtPrice.Text = $"Price: ${product.Price}";
-            txtSeller.Text = $"Seller: {sellerName}";
-            txtType.Text = $"Type: {product.ProductType}";
+            this.txtProductName.Text = product.Name;
+            this.txtPrice.Text = $"Price: ${product.Price}";
+            this.txtSeller.Text = $"Seller: {sellerName}";
+            this.txtType.Text = $"Type: {product.ProductType}";
 
             bool isAvailable = product.EndDate == DateTime.MinValue;
 
             if (isAvailable)
             {
-                txtDates.Text = product.StartDate == DateTime.MinValue
+                this.txtDates.Text = product.StartDate == DateTime.MinValue
                     ? "Availability: Now"
                     : $"Available after: {product.StartDate:yyyy-MM-dd}";
 
-                btnBorrow.Visibility = Visibility.Visible;
-                btnJoinWaitList.Visibility = Visibility.Collapsed;
+                this.btnBorrow.Visibility = Visibility.Visible;
+                this.btnJoinWaitList.Visibility = Visibility.Collapsed;
             }
             else
             {
-                txtDates.Text = $"Unavailable until: {product.EndDate:yyyy-MM-dd}";
-                btnBorrow.Visibility = Visibility.Collapsed;
-                btnJoinWaitList.Visibility = Visibility.Visible;
+                this.txtDates.Text = $"Unavailable until: {product.EndDate:yyyy-MM-dd}";
+                this.btnBorrow.Visibility = Visibility.Collapsed;
+                this.btnJoinWaitList.Visibility = Visibility.Visible;
             }
         }
 
         private async Task ShowMessageAsync(string title, string message)
         {
-            var dialog = new ContentDialog
+            try
             {
-                Title = title,
-                Content = message,
-                CloseButtonText = "OK",
-                XamlRoot = this.Content.XamlRoot
-            };
-            await dialog.ShowAsync();
+                if (this.Content.XamlRoot == null)
+                {
+                    throw new InvalidOperationException("XamlRoot is not initialized.");
+                }
+
+                var dialog = new ContentDialog
+                {
+                    Title = title,
+                    Content = message,
+                    CloseButtonText = "OK",
+                    XamlRoot = this.Content.XamlRoot,
+                };
+
+                await dialog.ShowAsync();
+            }
+            catch (Exception e)
+            {
+                // Handle the exception here
+                Debug.WriteLine($"Failed to show dialog: {e.Message}");
+            }
         }
 
         private async void BtnJoinWaitList_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                int currentUserId = GetCurrentUserId();
+                int currentUserId = this.GetCurrentUserId();
 
-                waitListViewModel.AddUserToWaitlist(currentUserId, currentProductId);
+                this.waitListViewModel.AddUserToWaitlist(currentUserId, this.currentProductId);
 
-                UpdateWaitlistUI(true);
+                this.UpdateWaitlistUI(true);
 
-                await ShowMessageAsync("Success", "You've joined the waitlist!");
+                await this.ShowMessageAsync("Success", "You've joined the waitlist!");
             }
             catch (Exception ex)
             {
-                await ShowMessageAsync("Error", $"Failed to join waitlist: {ex.Message}");
+                await this.ShowMessageAsync("Error", $"Failed to join waitlist: {ex.Message}");
             }
         }
 
@@ -131,17 +147,17 @@ namespace ArtAttack
         {
             try
             {
-                int currentUserId = GetCurrentUserId();
+                int currentUserId = this.GetCurrentUserId();
 
-                waitListViewModel.RemoveUserFromWaitlist(currentUserId, currentProductId);
+                this.waitListViewModel.RemoveUserFromWaitlist(currentUserId, this.currentProductId);
 
-                UpdateWaitlistUI(false);
+                this.UpdateWaitlistUI(false);
 
-                await ShowMessageAsync("Success", "You've left the waitlist");
+                await this.ShowMessageAsync("Success", "You've left the waitlist");
             }
             catch (Exception ex)
             {
-                await ShowMessageAsync("Error", $"Failed to leave waitlist: {ex.Message}");
+                await this.ShowMessageAsync("Error", $"Failed to leave waitlist: {ex.Message}");
             }
         }
 
@@ -149,26 +165,26 @@ namespace ArtAttack
         {
             try
             {
-                int currentUserId = GetCurrentUserId();
-                int position = waitListViewModel.GetUserWaitlistPosition(currentUserId, currentProductId);
+                int currentUserId = this.GetCurrentUserId();
+                int position = this.waitListViewModel.GetUserWaitlistPosition(currentUserId, this.currentProductId);
 
                 if (position > 0)
                 {
-                    txtPositionInQueue.Text = $"Your position: #{position}";
-                    txtPositionInQueue.Visibility = Visibility.Visible;
+                    this.txtPositionInQueue.Text = $"Your position: #{position}";
+                    this.txtPositionInQueue.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    await ShowMessageAsync("Position", "You are not currently on the waitlist");
+                    await this.ShowMessageAsync("Position", "You are not currently on the waitlist");
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageAsync("Error", $"Failed to get waitlist position: {ex.Message}");
+                await this.ShowMessageAsync("Error", $"Failed to get waitlist position: {ex.Message}");
             }
         }
 
-        private async void BtnNotifications_Click(object sender, RoutedEventArgs e)
+        private async void ButtonNotifications_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -182,20 +198,19 @@ namespace ArtAttack
                         {
                             Children =
                     {
-                        new TextBlock { Text = notificationVM.UnReadNotificationsCountText },
-                        // Add more notification items here if needed
-                    }
-                        }
+                        new TextBlock { Text = this.notificationVM.unReadNotificationsCountText },
+                    },
+                        },
                     },
                     CloseButtonText = "Close",
-                    XamlRoot = this.Content.XamlRoot
+                    XamlRoot = this.Content.XamlRoot,
                 };
 
                 await notificationPopup.ShowAsync();
             }
             catch (Exception ex)
             {
-                await ShowMessageAsync("Error", $"Couldn't load notifications: {ex.Message}");
+                await this.ShowMessageAsync("Error", $"Couldn't load notifications: {ex.Message}");
             }
         }
     }
