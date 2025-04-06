@@ -2,17 +2,30 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
+using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
-    public class OrderSummaryModel
+    public class OrderSummaryModel : IOrderSummaryModel
     {
         private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
+        /// <summary>
+        /// Default constructor that uses SQL Server implementation
+        /// </summary>
         public OrderSummaryModel(string connectionString)
+            : this(connectionString, new SqlDatabaseProvider())
         {
-            this.connectionString = connectionString;
+        }
+
+        /// <summary>
+        /// Constructor with dependency injection for testing
+        /// </summary>
+        public OrderSummaryModel(string connectionString, IDatabaseProvider databaseProvider)
+        {
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
         }
 
         /// <summary>
@@ -34,22 +47,24 @@ namespace ArtAttack.Model
                                     string fullName, string email, string phoneNumber, string address,
                                     string postalCode, string additionalInfo, string contractDetails)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("AddOrderSummary", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Subtotal", subtotal);
-                    cmd.Parameters.AddWithValue("@WarrantyTax", warrantyTax);
-                    cmd.Parameters.AddWithValue("@DeliveryFee", deliveryFee);
-                    cmd.Parameters.AddWithValue("@FinalTotal", finalTotal);
-                    cmd.Parameters.AddWithValue("@FullName", fullName);
-                    cmd.Parameters.AddWithValue("@Email", email);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
-                    cmd.Parameters.AddWithValue("@Address", address);
-                    cmd.Parameters.AddWithValue("@PostalCode", postalCode);
-                    cmd.Parameters.AddWithValue("@AdditionalInfo", additionalInfo);
-                    cmd.Parameters.AddWithValue("@ContractDetails", contractDetails ?? (object)DBNull.Value);
+                    cmd.CommandText = "AddOrderSummary";
+
+                    AddParameter(cmd, "@Subtotal", subtotal);
+                    AddParameter(cmd, "@WarrantyTax", warrantyTax);
+                    AddParameter(cmd, "@DeliveryFee", deliveryFee);
+                    AddParameter(cmd, "@FinalTotal", finalTotal);
+                    AddParameter(cmd, "@FullName", fullName);
+                    AddParameter(cmd, "@Email", email);
+                    AddParameter(cmd, "@PhoneNumber", phoneNumber);
+                    AddParameter(cmd, "@Address", address);
+                    AddParameter(cmd, "@PostalCode", postalCode);
+                    AddParameter(cmd, "@AdditionalInfo", additionalInfo);
+                    AddParameter(cmd, "@ContractDetails", contractDetails);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -77,23 +92,25 @@ namespace ArtAttack.Model
                                        string fullName, string email, string phoneNumber, string address,
                                        string postalCode, string additionalInfo, string contractDetails)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("UpdateOrderSummary", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ID", id);
-                    cmd.Parameters.AddWithValue("@Subtotal", subtotal);
-                    cmd.Parameters.AddWithValue("@WarrantyTax", warrantyTax);
-                    cmd.Parameters.AddWithValue("@DeliveryFee", deliveryFee);
-                    cmd.Parameters.AddWithValue("@FinalTotal", finalTotal);
-                    cmd.Parameters.AddWithValue("@FullName", fullName);
-                    cmd.Parameters.AddWithValue("@Email", email);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
-                    cmd.Parameters.AddWithValue("@Address", address);
-                    cmd.Parameters.AddWithValue("@PostalCode", postalCode);
-                    cmd.Parameters.AddWithValue("@AdditionalInfo", additionalInfo ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@ContractDetails", contractDetails ?? (object)DBNull.Value);
+                    cmd.CommandText = "UpdateOrderSummary";
+
+                    AddParameter(cmd, "@ID", id);
+                    AddParameter(cmd, "@Subtotal", subtotal);
+                    AddParameter(cmd, "@WarrantyTax", warrantyTax);
+                    AddParameter(cmd, "@DeliveryFee", deliveryFee);
+                    AddParameter(cmd, "@FinalTotal", finalTotal);
+                    AddParameter(cmd, "@FullName", fullName);
+                    AddParameter(cmd, "@Email", email);
+                    AddParameter(cmd, "@PhoneNumber", phoneNumber);
+                    AddParameter(cmd, "@Address", address);
+                    AddParameter(cmd, "@PostalCode", postalCode);
+                    AddParameter(cmd, "@AdditionalInfo", additionalInfo);
+                    AddParameter(cmd, "@ContractDetails", contractDetails);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -108,12 +125,14 @@ namespace ArtAttack.Model
         /// <returns></returns>
         public async Task DeleteOrderSummaryAsync(int id)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("DeleteOrderSummary", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ID", id);
+                    cmd.CommandText = "DeleteOrderSummary";
+
+                    AddParameter(cmd, "@ID", id);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -128,14 +147,16 @@ namespace ArtAttack.Model
         /// <returns></returns>
         public async Task<OrderSummary> GetOrderSummaryByIDAsync(int orderSummaryID)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("select * from [OrderSummary] where [ID] = @ID", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
-                    cmd.Parameters.AddWithValue("@ID", orderSummaryID);
+                    cmd.CommandText = "SELECT * FROM [OrderSummary] WHERE [ID] = @ID";
+
+                    AddParameter(cmd, "@ID", orderSummaryID);
 
                     await conn.OpenAsync();
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -159,6 +180,17 @@ namespace ArtAttack.Model
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Helper method to add a parameter to a command
+        /// </summary>
+        private void AddParameter(IDbCommand command, string name, object value)
+        {
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = name;
+            parameter.Value = value ?? DBNull.Value;
+            command.Parameters.Add(parameter);
         }
     }
 }
