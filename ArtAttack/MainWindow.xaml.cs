@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
@@ -12,6 +13,7 @@ using QuestPDF.Infrastructure;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class MainWindow : Window
     {
         private IContract contract;

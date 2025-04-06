@@ -1,9 +1,11 @@
-﻿using ArtAttack.ViewModel;
+﻿using System.Diagnostics.CodeAnalysis;
+using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class CardInfo : Page
     {
         private CardInfoViewModel viewModel;

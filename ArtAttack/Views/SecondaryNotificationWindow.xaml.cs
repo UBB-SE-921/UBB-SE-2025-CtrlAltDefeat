@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using ArtAttack.Domain;
 using Microsoft.UI.Xaml;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class SecondaryNotificationWindow : Window
     {
         public Notification SelectedNotification { get; }

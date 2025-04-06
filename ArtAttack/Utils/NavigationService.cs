@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml.Controls;
 
 namespace ArtAttack.Utils
 {
+    /*
+    [ExcludeFromCodeCoverage]
     public class NavigationService
     {
         private Frame mainFrame;
@@ -25,4 +28,6 @@ namespace ArtAttack.Utils
             }
         }
     }
+
+*/
 }

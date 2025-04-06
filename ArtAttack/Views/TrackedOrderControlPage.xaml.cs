@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace ArtAttack.Views
 {
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>

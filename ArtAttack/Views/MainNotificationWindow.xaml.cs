@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml;
@@ -5,6 +6,8 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
+
     public sealed partial class MainNotificationWindow : Window
     {
         private const int CurrentUserId = 1; // Replace with your actual user ID

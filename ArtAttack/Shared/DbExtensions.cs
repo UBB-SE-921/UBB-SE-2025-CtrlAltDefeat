@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -241,7 +242,7 @@ namespace ArtAttack.Shared
             parameters.Add(genericParam);
             return genericParam;
         }
-
+        [ExcludeFromCodeCoverage]
         /// <summary>
         /// A generic implementation of IDbDataParameter for testing purposes
         /// </summary>

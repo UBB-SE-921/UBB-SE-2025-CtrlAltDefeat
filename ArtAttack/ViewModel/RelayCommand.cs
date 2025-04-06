@@ -3,6 +3,7 @@ using System.Windows.Input;
 
 namespace ArtAttack.ViewModel
 {
+    /*
     public class RelayCommand : ICommand
     {
         private readonly Action execute;
@@ -35,4 +36,5 @@ namespace ArtAttack.ViewModel
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+    */
 }
