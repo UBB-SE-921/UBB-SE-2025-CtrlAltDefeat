@@ -47,7 +47,7 @@ namespace ArtAttack.Tests.Model
             _mockDatabaseProvider.Setup(p => p.CreateConnection(It.IsAny<string>())).Returns(_mockConnection.Object);
 
             // Initialize the model with the mock database provider
-            _orderModel = new OrderModel(_testConnectionString, _mockDatabaseProvider.Object);
+            _orderModel = new OrderModel(_testConnectionString);
         }
 
         [TestMethod]

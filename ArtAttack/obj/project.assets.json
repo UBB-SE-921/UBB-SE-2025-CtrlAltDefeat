@@ -63,6 +63,19 @@
           }
         }
       },
+      "Dapper/2.1.66": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Dapper.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Dapper.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
         "type": "package",
         "compile": {
@@ -1038,6 +1051,35 @@
         "runtime": {
           "lib/netcoreapp2.1/_._": {}
         }
+      },
+      "xunit.abstractions/2.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "xunit.extensibility.core/2.9.3": {
+        "type": "package",
+        "dependencies": {
+          "xunit.abstractions": "2.0.3"
+        },
+        "compile": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        }
       }
     },
     "net8.0-windows10.0.19041/win-arm64": {
@@ -1098,6 +1140,19 @@
         },
         "runtime": {
           "lib/net6.0/Castle.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Dapper/2.1.66": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Dapper.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Dapper.dll": {
             "related": ".xml"
           }
         }
@@ -1892,6 +1947,35 @@
         "runtime": {
           "lib/netcoreapp2.1/_._": {}
         }
+      },
+      "xunit.abstractions/2.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "xunit.extensibility.core/2.9.3": {
+        "type": "package",
+        "dependencies": {
+          "xunit.abstractions": "2.0.3"
+        },
+        "compile": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        }
       }
     },
     "net8.0-windows10.0.19041/win-x64": {
@@ -1952,6 +2036,19 @@
         },
         "runtime": {
           "lib/net6.0/Castle.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Dapper/2.1.66": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Dapper.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Dapper.dll": {
             "related": ".xml"
           }
         }
@@ -2753,6 +2850,35 @@
         "runtime": {
           "lib/netcoreapp2.1/_._": {}
         }
+      },
+      "xunit.abstractions/2.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "xunit.extensibility.core/2.9.3": {
+        "type": "package",
+        "dependencies": {
+          "xunit.abstractions": "2.0.3"
+        },
+        "compile": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        }
       }
     },
     "net8.0-windows10.0.19041/win-x86": {
@@ -2813,6 +2939,19 @@
         },
         "runtime": {
           "lib/net6.0/Castle.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Dapper/2.1.66": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Dapper.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Dapper.dll": {
             "related": ".xml"
           }
         }
@@ -3614,6 +3753,35 @@
         "runtime": {
           "lib/netcoreapp2.1/_._": {}
         }
+      },
+      "xunit.abstractions/2.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/xunit.abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "xunit.extensibility.core/2.9.3": {
+        "type": "package",
+        "dependencies": {
+          "xunit.abstractions": "2.0.3"
+        },
+        "compile": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.1/xunit.core.dll": {
+            "related": ".xml"
+          }
+        }
       }
     }
   },
@@ -3678,6 +3846,25 @@
         "lib/netstandard2.1/Castle.Core.dll",
         "lib/netstandard2.1/Castle.Core.xml",
         "readme.txt"
+      ]
+    },
+    "Dapper/2.1.66": {
+      "sha512": "/q77jUgDOS+bzkmk3Vy9SiWMaetTw+NOoPAV0xPBsGVAyljd5S6P+4RUW7R3ZUGGr9lDRyPKgAMj2UAOwvqZYw==",
+      "type": "package",
+      "path": "dapper/2.1.66",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Dapper.png",
+        "dapper.2.1.66.nupkg.sha512",
+        "dapper.nuspec",
+        "lib/net461/Dapper.dll",
+        "lib/net461/Dapper.xml",
+        "lib/net8.0/Dapper.dll",
+        "lib/net8.0/Dapper.xml",
+        "lib/netstandard2.0/Dapper.dll",
+        "lib/netstandard2.0/Dapper.xml",
+        "readme.md"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
@@ -5849,17 +6036,57 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "xunit.abstractions/2.0.3": {
+      "sha512": "pot1I4YOxlWjIb5jmwvvQNbTrZ3lJQ+jUGkGjWE3hEFM0l5gOnBWS+H3qsex68s5cO52g+44vpGzhAt+42vwKg==",
+      "type": "package",
+      "path": "xunit.abstractions/2.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/xunit.abstractions.dll",
+        "lib/net35/xunit.abstractions.xml",
+        "lib/netstandard1.0/xunit.abstractions.dll",
+        "lib/netstandard1.0/xunit.abstractions.xml",
+        "lib/netstandard2.0/xunit.abstractions.dll",
+        "lib/netstandard2.0/xunit.abstractions.xml",
+        "xunit.abstractions.2.0.3.nupkg.sha512",
+        "xunit.abstractions.nuspec"
+      ]
+    },
+    "xunit.extensibility.core/2.9.3": {
+      "sha512": "kf3si0YTn2a8J8eZNb+zFpwfoyvIrQ7ivNk5ZYA5yuYk1bEtMe4DxJ2CF/qsRgmEnDr7MnW1mxylBaHTZ4qErA==",
+      "type": "package",
+      "path": "xunit.extensibility.core/2.9.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "_content/README.md",
+        "_content/logo-128-transparent.png",
+        "lib/net452/xunit.core.dll",
+        "lib/net452/xunit.core.dll.tdnet",
+        "lib/net452/xunit.core.xml",
+        "lib/net452/xunit.runner.tdnet.dll",
+        "lib/net452/xunit.runner.utility.net452.dll",
+        "lib/netstandard1.1/xunit.core.dll",
+        "lib/netstandard1.1/xunit.core.xml",
+        "xunit.extensibility.core.2.9.3.nupkg.sha512",
+        "xunit.extensibility.core.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "net8.0-windows10.0.19041": [
+      "Dapper >= 2.1.66",
       "MSTest.TestFramework >= 3.8.3",
       "Microsoft.Data.SqlClient >= 6.0.1",
       "Microsoft.Windows.SDK.BuildTools >= 10.0.26100.1742",
       "Microsoft.WindowsAppSDK >= 1.7.250310001",
       "Moq >= 4.20.72",
       "QuestPDF >= 2025.1.6",
-      "StyleCop.Analyzers >= 1.1.118"
+      "StyleCop.Analyzers >= 1.1.118",
+      "xunit.abstractions >= 2.0.3",
+      "xunit.extensibility.core >= 2.9.3"
     ]
   },
   "packageFolders": {
@@ -5912,6 +6139,10 @@
       "net8.0-windows10.0.19041": {
         "targetAlias": "net8.0-windows10.0.19041.0",
         "dependencies": {
+          "Dapper": {
+            "target": "Package",
+            "version": "[2.1.66, )"
+          },
           "MSTest.TestFramework": {
             "target": "Package",
             "version": "[3.8.3, )"
@@ -5941,6 +6172,14 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[1.1.118, )"
+          },
+          "xunit.abstractions": {
+            "target": "Package",
+            "version": "[2.0.3, )"
+          },
+          "xunit.extensibility.core": {
+            "target": "Package",
+            "version": "[2.9.3, )"
           }
         },
         "imports": [

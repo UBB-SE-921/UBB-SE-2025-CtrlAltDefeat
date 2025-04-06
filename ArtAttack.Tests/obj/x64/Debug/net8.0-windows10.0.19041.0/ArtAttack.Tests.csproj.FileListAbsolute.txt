@@ -325,3 +325,6 @@ C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64
 C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\qualifiers.txt
 C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\qualifiers.txt.intermediate
 C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\obj\x64\Debug\net8.0-windows10.0.19041.0\MultipleQualifiersPerDimensionFound.txt
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\Dapper.dll
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\xunit.abstractions.dll
+C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack.Tests\bin\x64\Debug\net8.0-windows10.0.19041.0\xunit.core.dll

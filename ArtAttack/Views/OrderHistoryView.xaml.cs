@@ -12,7 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ArtAttack
 {
-    public sealed partial class OrderHistoryUI : Window
+    public sealed partial class OrderHistoryView : Window
     {
         private readonly int userId;
         private IOrderViewModel orderViewModel;
@@ -26,7 +26,7 @@ namespace ArtAttack
         /// <param name="userId">The ID of the user whose order history to display. Must be a positive integer.</param>
         /// <exception cref="ArgumentNullException">Thrown when connectionString is null.</exception>
         /// <exception cref="ArgumentException">Thrown when userId is less than or equal to zero.</exception>
-        public OrderHistoryUI(string connectionString, int userId)
+        public OrderHistoryView(string connectionString, int userId)
         {
             InitializeComponent();
             this.userId = userId;

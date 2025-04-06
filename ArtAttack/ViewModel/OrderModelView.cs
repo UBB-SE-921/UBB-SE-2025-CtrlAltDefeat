@@ -1,18 +1,19 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using ArtAttack.Shared;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-
+using ArtAttack.Domain;
+using ArtAttack.Model;
+using ArtAttack.Shared;
+using Microsoft.Data.SqlClient;
+/*
 namespace ArtAttack.ViewModel
 {
     /// <summary>
     /// Interface defining operations for managing orders in the ArtAttack application
     /// </summary>
+    /*
     public interface IOrderViewModel
     {
         Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate);
@@ -29,8 +30,7 @@ namespace ArtAttack.ViewModel
         Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId);
         Task<Order> GetOrderByIdAsync(int orderId);
         Task<List<Order>> GetCombinedOrderHistoryAsync(int buyerId, string timePeriodFilter = "all");
-    }
-
+    //}
     /// <summary>
     /// Interface for retrieving order summary information
     /// </summary>
@@ -355,3 +355,4 @@ namespace ArtAttack.ViewModel
         }
     }
 }
+*/

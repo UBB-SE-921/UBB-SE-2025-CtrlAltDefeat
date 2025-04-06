@@ -244,7 +244,7 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
             _typeNameTable[14] = "ArtAttack.CardInfo";
             _typeNameTable[15] = "ArtAttack.FinalisePurchase";
             _typeNameTable[16] = "ArtAttack.MainNotificationWindow";
-            _typeNameTable[17] = "ArtAttack.OrderHistoryUI";
+            _typeNameTable[17] = "ArtAttack.OrderHistoryView";
             _typeNameTable[18] = "ArtAttack.RenewContractView";
             _typeNameTable[19] = "ArtAttack.SecondaryNotificationWindow";
             _typeNameTable[20] = "ArtAttack.Domain.Notification";
@@ -275,7 +275,7 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
             _typeTable[14] = typeof(global::ArtAttack.CardInfo);
             _typeTable[15] = typeof(global::ArtAttack.FinalisePurchase);
             _typeTable[16] = typeof(global::ArtAttack.MainNotificationWindow);
-            _typeTable[17] = typeof(global::ArtAttack.OrderHistoryUI);
+            _typeTable[17] = typeof(global::ArtAttack.OrderHistoryView);
             _typeTable[18] = typeof(global::ArtAttack.RenewContractView);
             _typeTable[19] = typeof(global::ArtAttack.SecondaryNotificationWindow);
             _typeTable[20] = typeof(global::ArtAttack.Domain.Notification);
@@ -343,7 +343,7 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
         private void StaticInitializer_14_CardInfo() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.CardInfo).TypeHandle);
         private void StaticInitializer_15_FinalisePurchase() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.FinalisePurchase).TypeHandle);
         private void StaticInitializer_16_MainNotificationWindow() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.MainNotificationWindow).TypeHandle);
-        private void StaticInitializer_17_OrderHistoryUI() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.OrderHistoryUI).TypeHandle);
+        private void StaticInitializer_17_OrderHistoryView() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.OrderHistoryView).TypeHandle);
         private void StaticInitializer_18_RenewContractView() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.RenewContractView).TypeHandle);
         private void StaticInitializer_19_SecondaryNotificationWindow() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.SecondaryNotificationWindow).TypeHandle);
         private void StaticInitializer_20_Notification() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.Domain.Notification).TypeHandle);
@@ -486,9 +486,9 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 17:   //  ArtAttack.OrderHistoryUI
+            case 17:   //  ArtAttack.OrderHistoryView
                 userType = new global::ArtAttack.ArtAttack_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Window"));
-                userType.StaticInitializer = StaticInitializer_17_OrderHistoryUI;
+                userType.StaticInitializer = StaticInitializer_17_OrderHistoryView;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;

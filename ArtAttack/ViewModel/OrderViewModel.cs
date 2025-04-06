@@ -25,7 +25,7 @@ namespace ArtAttack.ViewModel
         {
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
             this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
-            model = new OrderModel(connectionString, databaseProvider);
+            model = new OrderModel(connectionString);
         }
 
         public async Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate)

@@ -52,7 +52,7 @@ public class NotificationDataAdapter : IDisposable
 
             // Common parameters
             command.Parameters.AddWithValue("@recipientID", notification.RecipientID);
-            command.Parameters.AddWithValue("@category", notification.RecipientID.ToString());
+            command.Parameters.AddWithValue("@category", notification.Category.ToString());
 
             switch (notification)
             {

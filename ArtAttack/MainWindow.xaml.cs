@@ -52,7 +52,7 @@ namespace ArtAttack
         private void OrderHitoryButton_Clicked(object sender, RoutedEventArgs e)
         {
             int user_id = 1;
-            var orderhistorywindow = new OrderHistoryUI(Configuration.CONNECTION_STRING, user_id);
+            var orderhistorywindow = new OrderHistoryView(Configuration.CONNECTION_STRING, user_id);
             orderhistorywindow.Activate();
         }
 

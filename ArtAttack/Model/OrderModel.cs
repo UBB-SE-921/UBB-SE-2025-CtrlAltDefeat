@@ -1,15 +1,15 @@
-
-using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using ArtAttack.Shared;
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.Model
 {
+    /*
     public interface IOrderModel
     {
         Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate);
@@ -24,24 +24,26 @@ namespace ArtAttack.Model
         List<Order> GetOrdersByName(int buyerId, string searchText);
         Task<List<Order>> GetOrdersFromOrderHistoryAsync(int orderHistoryId);
     }
+    */
     public class OrderModel : IOrderModel
     {
-        private readonly string _connectionString;
-        private readonly IDatabaseProvider _databaseProvider;
+        private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
         /// <summary>
         /// Gets the database connection string
         /// </summary>
-        public string ConnectionString => _connectionString;
+        public string ConnectionString => connectionString;
 
         /// <summary>
         /// Initializes a new instance of the OrderModel class
         /// </summary>
         /// <param name="connectionString">Database connection string</param>
         /// <param name="databaseProvider">Database provider for creating connections</param>
-        public OrderModel(string connectionString, IDatabaseProvider databaseProvider)
+        public OrderModel(string connectionString)
         {
-            _connectionString = connectionString;
+            this.connectionString = connectionString;
+            this.databaseProvider = new SqlDatabaseProvider();
         }
 
         /// <summary>
@@ -56,18 +58,18 @@ namespace ArtAttack.Model
         /// <returns>Task representing the asynchronous operation</returns>
         public async Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "AddOrder";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@ProductID", productId);
-                    AddParameter(command, "@BuyerID", buyerId);
-                    AddParameter(command, "@ProductType", productType);
-                    AddParameter(command, "@PaymentMethod", paymentMethod);
-                    AddParameter(command, "@OrderSummaryID", orderSummaryId);
-                    AddParameter(command, "@OrderDate", orderDate);
+                    command.Parameters.AddWithValue("@ProductID", productId);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@ProductType", productType);
+                    command.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
+                    command.Parameters.AddWithValue("@OrderSummaryID", orderSummaryId);
+                    command.Parameters.AddWithValue("@OrderDate", orderDate);
 
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
@@ -85,16 +87,16 @@ namespace ArtAttack.Model
         /// <returns>Task representing the asynchronous operation</returns>
         public async Task UpdateOrderAsync(int orderId, int productType, string paymentMethod, DateTime orderDate)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "UpdateOrder";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@OrderID", orderId);
-                    AddParameter(command, "@ProductType", productType);
-                    AddParameter(command, "@PaymentMethod", paymentMethod);
-                    AddParameter(command, "@OrderDate", orderDate);
+                    command.Parameters.AddWithValue("@OrderID", orderId);
+                    command.Parameters.AddWithValue("@ProductType", productType);
+                    command.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
+                    command.Parameters.AddWithValue("@OrderDate", orderDate);
 
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
@@ -109,13 +111,13 @@ namespace ArtAttack.Model
         /// <returns>Task representing the asynchronous operation</returns>
         public async Task DeleteOrderAsync(int orderId)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "DeleteOrder";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@OrderID", orderId);
+                    command.Parameters.AddWithValue("@OrderID", orderId);
 
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
@@ -131,13 +133,13 @@ namespace ArtAttack.Model
         public async Task<List<Order>> GetBorrowedOrderHistoryAsync(int buyerId)
         {
             List<Order> orderList = new List<Order>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_borrowed_order_history";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
                     await connection.OpenAsync();
 
                     using (IDataReader dataReader = await command.ExecuteReaderAsync())
@@ -171,13 +173,13 @@ namespace ArtAttack.Model
         public async Task<List<Order>> GetNewOrUsedOrderHistoryAsync(int buyerId)
         {
             List<Order> orderList = new List<Order>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_new_or_used_order_history";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
                     await connection.OpenAsync();
 
                     using (IDataReader dataReader = await command.ExecuteReaderAsync())
@@ -202,18 +204,16 @@ namespace ArtAttack.Model
             }
             return orderList;
         }
-
-
         public List<Order> GetOrdersFromLastThreeMonths(int buyerId)
         {
             List<Order> orderList = new List<Order>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_orders_from_last_3_months";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
                     connection.Open();
 
                     using (IDataReader dataReader = command.ExecuteReader())
@@ -247,13 +247,13 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersFromLastSixMonths(int buyerId)
         {
             List<Order> orderList = new List<Order>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_orders_from_last_6_months";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
                     connection.Open();
 
                     using (IDataReader dataReader = command.ExecuteReader())
@@ -287,13 +287,13 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersFrom2025(int buyerId)
         {
             List<Order> orderList = new List<Order>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_orders_from_2025";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
                     connection.Open();
 
                     using (IDataReader dataReader = command.ExecuteReader())
@@ -327,13 +327,13 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersFrom2024(int buyerId)
         {
             List<Order> orderList = new List<Order>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_orders_from_2024";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
                     connection.Open();
 
                     using (IDataReader dataReader = command.ExecuteReader())
@@ -368,14 +368,14 @@ namespace ArtAttack.Model
         public List<Order> GetOrdersByName(int buyerId, string searchText)
         {
             List<Order> orderList = new List<Order>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_orders_by_name";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@BuyerID", buyerId);
-                    AddParameter(command, "@text", searchText);
+                    command.Parameters.AddWithValue("@BuyerID", buyerId);
+                    command.Parameters.AddWithValue("@text", searchText);
                     connection.Open();
 
                     using (IDataReader dataReader = command.ExecuteReader())
@@ -410,13 +410,13 @@ namespace ArtAttack.Model
         {
             List<Order> orderList = new List<Order>();
 
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.CommandText = "get_orders_from_order_history";
                     command.CommandType = CommandType.StoredProcedure;
-                    AddParameter(command, "@OrderHistoryID", orderHistoryId);
+                    command.Parameters.AddWithValue("@OrderHistoryID", orderHistoryId);
                     await connection.OpenAsync();
 
                     using (IDataReader dataReader = await command.ExecuteReaderAsync())
@@ -442,8 +442,6 @@ namespace ArtAttack.Model
 
             return orderList;
         }
-
-
     }
 }
 
