@@ -73,11 +73,6 @@ namespace ArtAttack.ViewModel
         /// <param name="connectionString">Database connection string</param>
         public TrackedOrderViewModel(string connectionString)
         {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
             IDatabaseProvider databaseProvider = new SqlDatabaseProvider();
             trackedOrderModel = new TrackedOrderModel(connectionString, databaseProvider);
             orderViewModel = new OrderViewModel(connectionString);

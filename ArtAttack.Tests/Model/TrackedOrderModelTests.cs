@@ -43,51 +43,6 @@ namespace ArtAttack.Tests.Model
             _trackedOrderModel = new TrackedOrderModel(ConnectionString, _mockDatabaseProvider.Object);
         }
 
-        //[TestMethod]
-        //public async Task AddTrackedOrderAsync_ValidParameters_ExecutesStoredProcedure()
-        //{
-        //    // Arrange
-        //    var order = new TrackedOrder
-        //    {
-        //        OrderID = 123,
-        //        EstimatedDeliveryDate = new DateOnly(2025, 4, 15),
-        //        DeliveryAddress = "123 Test St, Test City",
-        //        CurrentStatus = OrderStatus.PROCESSING
-        //    };
-
-        //    // Setup parameter creation
-        //    Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-        //    _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
-
-        //    // Setup output parameter
-        //    var outputParam = new SqlParameter("@newTrackedOrderID", SqlDbType.Int) { Value = 456 };
-        //    _mockCommand.Setup(c => c.Parameters["@newTrackedOrderID"]).Returns(outputParam);
-
-        //    // Mock the behavior of OpenAsync
-        //    _mockConnection.Setup(c => c.Open());
-
-        //    // Mock ExecuteNonQueryAsync
-        //    _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
-
-        //    // Act
-        //    int result = await _trackedOrderModel.AddTrackedOrderAsync(order);
-
-        //    // Assert
-        //    Assert.AreEqual(456, result);
-        //    _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-        //    _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-        //    _mockConnection.Verify(c => c.Open(), Times.Once);
-        //    _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
-
-        //    // Verify command properties
-        //    _mockCommand.VerifySet(c => c.CommandText = "uspInsertTrackedOrder");
-        //    _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-
-        //    // Verify parameters were created correctly
-        //    _mockCommand.Verify(c => c.CreateParameter(), Times.Exactly(5));
-        //    _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Exactly(5));
-        //}
-
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public async Task AddTrackedOrderAsync_NegativeReturnValue_ThrowsException()
@@ -121,94 +76,98 @@ namespace ArtAttack.Tests.Model
             // Assert - Exception is expected
         }
 
-        //[TestMethod]
-        //public async Task AddOrderCheckpointAsync_ValidParameters_ExecutesStoredProcedure()
-        //{
-        //    // Arrange
-        //    var checkpoint = new OrderCheckpoint
-        //    {
-        //        TrackedOrderID = 123,
-        //        Timestamp = new DateTime(2025, 4, 10, 12, 0, 0),
-        //        Location = "Distribution Center",
-        //        Description = "Order processed",
-        //        Status = OrderStatus.PROCESSING
-        //    };
+        [TestMethod]
+        public async Task AddOrderCheckpointAsync_SuccessfulExecution_ReturnsNewId()
+        {
+            // Arrange
+            var checkpoint = new OrderCheckpoint
+            {
+                TrackedOrderID = 123,
+                Timestamp = new DateTime(2025, 4, 15, 12, 0, 0),
+                Location = "Distribution Center",
+                Description = "Order processed",
+                Status = OrderStatus.PROCESSING
+            };
 
-        //    // Setup parameter creation
-        //    Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-        //    _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            // Create mock parameter for output value
+            int expectedCheckpointId = 42;
+            Mock<IDbDataParameter> mockOutputParameter = new Mock<IDbDataParameter>();
+            mockOutputParameter.Setup(p => p.ParameterName).Returns("@newCheckpointID");
+            mockOutputParameter.Setup(p => p.Value).Returns(expectedCheckpointId);
 
-        //    // Setup output parameter
-        //    var outputParam = new SqlParameter("@newCheckpointID", SqlDbType.Int) { Value = 789 };
-        //    _mockCommand.Setup(c => c.Parameters["@newCheckpointID"]).Returns(outputParam);
+            // Setup parameter creation to return our custom output parameter
+            _mockCommand.SetupSequence(c => c.CreateParameter())
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(mockOutputParameter.Object);
 
-        //    // Mock the behavior of OpenAsync
-        //    _mockConnection.Setup(c => c.Open());
+            // Setup the command to return our parameter when accessed by name
+            _mockCommand.Setup(c => c.Parameters["@newCheckpointID"]).Returns(mockOutputParameter.Object);
 
-        //    // Mock ExecuteNonQueryAsync
-        //    _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
+            // Mock the behavior of OpenAsync
+            _mockConnection.Setup(c => c.Open());
 
-        //    // Act
-        //    int result = await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
+            // Mock ExecuteNonQueryAsync
+            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
 
-        //    // Assert
-        //    Assert.AreEqual(789, result);
-        //    _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-        //    _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-        //    _mockConnection.Verify(c => c.Open(), Times.Once);
-        //    _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            // Act
+            int result = await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
 
-        //    // Verify command properties
-        //    _mockCommand.VerifySet(c => c.CommandText = "uspInsertOrderCheckpoint");
-        //    _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
+            // Assert
+            Assert.AreEqual(expectedCheckpointId, result);
+            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+        }
 
-        //    // Verify parameters were created correctly
-        //    _mockCommand.Verify(c => c.CreateParameter(), Times.Exactly(6));
-        //    _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Exactly(6));
-        //}
+        [TestMethod]
+        public async Task AddTrackedOrderAsync_SuccessfulExecution_ReturnsNewId()
+        {
+            // Arrange
+            var order = new TrackedOrder
+            {
+                OrderID = 123,
+                EstimatedDeliveryDate = new DateOnly(2025, 4, 15),
+                DeliveryAddress = "123 Test St, Test City",
+                CurrentStatus = OrderStatus.PROCESSING
+            };
 
-        //[TestMethod]
-        //public async Task AddOrderCheckpointAsync_NullLocation_HandlesNullValue()
-        //{
-        //    // Arrange
-        //    var checkpoint = new OrderCheckpoint
-        //    {
-        //        TrackedOrderID = 123,
-        //        Timestamp = new DateTime(2025, 4, 10, 12, 0, 0),
-        //        Location = null,
-        //        Description = "Order processed",
-        //        Status = OrderStatus.PROCESSING
-        //    };
+            // Create mock parameter for output value
+            int expectedTrackedOrderId = 789;
+            Mock<IDbDataParameter> mockOutputParameter = new Mock<IDbDataParameter>();
+            mockOutputParameter.Setup(p => p.ParameterName).Returns("@newTrackedOrderID");
+            mockOutputParameter.Setup(p => p.Value).Returns(expectedTrackedOrderId);
 
-        //    // Setup parameter creation
-        //    Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-        //    _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            // Setup parameter creation to return our custom output parameter
+            _mockCommand.SetupSequence(c => c.CreateParameter())
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(mockOutputParameter.Object);
 
-        //    // Setup output parameter
-        //    var outputParam = new SqlParameter("@newCheckpointID", SqlDbType.Int) { Value = 789 };
-        //    _mockCommand.Setup(c => c.Parameters["@newCheckpointID"]).Returns(outputParam);
+            // Setup the command to return our parameter when accessed by name
+            _mockCommand.Setup(c => c.Parameters["@newTrackedOrderID"]).Returns(mockOutputParameter.Object);
 
-        //    // Mock the behavior of OpenAsync
-        //    _mockConnection.Setup(c => c.Open());
+            // Mock the behavior of OpenAsync
+            _mockConnection.Setup(c => c.Open());
 
-        //    // Mock ExecuteNonQuery
-        //    _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
+            // Mock ExecuteNonQueryAsync
+            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
 
-        //    // Option 1: Change the test to expect an exception
-        //    // [ExpectedException(typeof(Exception))]
+            // Act
+            int result = await _trackedOrderModel.AddTrackedOrderAsync(order);
 
-        //    // Option 2: Set a default non-null value instead of null
-        //    checkpoint.Location = string.Empty; // or "Unknown"
+            // Assert
+            Assert.AreEqual(expectedTrackedOrderId, result);
+            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+        }
 
-        //    // Act
-        //    int result = await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
-
-        //    // Assert
-        //    Assert.AreEqual(789, result);
-        //    _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-        //    _mockConnection.Verify(c => c.Open(), Times.Once);
-        //    _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
-        //}
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]

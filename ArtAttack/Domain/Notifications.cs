@@ -297,6 +297,10 @@ namespace ArtAttack.Domain
         {
             return ContractID;
         }
+        public DateTime GetExpirationDate()
+        {
+            return ExpirationDate;
+        }
 
         [ExcludeFromCodeCoverage]
         public override string Content => $"Contract: {ContractID} is set to expire on {ExpirationDate}.";

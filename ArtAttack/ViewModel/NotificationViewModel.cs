@@ -6,13 +6,14 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ArtAttack.Domain;
+using ArtAttack.Model;
 using ArtAttack.Shared;
 
 namespace ArtAttack.ViewModel
 {
     public class NotificationViewModel : INotifyPropertyChanged
     {
-        private readonly NotificationDataAdapter dataAdapter;
+        private readonly INotificationDataAdapter dataAdapter;
         private ObservableCollection<Notification> notifications;
         private int unreadCount;
         private bool isLoading;
