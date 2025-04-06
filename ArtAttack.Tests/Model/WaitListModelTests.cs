@@ -44,7 +44,7 @@ namespace ArtAttack.Tests.Model
             // Setup the connection mock
             _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
 
-            // Setup the mock database 
+            // Setup the mock database - make sure this is always used
             _mockDatabase = new MockDatabase();
             _mockDatabase.SetupMockConnection(_mockConnection.Object);
 
@@ -124,16 +124,15 @@ namespace ArtAttack.Tests.Model
             int userId = 42;
             int productWaitListId = 101;
 
-            // Clear any previous setup
+            // Setup the command to throw an exception when executed
             _mockCommand.Setup(c => c.CommandType).Returns(CommandType.StoredProcedure);
-
-            // Setup command to throw when executed
             _mockCommand.Setup(c => c.ExecuteNonQuery()).Throws(new Exception("Database error"));
 
             // Act & Assert
             _waitListModel.AddUserToWaitlist(userId, productWaitListId);
             // The ExpectedException attribute will handle the assertion
         }
+
 
         #region RemoveUserFromWaitlist Tests
 
@@ -233,51 +232,36 @@ namespace ArtAttack.Tests.Model
             int waitlistProductId = 101;
             DateTime today = DateTime.Today;
 
-            var testData = new List<Dictionary<string, object>>
-            {
-                new Dictionary<string, object>
-                {
-                    { "userID", 1 },
-                    { "positionInQueue", 1 },
-                    { "joinedTime", today }
-                },
-                new Dictionary<string, object>
-                {
-                    { "userID", 2 },
-                    { "positionInQueue", 2 },
-                    { "joinedTime", today.AddDays(-1) }
-                }
-            };
-
-            // For each key in each dictionary, set up specific return value
+            // Setup column ordinals
             _mockReader.Setup(r => r.GetOrdinal("userID")).Returns(0);
             _mockReader.Setup(r => r.GetOrdinal("positionInQueue")).Returns(1);
             _mockReader.Setup(r => r.GetOrdinal("joinedTime")).Returns(2);
+            _mockReader.Setup(r => r.GetOrdinal("productWaitListID")).Returns(3); // Add this line
 
-            _mockReader.Setup(r => r.Read())
-                .Returns(() => testData.Count > 0)
-                .Callback(() => {
-                    if (testData.Count > 0) testData.RemoveAt(0);
-                });
+            // Setup Read() method to return true twice then false
+            _mockReader.SetupSequence(r => r.Read())
+                .Returns(true)  // First call - first record
+                .Returns(true)  // Second call - second record
+                .Returns(false); // Third call - no more records
 
-            // First record
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(1);   // userID
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(1);   // positionInQueue
-            _mockReader.Setup(r => r.GetDateTime(2)).Returns(today);   // joinedTime
+            // Setup data for each column with explicit indices
+            // First user
+            _mockReader.SetupSequence(r => r.GetInt32(0))  // userID column
+                .Returns(1)  // First row
+                .Returns(2); // Second row
 
-            // Set up for second read call
-            _mockReader.SetupSequence(r => r.GetInt32(0))
-                .Returns(1)  // First call returns userID = 1
-                .Returns(2); // Second call returns userID = 2
+            _mockReader.SetupSequence(r => r.GetInt32(1))  // positionInQueue column
+                .Returns(1)  // First row
+                .Returns(2); // Second row
 
-            _mockReader.SetupSequence(r => r.GetInt32(1))
-                .Returns(1)  // First call returns positionInQueue = 1 
-                .Returns(2); // Second call returns positionInQueue = 2
+            _mockReader.SetupSequence(r => r.GetDateTime(2))  // joinedTime column
+                .Returns(today)  // First row
+                .Returns(today.AddDays(-1)); // Second row
 
-            _mockReader.SetupSequence(r => r.GetDateTime(2))
-                .Returns(today)  // First call
-                .Returns(today.AddDays(-1)); // Second call
+            // Set productWaitListID value to be the same as the input parameter
+            _mockReader.Setup(r => r.GetInt32(3)).Returns(waitlistProductId); // Add this line
 
+            _mockCommand.Setup(c => c.CommandType).Returns(CommandType.StoredProcedure);
             _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
@@ -290,54 +274,15 @@ namespace ArtAttack.Tests.Model
             Assert.AreEqual(1, result[0].UserID);
             Assert.AreEqual(1, result[0].PositionInQueue);
             Assert.AreEqual(today, result[0].JoinedTime);
+            Assert.AreEqual(waitlistProductId, result[0].ProductWaitListID);
 
             // Second user
             Assert.AreEqual(2, result[1].UserID);
             Assert.AreEqual(2, result[1].PositionInQueue);
             Assert.AreEqual(today.AddDays(-1), result[1].JoinedTime);
+            Assert.AreEqual(waitlistProductId, result[1].ProductWaitListID);
         }
 
-
-        //public void GetUsersInWaitlist_ReturnsCorrectData()
-        //{
-        //    // Arrange
-        //    int waitlistProductId = 101;
-        //    DateTime today = DateTime.Today;
-
-        //    var testData = new List<Dictionary<string, object>>
-        //    {
-        //        new Dictionary<string, object>
-        //        {
-        //            { "userID", 1 },
-        //            { "positionInQueue", 1 },
-        //            { "joinedTime", today }
-        //        },
-        //        new Dictionary<string, object>
-        //        {
-        //            { "userID", 2 },
-        //            { "positionInQueue", 2 },
-        //            { "joinedTime", today.AddDays(-1) }
-        //        }
-        //    };
-
-        //    SetupMockDataReader(testData);
-
-        //    // Act
-        //    var result = _waitListModel.GetUsersInWaitlist(waitlistProductId);
-
-        //    // Assert
-        //    Assert.AreEqual(2, result.Count);
-
-        //    // First user
-        //    Assert.AreEqual(1, result[0].userID);
-        //    Assert.AreEqual(1, result[0].positionInQueue);
-        //    Assert.AreEqual(today, result[0].joinedTime);
-
-        //    // Second user
-        //    Assert.AreEqual(2, result[1].userID);
-        //    Assert.AreEqual(2, result[1].positionInQueue);
-        //    Assert.AreEqual(today.AddDays(-1), result[1].joinedTime);
-        //}
 
         [TestMethod]
         public void GetUsersInWaitlist_ReturnsEmptyList_WhenNoData()

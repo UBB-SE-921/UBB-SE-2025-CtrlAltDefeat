@@ -50,21 +50,29 @@ namespace ArtAttack.Model
         /// </summary>
         /// <param name="userId">The ID of the user to be added to the waitlist. Must be a positive integer.</param>
         /// <param name="productWaitListId">The ID of the product waitlist. Must be a positive integer.</param>
-        // <summary>
-        /// Adds a user to the waitlist for a specific product.
         public void AddUserToWaitlist(int userId, int productWaitListId)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("AddUserToWaitlist", conn))
+                connection.Open();
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    cmd.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    command.CommandText = "AddUserToWaitlist";
+                    command.CommandType = CommandType.StoredProcedure;
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    IDbDataParameter userIdParam = command.CreateParameter();
+                    userIdParam.ParameterName = "@UserID";
+                    userIdParam.Value = userId;
+                    command.Parameters.Add(userIdParam);
+
+                    IDbDataParameter productIdParam = command.CreateParameter();
+                    productIdParam.ParameterName = "@ProductWaitListID";
+                    productIdParam.Value = productWaitListId;
+                    command.Parameters.Add(productIdParam);
+
+                    command.ExecuteNonQuery();
                 }
+                connection.Close();
             }
         }
 
@@ -129,7 +137,8 @@ namespace ArtAttack.Model
                         {
                             var userWaitListEntry = new UserWaitList
                             {
-                                UserWaitListID = reader.GetInt32(reader.GetOrdinal("userID")),
+                                UserID = reader.GetInt32(reader.GetOrdinal("userID")),
+                                ProductWaitListID = waitListProductId, // Add this line
                                 PositionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
                                 JoinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
                             };
