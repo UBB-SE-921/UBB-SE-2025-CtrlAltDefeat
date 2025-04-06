@@ -60,6 +60,11 @@ namespace ArtAttack
             {
                 var selectedPeriod = (TimePeriodComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
 
+                if (selectedPeriod == null)
+                {
+                    return;
+                }
+
                 // Use the view model to get orders with product info
                 var orderDisplayInfos = await orderViewModel.GetOrdersWithProductInfoAsync(userId, searchText, selectedPeriod);
 
@@ -278,7 +283,7 @@ namespace ArtAttack
                             XamlRoot = Content.XamlRoot
                         };
 
-                        errorContentDialog.ShowAsync();
+                        _ = errorContentDialog.ShowAsync();
                     }
                     catch (Exception exception)
                     {
