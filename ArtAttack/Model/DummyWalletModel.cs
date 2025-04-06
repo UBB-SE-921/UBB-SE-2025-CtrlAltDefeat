@@ -15,6 +15,12 @@ namespace ArtAttack.Model
             connectionString = connstring;
         }
 
+        /// <summary>
+        /// Updates the balance of a wallet in the database
+        /// </summary>
+        /// <param name="walletID">Id of the wallet to be updated</param>
+        /// <param name="balance">Amount to update to</param>
+        /// <returns></returns>
         public async Task UpdateWalletBalance(int walletID, float balance)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -32,6 +38,11 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Retrieves the balance of a wallet from the database
+        /// </summary>
+        /// <param name="walletID">Id of the wallet to retrieve the balance of</param>
+        /// <returns></returns>
         public async Task<float> GetWalletBalanceAsync(int walletID)
         {
             float walletBalance = -1;

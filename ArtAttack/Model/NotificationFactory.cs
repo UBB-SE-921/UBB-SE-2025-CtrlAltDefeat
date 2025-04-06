@@ -8,6 +8,12 @@ namespace ArtAttack.Model
 {
     public class NotificationFactory : INotificationFactory
     {
+        /// <summary>
+        /// Creates a Notification object from a data reader
+        /// </summary>
+        /// <param name="reader">The reader to create a notification from</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static Notification CreateFromDataReader(IDataReader reader)
         {
             int notificationId = reader.GetInt32(reader.GetOrdinal("notificationID"));

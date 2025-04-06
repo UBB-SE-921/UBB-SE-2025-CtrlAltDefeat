@@ -11,7 +11,7 @@ namespace ArtAttack.Model
     {
         private readonly IDatabaseProvider databaseProvider;
         private readonly string connectionString;
-        private IDbConnection? connection;
+        private IDbConnection connection;
 
         public NotificationDataAdapter(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
@@ -35,7 +35,7 @@ namespace ArtAttack.Model
         {
             var notifications = new List<Notification>();
 
-            using (IDbCommand command = connection.CreateCommand())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandText = "GetNotificationsByRecipient";
                 command.CommandType = CommandType.StoredProcedure;
