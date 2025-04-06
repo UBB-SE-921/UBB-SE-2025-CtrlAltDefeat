@@ -207,6 +207,7 @@ namespace ArtAttack.Model
         {
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
+                int waitListSize = 0;
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -228,11 +229,11 @@ namespace ArtAttack.Model
                     // Get the output parameter value
                     if (totalUsersParam.Value != DBNull.Value)
                     {
-                        return Convert.ToInt32(totalUsersParam.Value);
+                        waitListSize = Convert.ToInt32(totalUsersParam.Value);
                     }
-                    return 0;
                 }
                 connection.Close();
+                return waitListSize;
             }
         }
 
@@ -247,6 +248,7 @@ namespace ArtAttack.Model
         {
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
+                bool isInWaitlist = false;
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -264,9 +266,10 @@ namespace ArtAttack.Model
                     command.Parameters.Add(productIdParam);
 
                     object result = command.ExecuteScalar();
-                    return result != null && result != DBNull.Value;
+                    isInWaitlist = result != null && result != DBNull.Value;
                 }
                 connection.Close();
+                return isInWaitlist;
             }
         }
 
@@ -282,6 +285,7 @@ namespace ArtAttack.Model
             Debug.WriteLine($"GetUserWaitlistPosition: UserID: {userId}, ProductID: {productId}");
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
+                int userWaitListposition = -1;
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -308,11 +312,11 @@ namespace ArtAttack.Model
                     // Get the output parameter value
                     if (positionParam.Value != DBNull.Value)
                     {
-                        return Convert.ToInt32(positionParam.Value);
+                        userWaitListposition = Convert.ToInt32(positionParam.Value);
                     }
-                    return -1;
                 }
                 connection.Close();
+                return userWaitListposition;
             }
         }
 

@@ -2,25 +2,84 @@
 <RunSettings>
   <DataCollectionRunSettings>
     <DataCollectors>
-      <DataCollector friendlyName="Code Coverage">
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
         <Configuration>
           <CodeCoverage>
+            <!-- Include all assemblies in the project -->
             <ModulePaths>
               <Include>
-                <ModulePath>.*</ModulePath>
+                <ModulePath>.*\.dll$</ModulePath>
+                <ModulePath>.*\.exe$</ModulePath>
               </Include>
+              <Exclude>
+                <ModulePath>.*\.Tests\.dll$</ModulePath>
+				  <ModulePath>.*moq\.dll$</ModulePath>
+                <ModulePath>.*xunit\..*\.dll$</ModulePath>
+                <ModulePath><Sources>
+              <Exclude>
+                <Source>.*\\obj\\.*</Source>
+                <Source>.*\\bin\\.*</Source>
+                <Source>.*\\Views\\.*</Source>
+                <Source>.*\\App\.xaml\.cs$</Source>
+                <Source>.*\\Program\.cs$</Source>
+                <Source>.*\\*Window\.xaml\.cs$</Source>
+                <Source>.*\\*Page\.xaml\.cs$</Source>
+                <Source>.*\.g\.cs$</Source>
+                <Source>.*\.g\.i\.cs$</Source>
+              </Exclude>
+            </Sources>
+            .*mstest\..*\.dll$</ModulePath>
+			  </Exclude>
             </ModulePaths>
+
+            <!-- Attributes to exclude -->
             <Attributes>
               <Exclude>
-                <Attribute>^System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.DebuggerNonUserCodeAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
+                <Attribute>^System\.Runtime\.CompilerServices\.CompilerGeneratedAttribute$</Attribute>
+                <Attribute>^Microsoft\.UI\.Xaml\..*</Attribute>
               </Exclude>
             </Attributes>
+
+            <!-- Files to exclude -->
             <Sources>
               <Exclude>
                 <Source>.*\\obj\\.*</Source>
                 <Source>.*\\bin\\.*</Source>
+                <Source>.*\\Views\\.*</Source>
+                <Source>.*\\App\.xaml\.cs$</Source>
+                <Source>.*\\Program\.cs$</Source>
+                <Source>.*\\*Window\.xaml\.cs$</Source>
+                <Source>.*\\*Page\.xaml\.cs$</Source>
+                <Source>.*\.g\.cs$</Source>
+                <Source>.*\.g\.i\.cs$</Source>
               </Exclude>
             </Sources>
+
+            <!-- Functions to exclude -->
+            <Functions>
+              <Exclude>
+                <!-- Property getters and setters -->
+                <Function>.*::get_.*</Function>
+                <Function>.*::set_.*</Function>
+                
+                <!-- XAML-related -->
+                <Function>.*::InitializeComponent\(.*</Function>
+                
+                <!-- Entry point -->
+                <Function>.*::Main\(.*</Function>
+                
+                <!-- Event handlers -->
+                <Function>.*::.*_Click\(.*</Function>
+                <Function>.*::.*_Loaded\(.*</Function>
+                <Function>.*::.*_Closing\(.*</Function>
+                <Function>.*::.*_Changed\(.*</Function>
+                <Function>.*::.*_Activated\(.*</Function>
+              </Exclude>
+            </Functions>
+
             <UseVerifiableInstrumentation>true</UseVerifiableInstrumentation>
             <AllowLowIntegrityProcesses>true</AllowLowIntegrityProcesses>
             <CollectFromChildProcesses>true</CollectFromChildProcesses>

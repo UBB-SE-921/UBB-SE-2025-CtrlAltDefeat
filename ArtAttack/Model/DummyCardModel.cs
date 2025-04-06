@@ -22,6 +22,11 @@ namespace ArtAttack.Model
             this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
         }
 
+        /// <summary>
+        /// Deletes a card from the database using the DeleteCard stored procedure
+        /// </summary>
+        /// <param name="cardNumber">The card number of the card to be deleted</param>
+        /// <returns></returns>
         public async Task DeleteCardAsync(string cardNumber)
         {
             using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
@@ -42,6 +47,12 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Updates the balance of a card in the database using the UpdateCardBalance stored procedure
+        /// </summary>
+        /// <param name="cardNumber">The number of the card to be updated</param>
+        /// <param name="balance">The balance amount the card to be updated to</param>
+        /// <returns></returns>
         public async Task UpdateCardBalanceAsync(string cardNumber, float balance)
         {
             using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
@@ -67,6 +78,11 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Retrieves the balance of a card from the database using the GetBalance stored procedure
+        /// </summary>
+        /// <param name="cardNumber">The number of the card of which to get the balance from</param>
+        /// <returns></returns>
         public async Task<float> GetCardBalanceAsync(string cardNumber)
         {
             float cardBalance = -1;

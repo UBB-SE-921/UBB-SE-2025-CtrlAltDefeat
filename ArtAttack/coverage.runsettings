@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+        <Configuration>
+          <CodeCoverage>
+            <!-- Exclude entire namespaces -->
+            <ModulePaths>
+              <Exclude>
+                <ModulePath>.*\.Views\..*</ModulePath>
+                <ModulePath>.*\.xaml\..*</ModulePath>
+				  <ModulePath>.*\Domain\..*</ModulePath>
+				  <ModulePath>.*\.Tests\.dll$</ModulePath>
+				  <ModulePath>.*moq\.dll$</ModulePath>
+				  <ModulePath>.*xunit\..*\.dll$</ModulePath>
+				  <ModulePath>.*mstest\..*\.dll$</ModulePath>
+              </Exclude>
+            </ModulePaths>
+            
+            <!-- Exclude specific classes -->
+            <Functions>
+              <Exclude>
+                <Function>.*\.MainWindow.*</Function>
+                <Function>.*\.App.*</Function>
+                <!-- This pattern excludes all property accessors -->
+                <Function>.*\.get_.*</Function>
+                <Function>.*\.set_.*</Function>
+              </Exclude>
+            </Functions>
+            
+            <!-- Exclude attributes -->
+            <Attributes>
+              <Exclude>
+                <!-- Exclude WinUI/XAML generated code -->
+                <Attribute>^System\.Runtime\.CompilerServices\.CompilerGeneratedAttribute$</Attribute>
+                <Attribute>^Microsoft\.UI\.Xaml\..*</Attribute>
+              </Exclude>
+            </Attributes>
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

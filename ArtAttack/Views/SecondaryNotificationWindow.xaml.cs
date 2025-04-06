@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using ArtAttack.Domain;
 using Microsoft.UI.Xaml;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class SecondaryNotificationWindow : Window
     {
         public Notification SelectedNotification { get; }
@@ -29,7 +31,7 @@ namespace ArtAttack
             this.Close();
         }
 
-        private async void GoToContractFile(object sender, RoutedEventArgs e)
+        private void GoToContractFile(object sender, RoutedEventArgs e)
         {
             // AWAIT + Apelare functie Contract Darius!!!
         }

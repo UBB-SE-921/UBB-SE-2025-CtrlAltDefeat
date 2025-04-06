@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using Microsoft.Data.SqlClient;
+[ExcludeFromCodeCoverage]
 public class WaitListNotifier
 {
     private readonly IWaitListModel waitListModel;
