@@ -2,7 +2,7 @@
 using ArtAttack.Domain;
 using System;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.Model
 {
     [TestClass]
     public class NotificationTests

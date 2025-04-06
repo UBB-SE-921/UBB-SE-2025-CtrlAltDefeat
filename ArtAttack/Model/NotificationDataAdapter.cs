@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.Shared;
@@ -13,6 +14,7 @@ namespace ArtAttack.Model
         private readonly string connectionString;
         private IDbConnection connection;
 
+        [ExcludeFromCodeCoverage]
         public NotificationDataAdapter(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {
