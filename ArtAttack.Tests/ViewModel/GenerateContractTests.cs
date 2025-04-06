@@ -5,7 +5,7 @@ using ArtAttack.ViewModel;
 using System.Reflection;
 using Contract = ArtAttack.Domain.Contract;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.ViewModel
 {
     [TestClass]
     public class GenerateContractTest
