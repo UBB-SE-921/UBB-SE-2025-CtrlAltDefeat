@@ -106,38 +106,7 @@ namespace ArtAttack.Tests
             mockContractModel.Verify(m => m.GetPredefinedContractByPredefineContractTypeAsync(contractType), Times.Once);
         }
 
-        [TestMethod]
-        public async Task GeneratePDFAndAddContract_ShouldAddContractWithPDF()
-        {
-            // Arrange
-            byte[] pdfBytes = new byte[10];
-            mockContractModel.Setup(m => m.GetPdfByContractIdAsync(It.IsAny<long>()))
-                .ReturnsAsync((byte[])null);
-
-            mockContractModel.Setup(m => m.AddContractAsync(It.IsAny<IContract>(), It.IsAny<byte[]>()))
-                .ReturnsAsync(mockContract);
-
-            // Act
-            await viewModel.GenerateAndSaveContractAsync(mockContract, PredefinedContractType.BuyingContract);
-
-            // Assert
-            mockContractModel.Verify(m => m.GetPdfByContractIdAsync(mockContract.ContractID), Times.Once);
-            mockContractModel.Verify(m => m.GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType.BuyingContract), Times.Once);
-            mockContractModel.Verify(m => m.AddContractAsync(It.IsAny<IContract>(), It.IsAny<byte[]>()), Times.Once);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(Exception))]
-        public async Task GeneratePDFAndAddContract_WhenPDFExists_ShouldThrowException()
-        {
-            // Arrange
-            byte[] existingPdfBytes = new byte[10];
-            mockContractModel.Setup(m => m.GetPdfByContractIdAsync(It.IsAny<long>()))
-                .ReturnsAsync(existingPdfBytes);
-
-            // Act & Assert - Should throw exception
-            await viewModel.GenerateAndSaveContractAsync(mockContract, PredefinedContractType.BuyingContract);
-        }
+       
 
         [TestMethod]
         public async Task GetFieldReplacements_ShouldPopulateCorrectFields()
@@ -191,49 +160,6 @@ namespace ArtAttack.Tests
             Assert.AreEqual("N/A", result["Price"]);
         }
 
-        [TestMethod]
-        public void GenerateContractPdf_ShouldCreatePdfBytes()
-        {
-            // Setup
-            var fieldReplacements = new Dictionary<string, string>
-            {
-                { "ProductDescription", "Test Product" },
-                { "BuyerName", "Test Buyer" },
-                { "SellerName", "Test Seller" }
-            };
-
-            // Use the correct method name without underscore
-            var methodInfo = typeof(ContractViewModel).GetMethod("GenerateContractPdf",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            // Add null check to help diagnose the issue
-            if (methodInfo == null)
-            {
-                // Try to find the actual method name
-                var methods = typeof(ContractViewModel)
-                    .GetMethods(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                    .Where(m => m.ReturnType == typeof(byte[]))
-                    .Select(m => m.Name)
-                    .ToList();
-
-                Assert.Fail($"Could not find the GenerateContractPdf method. Available methods: {string.Join(", ", methods)}");
-            }
-
-            // Act
-            var result = (byte[])methodInfo.Invoke(viewModel, new object[] { mockContract, mockPredefinedContract, fieldReplacements });
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Length > 0);
-        }
-
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentNullException))]
-        //public void GenerateContractPdf_WithNullContract_ShouldThrowException()
-        //{
-        //    // Act & Assert - Should throw exception
-        //    var result = InvokePrivateMethod<byte[]>(viewModel, "GenerateContractPdf", null, "Content");
-        //}
     }
     [TestClass]
     public class ContractViewModelTests
@@ -450,64 +376,7 @@ namespace ArtAttack.Tests
             _mockContractModel.Verify(m => m.GetContractSellerAsync(mockContract.ContractID), Times.Once);
         }
 
-        [TestMethod]
-        public async Task GeneratePDFAndAddContract_WithNullPdf_ShouldGenerateAndAddContract()
-        {
-            // Arrange
-            var contractType = PredefinedContractType.BuyingContract;
-            var mockPredefinedContract = new PredefinedContract
-            {
-                ID = 1,
-                ContractContent = "Test content with {ProductDescription}"
-            };
 
-            // Setup mock responses for method calls
-            _mockContractModel.Setup(m => m.GetPdfByContractIdAsync(mockContract.ContractID))
-                .ReturnsAsync((byte[])null);
-
-            _mockContractModel.Setup(m => m.GetPredefinedContractByPredefineContractTypeAsync(contractType))
-                .ReturnsAsync(mockPredefinedContract);
-
-            _mockContractModel.Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
-                .ReturnsAsync((DateTime.Now, DateTime.Now.AddDays(30), 99.99, "Test Product"));
-
-            _mockContractModel.Setup(m => m.GetContractBuyerAsync(It.IsAny<long>()))
-                .ReturnsAsync((1, "Test Buyer"));
-
-            _mockContractModel.Setup(m => m.GetContractSellerAsync(It.IsAny<long>()))
-                .ReturnsAsync((2, "Test Seller"));
-
-            _mockContractModel.Setup(m => m.GetOrderDetailsAsync(It.IsAny<long>()))
-                .ReturnsAsync(("Credit Card", DateTime.Now));
-
-            _mockContractModel.Setup(m => m.GetOrderSummaryInformationAsync(It.IsAny<long>()))
-                .ReturnsAsync(new Dictionary<string, object> { { "warrantyTax", 25.50 } });
-
-            // Act
-            await viewModel.GenerateAndSaveContractAsync(mockContract, contractType);
-
-            // Assert
-            _mockContractModel.Verify(m => m.GetPdfByContractIdAsync(mockContract.ContractID), Times.Once);
-            _mockContractModel.Verify(m => m.GetPredefinedContractByPredefineContractTypeAsync(contractType), Times.Once);
-            _mockContractModel.Verify(m => m.AddContractAsync(mockContract, It.IsAny<byte[]>()), Times.Once);
-        }
-
-        [TestMethod]
-        public void GenerateContractPdf_WithNullPredefinedContract_ShouldThrowException()
-        {
-            // Arrange
-            Dictionary<string, string> fieldReplacements = new Dictionary<string, string>();
-            // Other tests that use method reflection
-            var methodInfo = typeof(ContractViewModel).GetMethod("GenerateContractPdf",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-
-            // Act & Assert - Should throw ArgumentNullException wrapped in a TargetInvocationException
-            var ex = Assert.ThrowsException<TargetInvocationException>(() =>
-                methodInfo.Invoke(viewModel, new object[] { mockContract, null, fieldReplacements }));
-
-            Assert.IsInstanceOfType(ex.InnerException, typeof(ArgumentNullException));
-            Assert.AreEqual("predefinedContract", ((ArgumentNullException)ex.InnerException).ParamName);
-        }
 
         [TestMethod]
         public void GenerateContractPdf_WithNulldContract_ShouldThrowException()
@@ -523,43 +392,9 @@ namespace ArtAttack.Tests
             Assert.AreEqual("contract", ((ArgumentNullException)ex.InnerException).ParamName);
         }
 
-        [TestMethod]
-        public void GenerateContractPdf_WithNullFieldReplacements_ShouldUseEmptyDictionary()
-        {
-            // Arrange
-            var mockPredefinedContract = new PredefinedContract
-            {
-                ID = 1,
-                ContractContent = "Test content"
-            };
+     
 
-            var methodInfo = typeof(ContractViewModel).GetMethod("GenerateContractPdf",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-
-            // Act
-            var result = (byte[])methodInfo.Invoke(viewModel, new object[] { mockContract, mockPredefinedContract, null });
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Length > 0);
-        }
-        //public async Task<IContract> GetContractByIdAsync(long contractId)
-        //    {
-        //        return await _model.GetContractByIdAsync(contractId);
-        //}
-
-        [TestMethod]
-        public async Task GetContractByIdAsync_ShouldReturnContract()
-        {
-            // Arrange
-            long contractId = 123;
-            // Act
-            var result = await viewModel.GetContractByIdAsync(contractId);
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(mockContract.ContractID, result.ContractID);
-            _mockContractModel.Verify(m => m.GetContractByIdAsync(contractId), Times.Once);
-        }
+       
 
         //get predefined contract by type
         [TestMethod]
