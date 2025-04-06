@@ -183,13 +183,13 @@ namespace ArtAtackTests
             string expectedName = "John Doe";
 
             // Mock the behavior of the reader
-            _mockReader.SetupSequence(r => r.Read())
+            _mockReader.SetupSequence(reader => reader.Read())
                 .Returns(true)  // First call returns true (indicating data exists)
                 .Returns(false); // Second call returns false (end of data)
-            _mockReader.Setup(r => r["Name"]).Returns(expectedName);
+            _mockReader.Setup(reader => reader["Name"]).Returns(expectedName);
 
             // Mock the command to return the reader
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             string? result = await _dummyProductModel.GetSellerNameAsync(sellerId);
@@ -205,7 +205,7 @@ namespace ArtAtackTests
             }
 
             // Verify that the connection was opened and closed
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockConnection.Verify(command => command.Open(), Times.Once);
         }
 #nullable disable
         [TestMethod]
@@ -214,7 +214,7 @@ namespace ArtAtackTests
             // Arrange
             int productId = 42;
             string expectedName = "Mock Product";
-            double expectedPrice = 49.99; // stored as double in DB
+            double expectedPrice = 49.99; 
             int expectedSellerId = 101;
             string expectedProductType = "Art";
             DateTime expectedStartDate = new DateTime(2025, 1, 1);
@@ -227,21 +227,21 @@ namespace ArtAtackTests
                 .Returns(true)
                 .Returns(false);
 
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(productId); // ID
-            _mockReader.Setup(r => r.GetString(1)).Returns(expectedName); // Name
-            _mockReader.Setup(r => r.GetDouble(2)).Returns(expectedPrice); // Price
-            _mockReader.Setup(r => r.IsDBNull(3)).Returns(false);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(expectedSellerId); // SellerID
-            _mockReader.Setup(r => r.GetString(4)).Returns(expectedProductType); // ProductType
-            _mockReader.Setup(r => r.IsDBNull(5)).Returns(false);
-            _mockReader.Setup(r => r.GetDateTime(5)).Returns(expectedStartDate); // StartDate
-            _mockReader.Setup(r => r.IsDBNull(6)).Returns(false);
-            _mockReader.Setup(r => r.GetDateTime(6)).Returns(expectedEndDate); // EndDate
+            _mockReader.Setup(reader => reader.GetInt32(0)).Returns(productId); // ID
+            _mockReader.Setup(reader => reader.GetString(1)).Returns(expectedName); // Name
+            _mockReader.Setup(reader => reader.GetDouble(2)).Returns(expectedPrice); // Price
+            _mockReader.Setup(reader => reader.IsDBNull(3)).Returns(false);
+            _mockReader.Setup(reader => reader.GetInt32(3)).Returns(expectedSellerId); // SellerID
+            _mockReader.Setup(reader => reader.GetString(4)).Returns(expectedProductType); // ProductType
+            _mockReader.Setup(reader => reader.IsDBNull(5)).Returns(false);
+            _mockReader.Setup(reader => reader.GetDateTime(5)).Returns(expectedStartDate); // StartDate
+            _mockReader.Setup(reader => reader.IsDBNull(6)).Returns(false);
+            _mockReader.Setup(reader => reader.GetDateTime(6)).Returns(expectedEndDate); // EndDate
 
             // Setup command and connection
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
-            _mockConnection.Setup(c => c.Open());
-            _mockConnection.Setup(c => c.Close());
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
+            _mockConnection.Setup(command => command.Open());
+            _mockConnection.Setup(command => command.Close());
 
             // Act
             var result = await _dummyProductModel.GetDummyProductByIdAsync(productId);
@@ -255,6 +255,83 @@ namespace ArtAtackTests
             Assert.AreEqual(expectedProductType, result.ProductType);
             Assert.AreEqual(expectedStartDate, result.StartDate);
             Assert.AreEqual(expectedEndDate, result.EndDate);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task GetSellerNameAsync_ThrowsArgumentNullException_WhenSellerIdIsNull()
+        {
+            // Act
+            await _dummyProductModel.GetSellerNameAsync(null);
+        }
+
+        [TestMethod]
+        public async Task GetSellerNameAsync_ReturnsNull_WhenNoSellerFound()
+        {
+            // Arrange
+            int sellerId = 999;
+            _mockReader.Setup(reader => reader.Read()).Returns(false);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
+
+            // Act
+            var result = await _dummyProductModel.GetSellerNameAsync(sellerId);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task GetSellerByIdAsync_ReturnsNull_WhenNoSellerFound()
+        {
+            // Arrange
+            int sellerId = 999;
+            _mockReader.Setup(reader => reader.Read()).Returns(false);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
+
+            // Act
+            var result = await _dummyProductModel.GetSellerNameAsync(sellerId);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_Throws_WhenConnectionStringIsNull()
+        {
+            // Act
+            var model = new DummyProductModel(null, _mockDatabase);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_Throws_WhenDatabaseProviderIsNull()
+        {
+            // Act
+            var model = new DummyProductModel(_testConnectionString, null);
+        }
+
+        [TestMethod]
+        public async Task GetDummyProductByIdAsync_ReturnsNull_WhenNoRecordFound()
+        {
+            // Arrange
+            int productId = 99;
+
+            // Simulate no rows returned
+            _mockReader.Setup(reader => reader.Read()).Returns(false);
+
+            // Set up the command to return the mock reader
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
+            _mockConnection.Setup(command => command.Open());
+            _mockConnection.Setup(command => command.Close());
+
+            // Act
+            var result = await _dummyProductModel.GetDummyProductByIdAsync(productId);
+
+            // Assert
+            Assert.IsNull(result);
+            _mockConnection.Verify(command => command.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
         }
 
     }
