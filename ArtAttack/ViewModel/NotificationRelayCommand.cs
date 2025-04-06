@@ -4,6 +4,7 @@ using System.Windows.Input;
 
 namespace ArtAttack.ViewModel
 {
+    [ExcludeFromCodeCoverage]
     public class NotificationRelayCommand : ICommand
     {
         private readonly Action execute;

@@ -62,6 +62,11 @@ namespace ArtAttack.ViewModel
         /// <returns The added contract></returns>
         public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
+            if (pdfFile == null)
+            {
+                // ArgumentNullException
+                throw new ArgumentNullException(nameof(pdfFile));
+            }
             return await model.AddContractAsync(contract, pdfFile);
         }
 
@@ -182,7 +187,7 @@ namespace ArtAttack.ViewModel
             fieldReplacements ??= new Dictionary<string, string>();
 
             // Replace format variables in the content.
-            string content = predefinedContract.Content;
+            string content = predefinedContract.ContractContent;
             foreach (var pair in fieldReplacements)
             {
                 content = content.Replace("{" + pair.Key + "}", pair.Value);
@@ -337,6 +342,12 @@ namespace ArtAttack.ViewModel
         /// <returns The task></returns>
         public async Task GenerateAndSaveContractAsync(IContract contract, PredefinedContractType contractType)
         {
+            // Check if the contract is null.
+            if (contract == null)
+            {
+                throw new ArgumentNullException(nameof(contract));
+            }
+
             var predefinedContract = await GetPredefinedContractByPredefineContractTypeAsync(contractType);
 
             var fieldReplacements = await GetFieldReplacements(contract);
@@ -355,29 +366,6 @@ namespace ArtAttack.ViewModel
             // Open the saved PDF file using Windows.Storage and Windows.System APIs.
             StorageFile file = await StorageFile.GetFileFromPathAsync(filePath);
             await Launcher.LaunchFileAsync(file);
-        }
-
-        /// <summary>
-        /// Generate a PDF and add a contract
-        /// </summary>
-        /// <param name="contract" type="Contract">The contract to generate and add</param>
-        /// <param name="contractType" type="PredefinedContractType">The type of the predefined contract</param>
-        /// <returns The task></returns>
-        /// <exception cref="Exception" throws on="File already exists">Thrown when the file already exists</exception>
-        public async Task GeneratePDFAndAddContract(IContract contract, PredefinedContractType contractType)
-        {
-            if (await GetPdfByContractIdAsync(contract.ContractID) != null)
-            {
-                throw new Exception("File already exists");
-            }
-
-            var predefinedContract = await GetPredefinedContractByPredefineContractTypeAsync(contractType);
-
-            var fieldReplacements = await GetFieldReplacements(contract);
-
-            var pdfBytes = GenerateContractPdf(contract, predefinedContract, fieldReplacements);
-
-            await AddContractAsync(contract, pdfBytes);
         }
     }
 }
