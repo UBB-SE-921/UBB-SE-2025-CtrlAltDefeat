@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This XAML file defines the TrackedOrderBuyerPage, which displays details of a tracked order for a buyer. -->
+
 <Page
     x:Class="ArtAttack.Views.TrackedOrderBuyerPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -9,7 +11,9 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <!-- Root container for the page layout -->
     <Grid Padding="20">
+        <!-- Custom control that displays order tracking details -->
         <local:TrackedOrderDetailsControl />
     </Grid>
 </Page>

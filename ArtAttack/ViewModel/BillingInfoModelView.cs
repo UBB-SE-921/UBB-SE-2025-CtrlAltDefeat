@@ -14,7 +14,7 @@ namespace ArtAttack.ViewModel
     {
         private readonly OrderHistoryModel orderHistoryModel;
         private readonly OrderSummaryModel orderSummaryModel;
-        private readonly OrderModel orderModel;
+        private readonly IOrderModel orderModel;
         private readonly DummyProductModel dummyProductModel;
         private readonly DummyWalletModel dummyWalletModel;
 

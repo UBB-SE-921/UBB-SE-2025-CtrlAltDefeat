@@ -1,367 +1,449 @@
+
+using ArtAttack.Domain;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
-using ArtAttack.Domain;
 using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
+    public interface IOrderModel
+    {
+        Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate);
+        Task UpdateOrderAsync(int orderId, int productType, string paymentMethod, DateTime orderDate);
+        Task DeleteOrderAsync(int orderId);
+        Task<List<Order>> GetBorrowedOrderHistoryAsync(int buyerId);
+        Task<List<Order>> GetNewOrUsedOrderHistoryAsync(int buyerId);
+        List<Order> GetOrdersFromLastThreeMonths(int buyerId);
+        List<Order> GetOrdersFromLastSixMonths(int buyerId);
+        List<Order> GetOrdersFrom2025(int buyerId);
+        List<Order> GetOrdersFrom2024(int buyerId);
+        List<Order> GetOrdersByName(int buyerId, string searchText);
+        Task<List<Order>> GetOrdersFromOrderHistoryAsync(int orderHistoryId);
+    }
     public class OrderModel : IOrderModel
     {
-        private readonly string connectionString;
-        private readonly IDatabaseProvider databaseProvider;
+        private readonly string _connectionString;
+        private readonly IDatabaseProvider _databaseProvider;
 
-        public string ConnectionString => connectionString;
+        /// <summary>
+        /// Gets the database connection string
+        /// </summary>
+        public string ConnectionString => _connectionString;
 
-        public OrderModel(string connectionString)
-            : this(connectionString, new SqlDatabaseProvider())
-        {
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the OrderModel class
+        /// </summary>
+        /// <param name="connectionString">Database connection string</param>
+        /// <param name="databaseProvider">Database provider for creating connections</param>
         public OrderModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            this.connectionString = connectionString;
-            this.databaseProvider = databaseProvider;
+            _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Adds a new order to the database
+        /// </summary>
+        /// <param name="productId">ID of the product being ordered</param>
+        /// <param name="buyerId">ID of the buyer placing the order</param>
+        /// <param name="productType">Type of the product (1: New, 2: Used, 3: Borrowed)</param>
+        /// <param name="paymentMethod">Method of payment (e.g., "Credit Card", "PayPal")</param>
+        /// <param name="orderSummaryId">ID of the order summary</param>
+        /// <param name="orderDate">Date and time when the order was placed</param>
+        /// <returns>Task representing the asynchronous operation</returns>
         public async Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "AddOrder";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ProductID", productId);
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    cmd.Parameters.AddWithValue("@ProductType", productType);
-                    cmd.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
-                    cmd.Parameters.AddWithValue("@OrderSummaryID", orderSummaryId);
-                    cmd.Parameters.AddWithValue("@OrderDate", orderDate);
+                    command.CommandText = "AddOrder";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@ProductID", productId);
+                    AddParameter(command, "@BuyerID", buyerId);
+                    AddParameter(command, "@ProductType", productType);
+                    AddParameter(command, "@PaymentMethod", paymentMethod);
+                    AddParameter(command, "@OrderSummaryID", orderSummaryId);
+                    AddParameter(command, "@OrderDate", orderDate);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
+        /// <summary>
+        /// Updates an existing order in the database
+        /// </summary>
+        /// <param name="orderId">ID of the order to update</param>
+        /// <param name="productType">New product type value</param>
+        /// <param name="paymentMethod">New payment method value</param>
+        /// <param name="orderDate">New order date value</param>
+        /// <returns>Task representing the asynchronous operation</returns>
         public async Task UpdateOrderAsync(int orderId, int productType, string paymentMethod, DateTime orderDate)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "UpdateOrder";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@OrderID", orderId);
-                    cmd.Parameters.AddWithValue("@ProductType", productType);
-                    cmd.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
-                    cmd.Parameters.AddWithValue("@OrderDate", orderDate);
+                    command.CommandText = "UpdateOrder";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@OrderID", orderId);
+                    AddParameter(command, "@ProductType", productType);
+                    AddParameter(command, "@PaymentMethod", paymentMethod);
+                    AddParameter(command, "@OrderDate", orderDate);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
+        /// <summary>
+        /// Removes an order from the database
+        /// </summary>
+        /// <param name="orderId">ID of the order to delete</param>
+        /// <returns>Task representing the asynchronous operation</returns>
         public async Task DeleteOrderAsync(int orderId)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "DeleteOrder";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@OrderID", orderId);
+                    command.CommandText = "DeleteOrder";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@OrderID", orderId);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
+        /// <summary>
+        /// Retrieves all borrowed items ordered by a specific buyer
+        /// </summary>
+        /// <param name="buyerId">ID of the buyer</param>
+        /// <returns>List of borrowed orders for the specified buyer</returns>
         public async Task<List<Order>> GetBorrowedOrderHistoryAsync(int buyerId)
         {
-            List<Order> orders = new List<Order>();
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            List<Order> orderList = new List<Order>();
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_borrowed_order_history";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    await conn.OpenAsync();
+                    command.CommandText = "get_borrowed_order_history";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@BuyerID", buyerId);
+                    await connection.OpenAsync();
 
-                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (IDataReader dataReader = await command.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync())
+                        while (await dataReader.ReadAsync())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
-            return orders;
+            return orderList;
         }
 
+        /// <summary>
+        /// Retrieves all new or used items ordered by a specific buyer
+        /// </summary>
+        /// <param name="buyerId">ID of the buyer</param>
+        /// <returns>List of new or used orders for the specified buyer</returns>
         public async Task<List<Order>> GetNewOrUsedOrderHistoryAsync(int buyerId)
         {
-            List<Order> orders = new List<Order>();
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            List<Order> orderList = new List<Order>();
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_new_or_used_order_history";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    await conn.OpenAsync();
+                    command.CommandText = "get_new_or_used_order_history";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@BuyerID", buyerId);
+                    await connection.OpenAsync();
 
-                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (IDataReader dataReader = await command.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync())
+                        while (await dataReader.ReadAsync())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
-            return orders;
+            return orderList;
         }
+
 
         public List<Order> GetOrdersFromLastThreeMonths(int buyerId)
         {
-            List<Order> orders = new List<Order>();
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            List<Order> orderList = new List<Order>();
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_orders_from_last_3_months";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    conn.Open();
+                    command.CommandText = "get_orders_from_last_3_months";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@BuyerID", buyerId);
+                    connection.Open();
 
-                    using (IDataReader reader = cmd.ExecuteReader())
+                    using (IDataReader dataReader = command.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (dataReader.Read())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
-            return orders;
+            return orderList;
         }
 
+        /// <summary>
+        /// Gets all orders placed by a buyer within the last six months
+        /// </summary>
+        /// <param name="buyerId">ID of the buyer</param>
+        /// <returns>List of orders from the last six months</returns>
         public List<Order> GetOrdersFromLastSixMonths(int buyerId)
         {
-            List<Order> orders = new List<Order>();
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            List<Order> orderList = new List<Order>();
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_orders_from_last_6_months";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    conn.Open();
+                    command.CommandText = "get_orders_from_last_6_months";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@BuyerID", buyerId);
+                    connection.Open();
 
-                    using (IDataReader reader = cmd.ExecuteReader())
+                    using (IDataReader dataReader = command.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (dataReader.Read())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
-            return orders;
+            return orderList;
         }
 
+        /// <summary>
+        /// Gets all orders placed by a buyer in the year 2025
+        /// </summary>
+        /// <param name="buyerId">ID of the buyer</param>
+        /// <returns>List of orders from 2025</returns>
         public List<Order> GetOrdersFrom2025(int buyerId)
         {
-            List<Order> orders = new List<Order>();
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            List<Order> orderList = new List<Order>();
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_orders_from_2025";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    conn.Open();
+                    command.CommandText = "get_orders_from_2025";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@BuyerID", buyerId);
+                    connection.Open();
 
-                    using (IDataReader reader = cmd.ExecuteReader())
+                    using (IDataReader dataReader = command.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (dataReader.Read())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
-            return orders;
+            return orderList;
         }
 
+        /// <summary>
+        /// Gets all orders placed by a buyer in the year 2024
+        /// </summary>
+        /// <param name="buyerId">ID of the buyer</param>
+        /// <returns>List of orders from 2024</returns>
         public List<Order> GetOrdersFrom2024(int buyerId)
         {
-            List<Order> orders = new List<Order>();
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            List<Order> orderList = new List<Order>();
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_orders_from_2024";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    conn.Open();
+                    command.CommandText = "get_orders_from_2024";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@BuyerID", buyerId);
+                    connection.Open();
 
-                    using (IDataReader reader = cmd.ExecuteReader())
+                    using (IDataReader dataReader = command.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (dataReader.Read())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
-            return orders;
+            return orderList;
         }
 
-        public List<Order> GetOrdersByName(int buyerId, string text)
+        /// <summary>
+        /// Searches for orders by product name for a specific buyer
+        /// </summary>
+        /// <param name="buyerId">ID of the buyer</param>
+        /// <param name="searchText">Text to search for in product names</param>
+        /// <returns>List of matching orders</returns>
+        public List<Order> GetOrdersByName(int buyerId, string searchText)
         {
-            List<Order> orders = new List<Order>();
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            List<Order> orderList = new List<Order>();
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_orders_by_name";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
-                    cmd.Parameters.AddWithValue("@text", text);
-                    conn.Open();
+                    command.CommandText = "get_orders_by_name";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@BuyerID", buyerId);
+                    AddParameter(command, "@text", searchText);
+                    connection.Open();
 
-                    using (IDataReader reader = cmd.ExecuteReader())
+                    using (IDataReader dataReader = command.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (dataReader.Read())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
-            return orders;
+            return orderList;
         }
 
+        /// <summary>
+        /// Gets all orders from a specific order history
+        /// </summary>
+        /// <param name="orderHistoryId">ID of the order history</param>
+        /// <returns>List of orders in the specified order history</returns>
         public async Task<List<Order>> GetOrdersFromOrderHistoryAsync(int orderHistoryId)
         {
-            List<Order> orders = new List<Order>();
+            List<Order> orderList = new List<Order>();
 
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandText = "get_orders_from_order_history";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@OrderHistoryID", orderHistoryId);
-                    await conn.OpenAsync();
+                    command.CommandText = "get_orders_from_order_history";
+                    command.CommandType = CommandType.StoredProcedure;
+                    AddParameter(command, "@OrderHistoryID", orderHistoryId);
+                    await connection.OpenAsync();
 
-                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (IDataReader dataReader = await command.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync())
+                        while (await dataReader.ReadAsync())
                         {
-                            Order order = new Order()
+                            Order orderItem = new Order()
                             {
-                                OrderID = reader.GetInt32(reader.GetOrdinal("OrderID")),
-                                ProductID = reader.GetInt32(reader.GetOrdinal("ProductID")),
-                                BuyerID = reader.GetInt32(reader.GetOrdinal("BuyerID")),
-                                OrderSummaryID = reader.GetInt32(reader.GetOrdinal("OrderSummaryID")),
-                                OrderHistoryID = reader.GetInt32(reader.GetOrdinal("OrderHistoryID")),
-                                ProductType = reader.GetInt32(reader.GetOrdinal("ProductType")),
-                                PaymentMethod = reader.IsDBNull(reader.GetOrdinal("PaymentMethod")) ? string.Empty : reader.GetString(reader.GetOrdinal("PaymentMethod")),
-                                OrderDate = reader.IsDBNull(reader.GetOrdinal("OrderDate")) ? DateTime.MinValue : reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                                OrderID = dataReader.GetInt32(dataReader.GetOrdinal("OrderID")),
+                                ProductID = dataReader.GetInt32(dataReader.GetOrdinal("ProductID")),
+                                BuyerID = dataReader.GetInt32(dataReader.GetOrdinal("BuyerID")),
+                                OrderSummaryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderSummaryID")),
+                                OrderHistoryID = dataReader.GetInt32(dataReader.GetOrdinal("OrderHistoryID")),
+                                ProductType = dataReader.GetInt32(dataReader.GetOrdinal("ProductType")),
+                                PaymentMethod = dataReader.IsDBNull(dataReader.GetOrdinal("PaymentMethod")) ? string.Empty : dataReader.GetString(dataReader.GetOrdinal("PaymentMethod")),
+                                OrderDate = dataReader.IsDBNull(dataReader.GetOrdinal("OrderDate")) ? DateTime.MinValue : dataReader.GetDateTime(dataReader.GetOrdinal("OrderDate"))
                             };
-                            orders.Add(order);
+                            orderList.Add(orderItem);
                         }
                     }
                 }
             }
 
-            return orders;
+            return orderList;
         }
+
+
     }
 }
+
