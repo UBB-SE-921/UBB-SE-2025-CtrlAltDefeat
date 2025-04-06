@@ -22,13 +22,18 @@ namespace ArtAttack.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public NotificationViewModel(int currentUserId)
+        // Modified NotificationViewModel constructor for testing
+        public NotificationViewModel(int currentUserId, bool autoLoad = true)
         {
             dataAdapter = new NotificationDataAdapter(Configuration.CONNECTION_STRING);
             Notifications = new ObservableCollection<Notification>();
             this.currentUserId = currentUserId;
             MarkAsReadCommand = new NotificationRelayCommand<int>(async (id) => await MarkAsReadAsync(id));
-            _ = LoadNotificationsAsync(currentUserId);
+
+            if (autoLoad)
+            {
+                _ = LoadNotificationsAsync(currentUserId);
+            }
         }
 
         public ObservableCollection<Notification> Notifications
@@ -126,12 +131,6 @@ namespace ArtAttack.ViewModel
         public string UnReadNotificationsCountText
         {
             get => "You've got #" + unreadCount + " unread notifications.";
-        }
-
-        private void UpdateUnreadCount()
-        {
-            UnreadCount = Notifications.Count(n => !n.IsRead);
-            OnPropertyChanged(nameof(UnReadNotificationsCountText));
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ArtAttack.ViewModel
 {
     public class FinalizePurchaseViewModel : IFinalizePurchaseViewModel, INotifyPropertyChanged
     {
-        private readonly OrderHistoryModel orderHistoryModel;
+        private readonly IOrderHistoryModel orderHistoryModel;
         private readonly OrderSummaryModel orderSummaryModel;
         private readonly IOrderModel orderModel;
         private readonly NotificationViewModel notificationViewModel;
