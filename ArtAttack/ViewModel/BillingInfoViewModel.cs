@@ -10,13 +10,13 @@ using ArtAttack.Utils;
 
 namespace ArtAttack.ViewModel
 {
-    public class BillingInfoModelView : IBillingInfoModelView, INotifyPropertyChanged
+    public class BillingInfoViewModel : IBillingInfoViewModel, INotifyPropertyChanged
     {
-        private readonly OrderHistoryModel orderHistoryModel;
-        private readonly OrderSummaryModel orderSummaryModel;
+        private readonly IOrderHistoryModel orderHistoryModel;
+        private readonly IOrderSummaryModel orderSummaryModel;
         private readonly IOrderModel orderModel;
-        private readonly DummyProductModel dummyProductModel;
-        private readonly DummyWalletModel dummyWalletModel;
+        private readonly IDummyProductModel dummyProductModel;
+        private readonly IDummyWalletModel dummyWalletModel;
 
         private int orderHistoryID;
 
@@ -44,7 +44,7 @@ namespace ArtAttack.ViewModel
         public ObservableCollection<DummyProduct> ProductList { get; set; }
         public List<DummyProduct> DummyProducts;
 
-        public BillingInfoModelView(int orderHistoryID)
+        public BillingInfoViewModel(int orderHistoryID)
         {
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
             orderModel = new OrderModel(Configuration.CONNECTION_STRING);

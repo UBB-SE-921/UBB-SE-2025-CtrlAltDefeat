@@ -31,7 +31,7 @@ namespace ArtAttack
             this.Close();
         }
 
-        private async void GoToContractFile(object sender, RoutedEventArgs e)
+        private void GoToContractFile(object sender, RoutedEventArgs e)
         {
             // AWAIT + Apelare functie Contract Darius!!!
         }

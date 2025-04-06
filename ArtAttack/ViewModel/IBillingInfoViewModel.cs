@@ -4,7 +4,7 @@ using ArtAttack.Domain;
 
 namespace ArtAttack.ViewModel
 {
-    public interface IBillingInfoModelView
+    public interface IBillingInfoViewModel
     {
         Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID);
         void CalculateOrderTotal(int orderHistoryID);

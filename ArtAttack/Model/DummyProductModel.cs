@@ -1,33 +1,54 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
+using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
     public class DummyProductModel : IDummyProductModel
     {
         private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
+        [ExcludeFromCodeCoverage]
         public DummyProductModel(string connectionString)
+            : this(connectionString, new SqlDatabaseProvider())
         {
-            this.connectionString = connectionString;
         }
 
+        public DummyProductModel(string connectionString, IDatabaseProvider databaseProvider)
+        {
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+        }
+
+        /// <summary>
+        /// Adds a new DummyProduct record to the database
+        /// </summary>
+        /// <param name="name">Name of the product to be added</param>
+        /// <param name="price">Price of the product to be added</param>
+        /// <param name="sellerId">Id of the product's seller</param>
+        /// <param name="productType">Type of the product</param>
+        /// <param name="startDate">Beginning date for the product</param>
+        /// <param name="endDate">End date for the product</param>
+        /// <returns></returns>
         public async Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("AddDummyProduct", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = "AddDummyProduct";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Name", name);
-                    cmd.Parameters.AddWithValue("@Price", price);
-                    cmd.Parameters.AddWithValue("@SellerID", sellerId);
-                    cmd.Parameters.AddWithValue("@ProductType", productType);
-                    cmd.Parameters.AddWithValue("@StartDate", startDate);
-                    cmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                    AddParameter(cmd, "@Name", name);
+                    AddParameter(cmd, "@Price", price);
+                    AddParameter(cmd, "@SellerID", sellerId);
+                    AddParameter(cmd, "@ProductType", productType);
+                    AddParameter(cmd, "@StartDate", startDate);
+                    AddParameter(cmd, "@EndDate", endDate);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -35,23 +56,34 @@ namespace ArtAttack.Model
             }
         }
 
+
         /// <summary>
-        /// Updates an existing DummyProduct record.
+        /// Updates an existing DummyProduct record in the database
         /// </summary>
+        /// <param name="id">Id of the Product to be updated</param>
+        /// <param name="name">Name to be updated</param>
+        /// <param name="price">Price to be updated</param>
+        /// <param name="sellerId">Seller Id to be updated</param>
+        /// <param name="productType">Product type to be updated</param>
+        /// <param name="startDate">Start date to be updated</param>
+        /// <param name="endDate">End date to be updated</param>
+        /// <returns></returns>
         public async Task UpdateDummyProductAsync(int id, string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("UpdateDummyProduct", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = "UpdateDummyProduct";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ID", id);
-                    cmd.Parameters.AddWithValue("@Name", name);
-                    cmd.Parameters.AddWithValue("@Price", price);
-                    cmd.Parameters.AddWithValue("@SellerID", sellerId);
-                    cmd.Parameters.AddWithValue("@ProductType", productType);
-                    cmd.Parameters.AddWithValue("@StartDate", startDate);
-                    cmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                    AddParameter(cmd, "@ID", id);
+                    AddParameter(cmd, "@Name", name);
+                    AddParameter(cmd, "@Price", price);
+                    AddParameter(cmd, "@SellerID", sellerId);
+                    AddParameter(cmd, "@ProductType", productType);
+                    AddParameter(cmd, "@StartDate", startDate);
+                    AddParameter(cmd, "@EndDate", endDate);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -60,16 +92,20 @@ namespace ArtAttack.Model
         }
 
         /// <summary>
-        /// Deletes a DummyProduct record by ID.
+        /// Deletes a DummyProduct record from the database
         /// </summary>
+        /// <param name="id">Id of the product to be deleted</param>
+        /// <returns></returns>
         public async Task DeleteDummyProduct(int id)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("DeleteDummyProduct", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = "DeleteDummyProduct";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ID", id);
+
+                    AddParameter(cmd, "@ID", id);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -80,35 +116,30 @@ namespace ArtAttack.Model
         /// <summary>
         /// Retrieves a Seler's name by its ID.
         /// </summary>
-        /// <param name="sellerId"> integer.</param>
+        /// <param name="sellerId">Seller Id for which to retrieve name</param>
         /// <returns> string or null.</returns>
         internal async Task<string?> GetSellerNameAsync(int? sellerId)
         {
-            using (SqlConnection connection = new SqlConnection(this.connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand command = new SqlCommand("GetSellerById", connection))
+                using (IDbCommand command = connection.CreateCommand())
                 {
+                    command.CommandText = "GetSellerById";
                     command.CommandType = CommandType.StoredProcedure;
+
                     if (sellerId.HasValue)
                     {
-                        command.Parameters.AddWithValue("@SellerID",  (object)sellerId.Value);
+                        AddParameter(command, "@SellerID", sellerId.Value);
                     }
                     else
                     {
-                        command.Parameters.AddWithValue("@SellerID", DBNull.Value);
+                        AddParameter(command, "@SellerID", DBNull.Value);
                     }
 
                     await connection.OpenAsync();
 
                     object result = await command.ExecuteScalarAsync();
-                    if (result != null)
-                    {
-                        return result.ToString();
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    return result?.ToString();
                 }
             }
         }
@@ -116,51 +147,63 @@ namespace ArtAttack.Model
         /// <summary>
         /// Retrieves a DummyProduct by its ID.
         /// </summary>
-        /// <param name="productId"> integer.</param>
+        /// <param name="productId">Product Id of the product to be fetched</param>
         /// <returns> string or null.</returns>
         internal async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
         {
-            using (SqlConnection connection = new SqlConnection(this.connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand command = new SqlCommand("GetDummyProductByID", connection))
+                using (IDbCommand command = connection.CreateCommand())
                 {
+                    command.CommandText = "GetDummyProductByID";
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@productID", productId);
+
+                    AddParameter(command, "@productID", productId);
 
                     await connection.OpenAsync();
 
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    using (IDataReader reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
                             return new DummyProduct
                             {
-                                ID = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Price = (float)reader.GetDouble(2),
-                                SellerID = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
-                                ProductType = reader.GetString(4),
-                                StartDate = reader.IsDBNull(5) ? (DateTime?)null : reader.GetDateTime(5),
-                                EndDate = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6)
+                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Price = (float)reader.GetDouble(reader.GetOrdinal("Price")),
+                                SellerID = reader.IsDBNull(reader.GetOrdinal("SellerID")) ? null : (int?)reader.GetInt32(reader.GetOrdinal("SellerID")),
+                                ProductType = reader.GetString(reader.GetOrdinal("ProductType")),
+                                StartDate = reader.IsDBNull(reader.GetOrdinal("StartDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("StartDate")),
+                                EndDate = reader.IsDBNull(reader.GetOrdinal("EndDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("EndDate"))
                             };
                         }
-                        else
-                        {
-                            return null;
-                        }
+                        return null;
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Retrieves a Seler's name by its ID
+        /// </summary>
+        /// <param name="sellerId">Id of the seller to be retrieved</param>
+        /// <returns></returns>
         Task<string> IDummyProductModel.GetSellerNameAsync(int? sellerId)
         {
             return GetSellerNameAsync(sellerId);
         }
 
+        /// <summary>
+        /// Retrieves a DummyProduct by its ID
+        /// </summary>
+        /// <param name="productId">Id of the product to be retrieved</param>
+        /// <returns></returns>
         Task<DummyProduct> IDummyProductModel.GetDummyProductByIdAsync(int productId)
         {
-            return GetDummyProductByIdAsync(productId);
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = name;
+            parameter.Value = value ?? DBNull.Value;
+            command.Parameters.Add(parameter);
         }
     }
 }

@@ -28,6 +28,11 @@ namespace ArtAttack.Model
             connection.Open();
         }
 
+        /// <summary>
+        /// Retrieves notification for a user based on ID
+        /// </summary>
+        /// <param name="recipientId">Id of the recipient to for which to retrieve notifications</param>
+        /// <returns></returns>
         public List<Notification> GetNotificationsForUser(int recipientId)
         {
             var notifications = new List<Notification>();
@@ -54,6 +59,10 @@ namespace ArtAttack.Model
             return notifications;
         }
 
+        /// <summary>
+        /// Marks a notification as read in the database using the MarkNotificationAsRead stored procedure
+        /// </summary>
+        /// <param name="notificationId">Notification for which to retrieve status</param>
         public void MarkAsRead(int notificationId)
         {
             using (var command = connection.CreateCommand())
@@ -70,6 +79,12 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Adds a notification to the database
+        /// </summary>
+        /// <param name="notification">Notification to be added to the database</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public void AddNotification(Notification notification)
         {
             if (notification == null)
@@ -82,11 +97,9 @@ namespace ArtAttack.Model
                 command.CommandText = "AddNotification";
                 command.CommandType = CommandType.StoredProcedure;
 
-                // Common parameters
                 AddParameter(command, "@recipientID", notification.RecipientID);
                 AddParameter(command, "@category", notification.Category.ToString());
 
-                // Type-specific parameters
                 switch (notification)
                 {
                     case ContractRenewalAnswerNotification ans:
@@ -145,6 +158,12 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Adds a parameter to an sql command
+        /// </summary>
+        /// <param name="command">The command to add a parameter to</param>
+        /// <param name="name">Name of the parameter to add</param>
+        /// <param name="value">Value of the parameter to be added</param>
         private void AddParameter(IDbCommand command, string name, object value)
         {
             var parameter = command.CreateParameter();
@@ -153,6 +172,10 @@ namespace ArtAttack.Model
             command.Parameters.Add(parameter);
         }
 
+        /// <summary>
+        /// Sets null parameters for unused fields in the command
+        /// </summary>
+        /// <param name="command">Database command to set null fields in</param>
         private void SetNullParametersForUnusedFields(IDbCommand command)
         {
             var allParams = new[] { "@contractID", "@isAccepted", "@productID", "@orderID", "@shippingState", "@deliveryDate", "@expirationDate" };
@@ -174,6 +197,9 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Disposes of the database connection
+        /// </summary>
         public void Dispose()
         {
             connection?.Dispose();

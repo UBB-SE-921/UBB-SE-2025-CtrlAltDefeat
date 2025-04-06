@@ -1,252 +1,408 @@
-﻿//using ArtAttack.Domain;
-//using ArtAttack.ViewModel;
-//using Moq;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using System.Windows.Input;
+﻿using ArtAttack.Domain;
+using ArtAttack.Model;
+using ArtAttack.Shared;
+using ArtAttack.ViewModel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
-//namespace ArtAttack.Tests.ViewModel
-//{
-//    [TestClass]
-//    public class NotificationViewModelTests
-//    {
-//        private Mock<INotificationDataAdapter> mockDataAdapter;
-//        private NotificationViewModel viewModel;
-//        private int testUserId = 1;
-//        private List<Notification> testNotifications;
+namespace ArtAttack.Tests.ViewModel
+{
+    [TestClass]
+    public class NotificationViewModelTests
+    {
+        private Mock<INotificationDataAdapter> _mockDataAdapter;
+        private NotificationViewModel _viewModel;
+        private readonly int _currentUserId = 5;
+        private List<Notification> _testNotifications;
 
-//        [TestInitialize]
-//        public void Setup()
-//        {
-//            // Setup mock notifications
-//            testNotifications = new List<Notification>
-//                {
-//                    CreateMockNotification(1, testUserId, false),
-//                    CreateMockNotification(2, testUserId, true),
-//                    CreateMockNotification(3, testUserId, false)
-//                };
+        // Note: We need to create a factory method for the NotificationDataAdapter
+        // to avoid direct instantiation in the ViewModel constructor
+        private static class NotificationDataAdapterFactory
+        {
+            public static INotificationDataAdapter CreateAdapter(string connectionString)
+            {
+                // During tests, this would return our mock
+                return null;
+            }
+        }
 
-//            // Setup mock data adapter
-//            mockDataAdapter = new Mock<INotificationDataAdapter>();
-//            mockDataAdapter.Setup(m => m.GetNotificationsForUser(testUserId))
-//                .Returns(testNotifications);
+        [TestInitialize]
+        public void Setup()
+        {
+            // Create mock data adapter
+            _mockDataAdapter = new Mock<INotificationDataAdapter>();
 
-//            // Create a helper method to create the view model with the mock adapter
-//            CreateViewModelWithMockAdapter();
-//        }
+            // Sample notifications for testing
+            _testNotifications = new List<Notification>
+            {
+                new ProductAvailableNotification(5, DateTime.Now, 101) { NotificationID = 1, IsRead = false },
+                new ContractExpirationNotification(5, DateTime.Now, 201, DateTime.Now.AddMonths(1)) { NotificationID = 2, IsRead = true },
+                new OutbiddedNotification(5, DateTime.Now, 301) { NotificationID = 3, IsRead = false }
+            };
 
-//        private void CreateViewModelWithMockAdapter()
-//        {
-//            // Inject mock adapter with a custom constructor that overrides the real one
-//            viewModel = new TestNotificationViewModel(testUserId, mockDataAdapter.Object);
-//        }
+            // Setup the mock adapter
+            _mockDataAdapter.Setup(m => m.GetNotificationsForUser(_currentUserId))
+                .Returns(_testNotifications);
 
-//        [TestMethod]
-//        public async Task LoadNotificationsAsync_ShouldLoadNotificationsAndSetUnreadCount()
-//        {
-//            // Act
-//            await viewModel.LoadNotificationsAsync(testUserId);
+            // Create fresh view model for each test
+            _viewModel = new NotificationViewModel(_currentUserId);
 
-//            // Assert
-//            Assert.AreEqual(3, viewModel.Notifications.Count, "Should load all notifications");
-//            Assert.AreEqual(2, viewModel.UnreadCount, "Should correctly count unread notifications");
-//            Assert.AreEqual("You've got #2 unread notifications.", viewModel.UnReadNotificationsCountText);
-//            mockDataAdapter.Verify(m => m.GetNotificationsForUser(testUserId), Times.Once);
-//        }
+            // Use reflection to replace the data adapter with our mock
+            var field = typeof(NotificationViewModel).GetField("dataAdapter",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            field.SetValue(_viewModel, _mockDataAdapter.Object);
 
-//        [TestMethod]
-//        public async Task LoadNotificationsAsync_ShouldHandleExceptionGracefully()
-//        {
-//            // Arrange
-//            mockDataAdapter.Setup(m => m.GetNotificationsForUser(testUserId))
-//                .Throws(new Exception("Test exception"));
+            // For tests, start with empty notifications and reset properties
+            _viewModel.Notifications.Clear();
+            _viewModel.IsLoading = false;
+            _viewModel.UnreadCount = 0;
+        }
 
-//            // Act - This should not throw
-//            await viewModel.LoadNotificationsAsync(testUserId);
+        [TestMethod]
+        public void Constructor_InitializesProperties()
+        {
+            // Assert
+            Assert.IsNotNull(_viewModel.Notifications);
+            Assert.IsNotNull(_viewModel.MarkAsReadCommand);
+            Assert.IsFalse(_viewModel.IsLoading);
+        }
 
-//            // Assert
-//            Assert.IsFalse(viewModel.IsLoading, "IsLoading should be reset to false even when exception occurs");
-//        }
+        [TestMethod]
+        public void Constructor_SetsCurrentUserIdCorrectly()
+        {
+            // Arrange - Use reflection to check private field
+            var field = typeof(NotificationViewModel).GetField("currentUserId",
+                BindingFlags.NonPublic | BindingFlags.Instance);
 
-//        [TestMethod]
-//        public async Task MarkAsReadAsync_ShouldCallAdapterCorrectly()
-//        {
-//            // Arrange
-//            int notificationId = 1;
+            // Act
+            var userId = (int)field.GetValue(_viewModel);
 
-//            // Act
-//            await viewModel.MarkAsReadAsync(notificationId);
+            // Assert
+            Assert.AreEqual(_currentUserId, userId);
+        }
 
-//            // Assert
-//            mockDataAdapter.Verify(m => m.MarkAsRead(notificationId), Times.Once);
-//        }
+        [TestMethod]
+        public async Task LoadNotificationsAsync_LoadsAndCountsUnreadNotifications()
+        {
+            // No need to clear invocations if we're using autoLoad = false
 
-//        [TestMethod]
-//        public async Task MarkAsReadAsync_ShouldHandleExceptionGracefully()
-//        {
-//            // Arrange
-//            int notificationId = 1;
-//            mockDataAdapter.Setup(m => m.MarkAsRead(notificationId))
-//                .Throws(new Exception("Test exception"));
+            // Act
+            await _viewModel.LoadNotificationsAsync(_currentUserId);
 
-//            // Act - This should not throw
-//            await viewModel.MarkAsReadAsync(notificationId);
+            // Assert
+            Assert.AreEqual(3, _viewModel.Notifications.Count);
+            Assert.AreEqual(2, _viewModel.UnreadCount); // 2 out of 3 are unread
+            Assert.IsFalse(_viewModel.IsLoading);
+        }
 
-//            // No assert needed - just verifying no exception is thrown
-//        }
 
-//        [TestMethod]
-//        public async Task AddNotificationAsync_ShouldAddToLocalCollectionWhenRecipientMatches()
-//        {
-//            // Arrange
-//            var notification = CreateMockNotification(4, testUserId, false);
-//            bool popupShown = false;
-//            viewModel.ShowPopup += (message) => popupShown = true;
 
-//            // Act
-//            await viewModel.AddNotificationAsync(notification);
+        [TestMethod]
+        public async Task LoadNotificationsAsync_SetsIsLoadingTrueWhileExecuting()
+        {
+            // Arrange
+            bool loadingPropertyChanged = false;
+            bool wasLoadingTrue = false;
 
-//            // Assert
-//            mockDataAdapter.Verify(m => m.AddNotification(notification), Times.Once);
-//            Assert.AreEqual(1, viewModel.Notifications.Count, "Should add to local collection");
-//            Assert.AreEqual(1, viewModel.UnreadCount, "Should increment unread count");
-//            Assert.IsTrue(popupShown, "Should show popup");
-//        }
+            _viewModel.PropertyChanged += (sender, e) => {
+                if (e.PropertyName == nameof(_viewModel.IsLoading))
+                {
+                    loadingPropertyChanged = true;
+                    if (_viewModel.IsLoading)
+                    {
+                        wasLoadingTrue = true;
+                    }
+                }
+            };
 
-//        [TestMethod]
-//        public async Task AddNotificationAsync_ShouldNotAddToLocalCollectionWhenRecipientDiffers()
-//        {
-//            // Arrange
-//            var notification = CreateMockNotification(4, testUserId + 1, false); // Different recipient
-//            bool popupShown = false;
-//            viewModel.ShowPopup += (message) => popupShown = true;
+            // Act
+            await _viewModel.LoadNotificationsAsync(_currentUserId);
 
-//            // Act
-//            await viewModel.AddNotificationAsync(notification);
+            // Assert
+            Assert.IsTrue(loadingPropertyChanged, "IsLoading property should have changed");
+            Assert.IsTrue(wasLoadingTrue, "IsLoading should have been true during execution");
+            Assert.IsFalse(_viewModel.IsLoading, "IsLoading should be false after completion");
+        }
 
-//            // Assert
-//            mockDataAdapter.Verify(m => m.AddNotification(notification), Times.Once);
-//            Assert.AreEqual(0, viewModel.Notifications.Count, "Should not add to local collection");
-//            Assert.AreEqual(0, viewModel.UnreadCount, "Should not increment unread count");
-//            Assert.IsFalse(popupShown, "Should not show popup");
-//        }
 
-//        [TestMethod]
-//        public async Task AddNotificationAsync_ShouldHandleExceptionGracefully()
-//        {
-//            // Arrange
-//            var notification = CreateMockNotification(4, testUserId, false);
-//            mockDataAdapter.Setup(m => m.AddNotification(notification))
-//                .Throws(new Exception("Test exception"));
 
-//            // Act - This should not throw
-//            await viewModel.AddNotificationAsync(notification);
+        [TestMethod]
+        public async Task LoadNotificationsAsync_HandlesException()
+        {
+            // Arrange - Setup mock to throw
+            _mockDataAdapter.Setup(m => m.GetNotificationsForUser(_currentUserId))
+                .Throws(new Exception("Test exception"));
 
-//            // Assert
-//            Assert.AreEqual(0, viewModel.Notifications.Count, "Should not add to local collection on error");
-//        }
+            // Act - Should not throw
+            await _viewModel.LoadNotificationsAsync(_currentUserId);
 
-//        [TestMethod]
-//        [ExpectedException(typeof(ArgumentNullException))]
-//        public async Task AddNotificationAsync_ShouldThrowArgumentNullExceptionWhenNotificationIsNull()
-//        {
-//            // Act
-//            await viewModel.AddNotificationAsync(null);
+            // Assert
+            Assert.AreEqual(0, _viewModel.Notifications.Count);
+            Assert.AreEqual(0, _viewModel.UnreadCount);
+            Assert.IsFalse(_viewModel.IsLoading);
+        }
 
-//            // Assert: ExpectedException attribute handles this
-//        }
+        [TestMethod]
+        public async Task MarkAsReadAsync_CallsDataAdapter()
+        {
+            // Arrange
+            int notificationId = 42;
 
-//        [TestMethod]
-//        public void MarkAsReadCommand_ShouldBeInitialized()
-//        {
-//            // Assert
-//            Assert.IsNotNull(viewModel.MarkAsReadCommand, "MarkAsReadCommand should be initialized");
-//            Assert.IsInstanceOfType(viewModel.MarkAsReadCommand, typeof(ICommand), "MarkAsReadCommand should implement ICommand");
-//        }
+            // Act
+            await _viewModel.MarkAsReadAsync(notificationId);
 
-//        [TestMethod]
-//        public void PropertyChanged_ShouldBeTriggeredWhenPropertiesChange()
-//        {
-//            // Arrange
-//            string propertyChanged = null;
-//            viewModel.PropertyChanged += (sender, e) => propertyChanged = e.PropertyName;
+            // Assert
+            _mockDataAdapter.Verify(m => m.MarkAsRead(notificationId), Times.Once);
+        }
 
-//            // Act - Test each property
-//            viewModel.IsLoading = true;
-//            Assert.AreEqual("IsLoading", propertyChanged);
+        [TestMethod]
+        public async Task MarkAsReadAsync_HandlesException()
+        {
+            // Arrange
+            int notificationId = 42;
+            _mockDataAdapter.Setup(m => m.MarkAsRead(notificationId))
+                .Throws(new Exception("Test exception"));
 
-//            propertyChanged = null;
-//            viewModel.UnreadCount = 5;
+            // Act - Should not throw an exception
+            await _viewModel.MarkAsReadAsync(notificationId);
 
-//            // UnreadCount changes both UnreadCount and UnReadNotificationsCountText
-//            Assert.AreEqual("UnReadNotificationsCountText", propertyChanged);
+            // Assert
+            _mockDataAdapter.Verify(m => m.MarkAsRead(notificationId), Times.Once);
+        }
 
-//            propertyChanged = null;
-//            viewModel.Notifications = new System.Collections.ObjectModel.ObservableCollection<Notification>();
-//            Assert.AreEqual("Notifications", propertyChanged);
-//        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task AddNotificationAsync_ThrowsArgumentNullException_WhenNotificationIsNull()
+        {
+            // Act
+            await _viewModel.AddNotificationAsync(null);
+        }
 
-//        [TestMethod]
-//        public void UpdateUnreadCount_ShouldRecalculateUnreadCount()
-//        {
-//            // Arrange
-//            var notifications = new List<Notification>
-//                {
-//                    CreateMockNotification(1, testUserId, false),
-//                    CreateMockNotification(2, testUserId, true),
-//                    CreateMockNotification(3, testUserId, false)
-//                };
-//            viewModel.Notifications = new System.Collections.ObjectModel.ObservableCollection<Notification>(notifications);
+        [TestMethod]
+        public async Task AddNotificationAsync_CallsDataAdapter_AndUpdatesCollection_WhenRecipientMatches()
+        {
+            // Create a new view model with empty collection to ensure clean state
+            var mockDataAdapter = new Mock<INotificationDataAdapter>();
+            var viewModel = new NotificationViewModel(_currentUserId, false); // don't auto-load
 
-//            // Act
-//            // Call the private method using reflection
-//            var methodInfo = typeof(NotificationViewModel).GetMethod("UpdateUnreadCount",
-//                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-//            methodInfo.Invoke(viewModel, null);
+            // Use reflection to replace adapter
+            var field = typeof(NotificationViewModel).GetField("dataAdapter",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            field.SetValue(viewModel, mockDataAdapter.Object);
 
-//            // Assert
-//            Assert.AreEqual(2, viewModel.UnreadCount, "Should correctly count unread notifications");
-//        }
+            // Ensure collection is empty
+            viewModel.Notifications = new ObservableCollection<Notification>();
+            viewModel.UnreadCount = 0;
 
-//        [TestMethod]
-//        public void Constructor_ShouldInitializePropertiesAndStartLoading()
-//        {
-//            // Constructor already called in setup, so just verify state
-//            Assert.IsNotNull(viewModel.Notifications);
-//            Assert.IsNotNull(viewModel.MarkAsReadCommand);
-//        }
+            // Arrange test data
+            var notification = new ProductAvailableNotification(_currentUserId, DateTime.Now, 501) { NotificationID = 4 };
+            bool popupInvoked = false;
+            string popupMessage = null;
 
-//        // Helper method to create mock notifications
-//        private Notification CreateMockNotification(int id, int recipientId, bool isRead)
-//        {
-//            var mockNotification = new Mock<Notification>();
-//            mockNotification.Setup(n => n.NotificationID).Returns(id);
-//            mockNotification.Setup(n => n.RecipientID).Returns(recipientId);
-//            mockNotification.Setup(n => n.IsRead).Returns(isRead);
+            viewModel.ShowPopup += (message) => {
+                popupInvoked = true;
+                popupMessage = message;
+            };
 
-//            // Setup a proper Title/Content/Subtitle implementation
-//            mockNotification.Setup(n => n.Title).Returns("Test Title");
-//            mockNotification.Setup(n => n.Content).Returns("Test Content");
-//            mockNotification.Setup(n => n.Subtitle).Returns("Test Subtitle");
-//            mockNotification.Setup(n => n.Category).Returns(NotificationCategory.PAYMENT_CONFIRMATION);
+            // Act
+            await viewModel.AddNotificationAsync(notification);
 
-//            return mockNotification.Object;
-//        }
+            // Assert
+            mockDataAdapter.Verify(m => m.AddNotification(notification), Times.Once);
+            Assert.AreEqual(1, viewModel.Notifications.Count);
+            Assert.AreSame(notification, viewModel.Notifications[0]);
+            Assert.AreEqual(1, viewModel.UnreadCount);
+            Assert.IsTrue(popupInvoked);
+            Assert.AreEqual("Notification sent!", popupMessage);
+        }
 
-//        // Helper class to inject mock dependencies
-//        private class TestNotificationViewModel : NotificationViewModel
-//        {
-//            public TestNotificationViewModel(int userId, INotificationDataAdapter mockAdapter)
-//                : base(userId)
-//            {
-//                // Use reflection to set the private field
-//                var field = typeof(NotificationViewModel).GetField("dataAdapter",
-//                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-//                field.SetValue(this, mockAdapter);
-//            }
-//        }
-//    }
-//}
+        [TestMethod]
+        public async Task AddNotificationAsync_CallsDataAdapter_ButDoesNotUpdateCollection_WhenRecipientDoesNotMatch()
+        {
+            // Create a new view model with empty collection to ensure clean state
+            var mockDataAdapter = new Mock<INotificationDataAdapter>();
+            var viewModel = new NotificationViewModel(_currentUserId, false); // don't auto-load
+
+            // Use reflection to replace adapter
+            var field = typeof(NotificationViewModel).GetField("dataAdapter",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            field.SetValue(viewModel, mockDataAdapter.Object);
+
+            // Ensure collection is empty
+            viewModel.Notifications = new ObservableCollection<Notification>();
+            viewModel.UnreadCount = 0;
+
+            // Arrange test data
+            var notification = new ProductAvailableNotification(_currentUserId + 1, DateTime.Now, 501) { NotificationID = 4 };
+            bool popupInvoked = false;
+
+            viewModel.ShowPopup += (message) => { popupInvoked = true; };
+
+            // Act
+            await viewModel.AddNotificationAsync(notification);
+
+            // Assert
+            mockDataAdapter.Verify(m => m.AddNotification(notification), Times.Once);
+            Assert.AreEqual(0, viewModel.Notifications.Count);
+            Assert.AreEqual(0, viewModel.UnreadCount);
+            Assert.IsFalse(popupInvoked);
+        }
+
+
+        [TestMethod]
+        public async Task AddNotificationAsync_HandlesException()
+        {
+            // Create a new view model with empty collection to ensure clean state
+            var mockDataAdapter = new Mock<INotificationDataAdapter>();
+            var viewModel = new NotificationViewModel(_currentUserId, false); // don't auto-load
+
+            // Use reflection to replace adapter
+            var field = typeof(NotificationViewModel).GetField("dataAdapter",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            field.SetValue(viewModel, mockDataAdapter.Object);
+
+            // Ensure collection is empty
+            viewModel.Notifications = new ObservableCollection<Notification>();
+            viewModel.UnreadCount = 0;
+
+            // Setup the test scenario
+            var notification = new ProductAvailableNotification(_currentUserId, DateTime.Now, 501) { NotificationID = 4 };
+            mockDataAdapter.Setup(m => m.AddNotification(It.IsAny<Notification>()))
+                .Throws(new Exception("Test exception"));
+
+            // Act
+            await viewModel.AddNotificationAsync(notification);
+
+            // Assert
+            mockDataAdapter.Verify(m => m.AddNotification(It.IsAny<Notification>()), Times.Once);
+            Assert.AreEqual(0, viewModel.Notifications.Count);
+        }
+
+
+        [TestMethod]
+        public void Notifications_PropertyChangeNotification()
+        {
+            // Arrange
+            bool propertyChangedRaised = false;
+            string changedPropertyName = null;
+
+            _viewModel.PropertyChanged += (sender, e) => {
+                propertyChangedRaised = true;
+                changedPropertyName = e.PropertyName;
+            };
+
+            // Act
+            _viewModel.Notifications = new ObservableCollection<Notification>();
+
+            // Assert
+            Assert.IsTrue(propertyChangedRaised);
+            Assert.AreEqual(nameof(_viewModel.Notifications), changedPropertyName);
+        }
+
+        [TestMethod]
+        public void OnPropertyChanged_RaisesPropertyChangedEvent()
+        {
+            // Arrange
+            string propertyChangedName = null;
+            _viewModel.PropertyChanged += (sender, e) => { propertyChangedName = e.PropertyName; };
+
+            // Act
+            _viewModel.IsLoading = true;
+
+            // Assert
+            Assert.AreEqual(nameof(_viewModel.IsLoading), propertyChangedName);
+        }
+
+        [TestMethod]
+        public void UnReadNotificationsCountText_ReturnsCorrectFormat()
+        {
+            // Arrange
+            _viewModel.UnreadCount = 5;
+
+            // Act
+            string result = _viewModel.UnReadNotificationsCountText;
+
+            // Assert
+            Assert.AreEqual("You've got #5 unread notifications.", result);
+        }
+
+        [TestMethod]
+        public void UnreadCount_TriggersPropertyChanged_ForBothUnreadCountAndText()
+        {
+            // Arrange
+            var propertyChangedNames = new List<string>();
+            _viewModel.PropertyChanged += (sender, e) => { propertyChangedNames.Add(e.PropertyName); };
+
+            // Act
+            _viewModel.UnreadCount = 10;
+
+            // Assert
+            Assert.AreEqual(2, propertyChangedNames.Count);
+            Assert.AreEqual(nameof(_viewModel.UnreadCount), propertyChangedNames[0]);
+            Assert.AreEqual(nameof(_viewModel.UnReadNotificationsCountText), propertyChangedNames[1]);
+        }
+
+        [TestMethod]
+        public void MarkAsReadCommand_CanExecute()
+        {
+            // Assert
+            Assert.IsTrue(_viewModel.MarkAsReadCommand.CanExecute(42));
+        }
+
+        [TestMethod]
+        public async Task MarkAsReadCommand_ExecutesMarkAsReadAsync()
+        {
+            // Arrange
+            int notificationId = 42;
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+
+            // Setup the mock to signal when MarkAsRead is called
+            _mockDataAdapter
+                .Setup(m => m.MarkAsRead(notificationId))
+                .Callback(() => taskCompletionSource.SetResult(true));
+
+            // Act
+            _viewModel.MarkAsReadCommand.Execute(notificationId);
+
+            // Wait for the command to complete with a timeout
+            var completedTask = await Task.WhenAny(taskCompletionSource.Task, Task.Delay(3000));
+
+            // Assert
+            if (completedTask == taskCompletionSource.Task)
+            {
+                _mockDataAdapter.Verify(m => m.MarkAsRead(notificationId), Times.Once);
+            }
+            else
+            {
+                Assert.Fail("Command execution timed out after 3 seconds");
+            }
+        }
+    }
+
+    // Wrapper class for testing the private UpdateUnreadCount method if needed
+    public class TestableNotificationViewModel : NotificationViewModel
+    {
+        public TestableNotificationViewModel(int currentUserId) : base(currentUserId)
+        {
+        }
+
+        public void TestUpdateUnreadCount()
+        {
+            // Call private method through reflection since it's not part of public API
+            var methodInfo = typeof(NotificationViewModel).GetMethod("UpdateUnreadCount",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (methodInfo != null)
+            {
+                methodInfo.Invoke(this, null);
+            }
+        }
+    }
+}

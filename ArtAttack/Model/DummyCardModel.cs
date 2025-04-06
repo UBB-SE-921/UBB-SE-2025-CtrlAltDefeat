@@ -2,28 +2,44 @@
 using System.Data;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
+using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
-    public class DummyCardModel
+    public class DummyCardModel : IDummyCardModel
     {
         private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
-        public DummyCardModel(string connstring)
+        public DummyCardModel(string connectionString)
+            : this(connectionString, new SqlDatabaseProvider())
         {
-            connectionString = connstring;
         }
 
+        public DummyCardModel(string connectionString, IDatabaseProvider databaseProvider)
+        {
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+        }
+
+        /// <summary>
+        /// Deletes a card from the database using the DeleteCard stored procedure
+        /// </summary>
+        /// <param name="cardNumber">The card number of the card to be deleted</param>
+        /// <returns></returns>
         public async Task DeleteCardAsync(string cardNumber)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("DeleteCard", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = "DeleteCard";
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@cardnumber", cardNumber);
+                    var parameter = cmd.CreateParameter();
+                    parameter.ParameterName = "@cardnumber";
+                    parameter.Value = cardNumber;
+                    cmd.Parameters.Add(parameter);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -31,16 +47,30 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Updates the balance of a card in the database using the UpdateCardBalance stored procedure
+        /// </summary>
+        /// <param name="cardNumber">The number of the card to be updated</param>
+        /// <param name="balance">The balance amount the card to be updated to</param>
+        /// <returns></returns>
         public async Task UpdateCardBalanceAsync(string cardNumber, float balance)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("UpdateCardBalance", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = "UpdateCardBalance";
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@cnumber", cardNumber);
-                    cmd.Parameters.AddWithValue("@balance", balance);
+                    var paramCardNumber = cmd.CreateParameter();
+                    paramCardNumber.ParameterName = "@cnumber";
+                    paramCardNumber.Value = cardNumber;
+                    cmd.Parameters.Add(paramCardNumber);
+
+                    var paramBalance = cmd.CreateParameter();
+                    paramBalance.ParameterName = "@balance";
+                    paramBalance.Value = balance;
+                    cmd.Parameters.Add(paramBalance);
 
                     await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -48,19 +78,29 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Retrieves the balance of a card from the database using the GetBalance stored procedure
+        /// </summary>
+        /// <param name="cardNumber">The number of the card of which to get the balance from</param>
+        /// <returns></returns>
         public async Task<float> GetCardBalanceAsync(string cardNumber)
         {
             float cardBalance = -1;
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("GetBalance", conn))
+                using (IDbCommand cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = "GetBalance";
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@cnumber", cardNumber);
+                    var parameter = cmd.CreateParameter();
+                    parameter.ParameterName = "@cnumber";
+                    parameter.Value = cardNumber;
+                    cmd.Parameters.Add(parameter);
+
                     await conn.OpenAsync();
 
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
