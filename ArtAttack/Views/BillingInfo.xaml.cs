@@ -8,18 +8,18 @@ namespace ArtAttack
 {
     public sealed partial class BillingInfo : Page
     {
-        private BillingInfoModelView viewModel;
+        private BillingInfoViewModel viewModel;
 
         public BillingInfo(int orderHistoryID)
         {
             this.InitializeComponent();
-            viewModel = new BillingInfoModelView(orderHistoryID);
+            viewModel = new BillingInfoViewModel(orderHistoryID);
 
             DataContext = viewModel;
         }
         private async void OnFinalizeButtonClickedAsync(object sender, RoutedEventArgs e)
         {
-            if (DataContext is BillingInfoModelView viewModel)
+            if (DataContext is BillingInfoViewModel viewModel)
             {
                 await viewModel.OnFinalizeButtonClickedAsync();
             }
@@ -38,7 +38,7 @@ namespace ArtAttack
 
         private async Task UpdateBorrowedProductTax(DatePicker sender)
         {
-            if (DataContext is BillingInfoModelView viewModel && sender.DataContext is DummyProduct product)
+            if (DataContext is BillingInfoViewModel viewModel && sender.DataContext is DummyProduct product)
             {
                 await viewModel.ApplyBorrowedTax(product);
             }

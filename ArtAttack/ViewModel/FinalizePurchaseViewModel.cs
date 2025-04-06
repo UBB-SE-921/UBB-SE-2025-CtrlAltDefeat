@@ -13,9 +13,9 @@ namespace ArtAttack.ViewModel
     public class FinalizePurchaseViewModel : IFinalizePurchaseViewModel, INotifyPropertyChanged
     {
         private readonly IOrderHistoryModel orderHistoryModel;
-        private readonly OrderSummaryModel orderSummaryModel;
+        private readonly IOrderSummaryModel orderSummaryModel;
         private readonly IOrderModel orderModel;
-        private readonly NotificationViewModel notificationViewModel;
+        private readonly INotificationViewModel notificationViewModel;
 
         private int orderHistoryID;
 
@@ -80,7 +80,7 @@ namespace ArtAttack.ViewModel
             return await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
         }
 
-        internal async void HandleFinish()
+        public async void HandleFinish()
         {
             foreach (var order in Orders)
             {

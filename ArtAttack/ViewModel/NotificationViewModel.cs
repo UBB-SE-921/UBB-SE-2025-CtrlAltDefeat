@@ -11,7 +11,7 @@ using ArtAttack.Shared;
 
 namespace ArtAttack.ViewModel
 {
-    public class NotificationViewModel : INotifyPropertyChanged
+    public class NotificationViewModel : INotifyPropertyChanged, INotificationViewModel
     {
         private readonly INotificationDataAdapter dataAdapter;
         private ObservableCollection<Notification> notifications;
