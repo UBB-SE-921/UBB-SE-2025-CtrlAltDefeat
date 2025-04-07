@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.Shared
 {
+    [ExcludeFromCodeCoverage]
     public static class DbExtensions
     {
         /// <summary>
