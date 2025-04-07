@@ -28,6 +28,12 @@ namespace ArtAttack.Views
             Checkpoints = new List<OrderCheckpoint>();
             LoadOrderData();
         }
+
+        /// <summary>
+        /// Shows an error dialog with the specified error message
+        /// </summary>
+        /// <param name="errorMessage">The message of the error to be shown</param>
+        /// <returns></returns>
         private async Task ShowErrorDialog(string errorMessage)
         {
             var dialog = new ContentDialog
@@ -41,6 +47,9 @@ namespace ArtAttack.Views
             await dialog.ShowAsync();
         }
 
+        /// <summary>
+        /// Loads the order data asynchronously
+        /// </summary>
         private async void LoadOrderData()
         {
             try
