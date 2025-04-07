@@ -38,10 +38,27 @@ namespace ArtAttack.ViewModel
             IDummyCardModel dummyCardModel,
             int orderHistoryID)
         {
-            this.orderHistoryModel = orderHistoryModel ?? throw new ArgumentNullException(nameof(orderHistoryModel));
-            this.orderSummaryModel = orderSummaryModel ?? throw new ArgumentNullException(nameof(orderSummaryModel));
-            this.orderModel = orderModel ?? throw new ArgumentNullException(nameof(orderModel));
-            this.dummyCardModel = dummyCardModel ?? throw new ArgumentNullException(nameof(dummyCardModel));
+            if (orderHistoryModel == null)
+            {
+                throw new ArgumentNullException(nameof(orderHistoryModel));
+            }
+            if (orderSummaryModel == null)
+            {
+                throw new ArgumentNullException(nameof(orderSummaryModel));
+            }
+            if (orderModel == null)
+            {
+                throw new ArgumentNullException(nameof(orderModel));
+            }
+            if (dummyCardModel == null)
+            {
+                throw new ArgumentNullException(nameof(dummyCardModel));
+            }
+
+            this.orderHistoryModel = orderHistoryModel;
+            this.orderSummaryModel = orderSummaryModel;
+            this.orderModel = orderModel;
+            this.dummyCardModel = dummyCardModel;
             this.orderHistoryID = orderHistoryID;
 
             _ = InitializeViewModelAsync();

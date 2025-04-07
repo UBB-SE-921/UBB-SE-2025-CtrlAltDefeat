@@ -23,8 +23,17 @@ namespace ArtAttack.ViewModel
 
         public OrderViewModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
             model = new OrderModel(connectionString);
         }
 

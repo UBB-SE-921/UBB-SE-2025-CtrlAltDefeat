@@ -28,8 +28,17 @@ namespace ArtAttack.Model
         /// <param name="databaseProvider">The database provider.</param>
         public ContractRenewalModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
         }
 
         /// <summary>

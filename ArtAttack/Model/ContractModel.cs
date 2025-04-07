@@ -19,8 +19,17 @@ namespace ArtAttack.Model
 
         public ContractModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
         }
 
         /// <summary>
@@ -56,11 +65,16 @@ namespace ArtAttack.Model
             }
 
             // If the contract is null, return a new instance with an empty content.
-            return predefinedContract ?? new PredefinedContract
+            if (predefinedContract == null)
             {
-                ContractID = 0,
-                ContractContent = string.Empty
-            };
+                return new PredefinedContract
+                {
+                    ContractID = 0,
+                    ContractContent = string.Empty
+                };
+            }
+
+            return predefinedContract;
         }
 
         /// <summary>
@@ -105,7 +119,12 @@ namespace ArtAttack.Model
                 }
             }
 
-            return contract ?? new Contract();
+            if (contract == null)
+            {
+                return new Contract();
+            }
+
+            return contract;
         }
 
         /// <summary>
@@ -222,7 +241,14 @@ namespace ArtAttack.Model
                     cmd.Parameters.AddWithValue("@PredefinedContractID",
                         contract.PredefinedContractID.HasValue ? (object)contract.PredefinedContractID.Value : DBNull.Value);
                     cmd.Parameters.AddWithValue("@PDFID", contract.PDFID);
-                    cmd.Parameters.AddWithValue("@PDFFile", pdfFile ?? (object)DBNull.Value);
+                    if (pdfFile == null)
+                    {
+                        cmd.Parameters.AddWithValue("@PDFFile", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@PDFFile", pdfFile);
+                    }
                     cmd.Parameters.AddWithValue("@RenewedFromContractID",
                         contract.RenewedFromContractID.HasValue ? (object)contract.RenewedFromContractID.Value : DBNull.Value);
 
@@ -251,7 +277,12 @@ namespace ArtAttack.Model
                 }
             }
 
-            return newContract ?? new Contract();
+            if (newContract == null)
+            {
+                return new Contract();
+            }
+
+            return newContract;
         }
 
         /// <summary>

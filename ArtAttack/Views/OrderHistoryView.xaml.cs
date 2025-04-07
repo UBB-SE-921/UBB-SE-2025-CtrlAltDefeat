@@ -16,6 +16,9 @@ namespace ArtAttack
     [ExcludeFromCodeCoverage]
     public sealed partial class OrderHistoryView : Window
     {
+        /// <summary>
+        /// The oder history view window;
+        /// </summary>
         private readonly int userId;
         private IOrderViewModel orderViewModel;
         private IContractViewModel contractViewModel;

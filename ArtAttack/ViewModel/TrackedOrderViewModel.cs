@@ -90,9 +90,22 @@ namespace ArtAttack.ViewModel
             IOrderViewModel orderViewModel,
             INotificationService notificationService)
         {
-            this.trackedOrderModel = trackedOrderModel ?? throw new ArgumentNullException(nameof(trackedOrderModel));
-            this.orderViewModel = orderViewModel ?? throw new ArgumentNullException(nameof(orderViewModel));
-            this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            if (trackedOrderModel == null)
+            {
+                throw new ArgumentNullException(nameof(trackedOrderModel));
+            }
+            if (orderViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(orderViewModel));
+            }
+            if (notificationService == null)
+            {
+                throw new ArgumentNullException(nameof(notificationService));
+            }
+
+            this.trackedOrderModel = trackedOrderModel;
+            this.orderViewModel = orderViewModel;
+            this.notificationService = notificationService;
         }
 
         /// <summary>

@@ -225,7 +225,16 @@ namespace ArtAttack.ViewModel
             dummyProduct.StartDate = newStartDate;
             dummyProduct.EndDate = newEndDate;
 
-            await dummyProductModel.UpdateDummyProductAsync(dummyProduct.ID, dummyProduct.Name, dummyProduct.Price, dummyProduct.SellerID ?? 0, dummyProduct.ProductType, newStartDate, newEndDate);
+            if (dummyProduct.SellerID == null)
+            {
+                dummyProduct.SellerID = 0;
+            }
+            else
+            {
+                dummyProduct.SellerID = dummyProduct.SellerID.Value;
+            }
+
+            await dummyProductModel.UpdateDummyProductAsync(dummyProduct.ID, dummyProduct.Name, dummyProduct.Price, (int)dummyProduct.SellerID, dummyProduct.ProductType, newStartDate, newEndDate);
         }
         [ExcludeFromCodeCoverage]
         internal void UpdateStartDate(DateTimeOffset date)

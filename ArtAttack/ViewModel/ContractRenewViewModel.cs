@@ -49,13 +49,42 @@ namespace ArtAttack.ViewModel
             IFileSystem fileSystem,
             IDateTimeProvider dateTimeProvider)
         {
-            this.contractModel = contractModel ?? throw new ArgumentNullException(nameof(contractModel));
-            this.renewalModel = renewalModel ?? throw new ArgumentNullException(nameof(renewalModel));
-            this.notificationAdapter = notificationAdapter ?? throw new ArgumentNullException(nameof(notificationAdapter));
-            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-            this.dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            if (contractModel == null)
+            {
+                throw new ArgumentNullException(nameof(contractModel));
+            }
+            if (renewalModel == null)
+            {
+                throw new ArgumentNullException(nameof(renewalModel));
+            }
+            if (notificationAdapter == null)
+            {
+                throw new ArgumentNullException(nameof(notificationAdapter));
+            }
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+            if (fileSystem == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystem));
+            }
+            if (dateTimeProvider == null)
+            {
+                throw new ArgumentNullException(nameof(dateTimeProvider));
+            }
+
+            this.contractModel = contractModel;
+            this.renewalModel = renewalModel;
+            this.notificationAdapter = notificationAdapter;
+            this.databaseProvider = databaseProvider;
+            this.connectionString = connectionString;
+            this.fileSystem = fileSystem;
+            this.dateTimeProvider = dateTimeProvider;
             BuyerContracts = new List<IContract>();
         }
 
