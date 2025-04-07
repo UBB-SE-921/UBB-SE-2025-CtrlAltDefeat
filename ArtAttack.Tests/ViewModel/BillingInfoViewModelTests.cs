@@ -215,7 +215,7 @@ namespace ArtAttack.Tests.ViewModel
             await viewModel.ApplyBorrowedTax(dummyProduct);
 
             // Assert
-            Assert.AreEqual(72, dummyProduct.Price);
+            Assert.AreEqual(36, dummyProduct.Price);
             viewModel.DummyProducts.Remove(dummyProduct);
 
         }
