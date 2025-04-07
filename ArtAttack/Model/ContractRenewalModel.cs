@@ -55,7 +55,7 @@ namespace ArtAttack.Model
             }
         }
 
-        private static void AddContractParameters(IDbCommand command, IContract contract, byte[] pdfFile = null)
+        private static void AddContractParameters(IDbCommand command, IContract contract, byte[] pdfFile)
         {
             command.Parameters.AddWithValue("@OrderID", contract.OrderID);
             command.Parameters.AddWithValue("@ContractStatus", contract.ContractStatus);
@@ -136,7 +136,7 @@ namespace ArtAttack.Model
                 ContractID = reader.GetInt64(reader.GetOrdinal("ID")),
                 OrderID = reader.GetInt32(reader.GetOrdinal("orderID")),
                 ContractStatus = reader.GetString(reader.GetOrdinal("contractStatus")),
-                ContractContent = reader["contractContent"] as string,
+                ContractContent = (string)reader["contractContent"],
                 RenewalCount = reader.GetInt32(reader.GetOrdinal("renewalCount")),
                 PredefinedContractID = reader.IsDBNull(reader.GetOrdinal("predefinedContractID"))
                     ? null

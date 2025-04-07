@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Data.SqlClient;
@@ -11,6 +12,7 @@ using ArtAttack.ViewModel;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class BorrowProductWindow : Window
     {
         private readonly string connectionString;

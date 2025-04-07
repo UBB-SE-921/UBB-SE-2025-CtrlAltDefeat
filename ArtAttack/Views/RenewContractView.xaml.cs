@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
@@ -8,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// Interaction logic for the Renew Contract page.
     /// Handles UI logic for selecting and renewing a contract.

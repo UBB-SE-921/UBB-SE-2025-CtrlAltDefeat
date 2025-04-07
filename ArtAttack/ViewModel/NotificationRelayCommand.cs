@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Input;
 
 namespace ArtAttack.ViewModel
 {
+    [ExcludeFromCodeCoverage]
     public class NotificationRelayCommand : ICommand
     {
         private readonly Action execute;
@@ -10,27 +12,28 @@ namespace ArtAttack.ViewModel
 
         public event EventHandler CanExecuteChanged;
 
+        [ExcludeFromCodeCoverage]
         public NotificationRelayCommand(Action execute)
-            : this(execute, null)
+           : this(execute, null)
         {
         }
-
         public NotificationRelayCommand(Action execute, Func<bool> canExecute)
         {
             this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this.canExecute = canExecute;
         }
 
+        [ExcludeFromCodeCoverage]
         public bool CanExecute(object parameter)
         {
             return canExecute == null || canExecute();
         }
-
+        [ExcludeFromCodeCoverage]
         public void Execute(object parameter)
         {
             execute();
         }
-
+        [ExcludeFromCodeCoverage]
         public void RaiseCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
@@ -54,17 +57,17 @@ namespace ArtAttack.ViewModel
             this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this.canExecute = canExecute;
         }
-
+        [ExcludeFromCodeCoverage]
         public bool CanExecute(object parameter)
         {
             return canExecute == null || canExecute((T)parameter);
         }
-
+        [ExcludeFromCodeCoverage]
         public void Execute(object parameter)
         {
             execute((T)parameter);
         }
-
+        [ExcludeFromCodeCoverage]
         public void RaiseCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);

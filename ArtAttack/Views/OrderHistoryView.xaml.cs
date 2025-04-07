@@ -2,6 +2,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -12,6 +13,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class OrderHistoryView : Window
     {
         private readonly int userId;
@@ -57,6 +59,11 @@ namespace ArtAttack
             try
             {
                 var selectedPeriod = (TimePeriodComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+                if (selectedPeriod == null)
+                {
+                    return;
+                }
 
                 // Use the view model to get orders with product info
                 var orderDisplayInfos = await orderViewModel.GetOrdersWithProductInfoAsync(userId, searchText, selectedPeriod);
@@ -276,7 +283,7 @@ namespace ArtAttack
                             XamlRoot = Content.XamlRoot
                         };
 
-                        errorContentDialog.ShowAsync();
+                        _ = errorContentDialog.ShowAsync();
                     }
                     catch (Exception exception)
                     {

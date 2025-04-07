@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -241,7 +242,7 @@ namespace ArtAttack.Shared
             parameters.Add(genericParam);
             return genericParam;
         }
-
+        [ExcludeFromCodeCoverage]
         /// <summary>
         /// A generic implementation of IDbDataParameter for testing purposes
         /// </summary>
@@ -250,10 +251,10 @@ namespace ArtAttack.Shared
             public DbType DbType { get; set; }
             public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
             public bool IsNullable => true;
-            public string ParameterName { get; set; }
+            public required string ParameterName { get; set; }
             public string SourceColumn { get; set; }
             public DataRowVersion SourceVersion { get; set; }
-            public object Value { get; set; }
+            public required object Value { get; set; }
             public byte Precision { get; set; }
             public byte Scale { get; set; }
             public int Size { get; set; }

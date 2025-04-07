@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,13 +11,14 @@ using Microsoft.UI.Xaml.Controls;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace ArtAttack.Views
 {
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class TrackedOrderControlPage : Page
     {
         internal ITrackedOrderViewModel ViewModel { get; set; }
-        public int TrackedOrderID { get; set; }
+        public required int TrackedOrderID { get; set; }
         internal List<OrderCheckpoint> Checkpoints { get; set; }
 
         internal TrackedOrderControlPage(ITrackedOrderViewModel viewModel, int trackedOrderID)
@@ -194,7 +196,13 @@ namespace ArtAttack.Views
                 await ShowErrorDialog(ex.ToString());
                 return;
             }
-            var lastCheckpoint = (await ViewModel.GetLastCheckpoint(order));
+
+            if (order == null)
+            {
+                return;
+            }
+
+            var lastCheckpoint = await ViewModel.GetLastCheckpoint(order);
 
             if (lastCheckpoint == null)
             {
@@ -274,10 +282,20 @@ namespace ArtAttack.Views
             {
                 TrackedOrder order = await ViewModel.GetTrackedOrderByIDAsync(TrackedOrderID);
 
+                if (order == null)
+                {
+                    return;
+                }
+
                 var lastCheckpoint = await ViewModel.GetLastCheckpoint(order);
                 if (lastCheckpoint == null)
                 {
                     await ShowErrorDialog("No checkpoint found to update.");
+                    return;
+                }
+
+                if (status == null)
+                {
                     return;
                 }
 

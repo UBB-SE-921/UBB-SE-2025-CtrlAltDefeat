@@ -1,10 +1,12 @@
-﻿using ArtAttack.Domain;
+﻿using System.Diagnostics.CodeAnalysis;
+using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
+
     public sealed partial class FinalisePurchase : Page
     {
         private FinalizePurchaseViewModel viewModel;

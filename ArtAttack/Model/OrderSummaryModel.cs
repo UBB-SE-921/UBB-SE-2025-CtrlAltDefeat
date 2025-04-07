@@ -28,6 +28,21 @@ namespace ArtAttack.Model
             this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
         }
 
+        /// <summary>
+        /// Adds an order summary to the database using the AddOrderSummary stored procedure
+        /// </summary>
+        /// <param name="subtotal">The subtotal of the order</param>
+        /// <param name="warrantyTax">The warranty tax of the order</param>
+        /// <param name="deliveryFee">The delivery fee of the order</param>
+        /// <param name="finalTotal">The final total of the order</param>
+        /// <param name="fullName">The order's full name</param>
+        /// <param name="email">The email on which the order was placed</param>
+        /// <param name="phoneNumber">The phone number on which the order was placed</param>
+        /// <param name="address">The order's address</param>
+        /// <param name="postalCode">The postal code of the order</param>
+        /// <param name="additionalInfo">Additional information for the order</param>
+        /// <param name="contractDetails">Other contact information for the order</param>
+        /// <returns></returns>
         public async Task AddOrderSummaryAsync(float subtotal, float warrantyTax, float deliveryFee, float finalTotal,
                                     string fullName, string email, string phoneNumber, string address,
                                     string postalCode, string additionalInfo, string contractDetails)
@@ -57,6 +72,22 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Updates an order summary in the database using the UpdateOrderSummary stored procedure
+        /// </summary>
+        /// <param name="id">The id of the order to be updated</param>
+        /// <param name="subtotal">The subtotal of the order</param>
+        /// <param name="warrantyTax">The warranty tax of the order</param>
+        /// <param name="deliveryFee">The delivery fee of the order</param>
+        /// <param name="finalTotal">The final total of the order</param>
+        /// <param name="fullName">The order's full name</param>
+        /// <param name="email">The email on which the order was placed</param>
+        /// <param name="phoneNumber">The phone number on which the order was placed</param>
+        /// <param name="address">The order's address</param>
+        /// <param name="postalCode">The postal code of the order</param>
+        /// <param name="additionalInfo">Additional information for the order</param>
+        /// <param name="contractDetails">Other contact information for the order</param>
+        /// <returns></returns>
         public async Task UpdateOrderSummaryAsync(int id, float subtotal, float warrantyTax, float deliveryFee, float finalTotal,
                                        string fullName, string email, string phoneNumber, string address,
                                        string postalCode, string additionalInfo, string contractDetails)
@@ -87,6 +118,11 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Deletes an order summary from the database using the DeleteOrderSummary stored procedure
+        /// </summary>
+        /// <param name="id">The id of the order summary to be deleted</param>
+        /// <returns></returns>
         public async Task DeleteOrderSummaryAsync(int id)
         {
             using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
@@ -104,6 +140,11 @@ namespace ArtAttack.Model
             }
         }
 
+        /// <summary>
+        /// Retrieves an order summary from the database using the GetOrderSummaryByID stored procedure
+        /// </summary>
+        /// <param name="orderSummaryID">The id of the order summary to be retrieved</param>
+        /// <returns></returns>
         public async Task<OrderSummary> GetOrderSummaryByIDAsync(int orderSummaryID)
         {
             using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))

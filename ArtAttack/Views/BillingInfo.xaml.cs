@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml;
@@ -6,6 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class BillingInfo : Page
     {
         private BillingInfoViewModel viewModel;
