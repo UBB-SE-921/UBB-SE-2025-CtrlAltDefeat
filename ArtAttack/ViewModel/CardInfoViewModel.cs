@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
@@ -10,10 +12,10 @@ namespace ArtAttack.ViewModel
 {
     public class CardInfoViewModel : ICardInfoViewModel, INotifyPropertyChanged
     {
-        private readonly OrderHistoryModel orderHistoryModel;
-        private readonly OrderSummaryModel orderSummaryModel;
+        private readonly IOrderHistoryModel orderHistoryModel;
+        private readonly IOrderSummaryModel orderSummaryModel;
         private readonly IOrderModel orderModel;
-        private readonly DummyCardModel dummyCardModel;
+        private readonly IDummyCardModel dummyCardModel;
 
         private int orderHistoryID;
 
@@ -29,7 +31,23 @@ namespace ArtAttack.ViewModel
         private string cardCVC;
         public ObservableCollection<DummyProduct> ProductList { get; set; }
         public List<DummyProduct> DummyProducts;
+        public CardInfoViewModel(
+            IOrderHistoryModel orderHistoryModel,
+            IOrderSummaryModel orderSummaryModel,
+            IOrderModel orderModel,
+            IDummyCardModel dummyCardModel,
+            int orderHistoryID)
+        {
+            this.orderHistoryModel = orderHistoryModel ?? throw new ArgumentNullException(nameof(orderHistoryModel));
+            this.orderSummaryModel = orderSummaryModel ?? throw new ArgumentNullException(nameof(orderSummaryModel));
+            this.orderModel = orderModel ?? throw new ArgumentNullException(nameof(orderModel));
+            this.dummyCardModel = dummyCardModel ?? throw new ArgumentNullException(nameof(dummyCardModel));
+            this.orderHistoryID = orderHistoryID;
 
+            _ = InitializeViewModelAsync();
+        }
+
+        [ExcludeFromCodeCoverage]
         public CardInfoViewModel(int orderHistoryID)
         {
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
@@ -168,7 +186,8 @@ namespace ArtAttack.ViewModel
             await dummyCardModel.UpdateCardBalanceAsync(CardNumber, newBalance);
         }
 
-        internal async Task OnPayButtonClickedAsync()
+        [ExcludeFromCodeCoverage]
+        public async Task OnPayButtonClickedAsync()
         {
             await ProcessCardPaymentAsync();
 
