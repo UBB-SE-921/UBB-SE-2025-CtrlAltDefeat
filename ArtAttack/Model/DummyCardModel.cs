@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
@@ -11,6 +12,7 @@ namespace ArtAttack.Model
         private readonly string connectionString;
         private readonly IDatabaseProvider databaseProvider;
 
+        [ExcludeFromCodeCoverage]
         public DummyCardModel(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {

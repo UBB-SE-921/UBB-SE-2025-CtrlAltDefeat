@@ -1,5 +1,5 @@
-﻿using ArtAttack.Domain;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using ArtAttack.Domain;
 
 namespace ArtAttack.Model
 {

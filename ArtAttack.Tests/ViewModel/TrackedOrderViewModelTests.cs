@@ -1257,7 +1257,8 @@ namespace ArtAttack.Tests.ViewModel
             // Setup to return different results on consecutive calls
             var checkpointListCallCounter = 0;
             _mockTrackedOrderModel.Setup(m => m.GetAllOrderCheckpointsAsync(trackedOrder.TrackedOrderID))
-                .ReturnsAsync(() => {
+                .ReturnsAsync(() =>
+                {
                     if (checkpointListCallCounter == 0)
                     {
                         checkpointListCallCounter++;
@@ -1433,7 +1434,8 @@ namespace ArtAttack.Tests.ViewModel
             // Use callCount to track and return different values for different calls
             int callCount = 0;
             _mockTrackedOrderModel.Setup(m => m.GetAllOrderCheckpointsAsync(trackedOrder.TrackedOrderID))
-                .ReturnsAsync(() => {
+                .ReturnsAsync(() =>
+                {
                     callCount++;
                     // First call returns checkpoints for the count check
                     if (callCount == 1)
