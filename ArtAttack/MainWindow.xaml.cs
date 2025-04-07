@@ -16,7 +16,6 @@ namespace ArtAttack
     [ExcludeFromCodeCoverage]
     public sealed partial class MainWindow : Window
     {
-
         private IContract contract;
         private IContractViewModel contractViewModel;
         private ITrackedOrderViewModel trackedOrderViewModel;

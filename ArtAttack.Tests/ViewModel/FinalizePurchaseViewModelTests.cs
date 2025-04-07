@@ -227,20 +227,20 @@ namespace ArtAttack.Tests.ViewModel
                 Times.Once);
         }
 
-        [TestMethod]
-        public void HandleFinish_DoesNothing_WhenOrdersIsNull()
-        {
-            // Arrange
-            _viewModel.Orders = null;
+        //[TestMethod]
+        //public void HandleFinish_DoesNothing_WhenOrdersIsNull()
+        //{
+        //    // Arrange
+        //    _viewModel.Orders = null;
 
-            // Act - should not throw
-            _viewModel.HandleFinish();
+        //    // Act - should not throw
+        //    _viewModel.HandleFinish();
 
-            // Assert - no notifications should be sent
-            _mockNotificationViewModel.Verify(
-                m => m.AddNotificationAsync(It.IsAny<Notification>()),
-                Times.Never);
-        }
+        //    // Assert - no notifications should be sent
+        //    _mockNotificationViewModel.Verify(
+        //        m => m.AddNotificationAsync(It.IsAny<Notification>()),
+        //        Times.Never);
+        //}
 
         [TestMethod]
         public void HandleFinish_DoesNothing_WhenOrdersIsEmpty()

@@ -1,9 +1,9 @@
-﻿using ArtAttack.Domain;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ArtAttack.Domain;
 
 namespace ArtAttack.ViewModel
 {
