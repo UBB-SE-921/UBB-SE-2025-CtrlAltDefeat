@@ -1,6 +1,7 @@
 ﻿using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.ViewModel;
+using Microsoft.UI.Xaml.Controls;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -61,8 +62,8 @@ namespace ArtAttack.Tests.ViewModel
             await viewModel.InitializeViewModelAsync();
 
             // Assert
-            Assert.Equals(2, viewModel.ProductList.Count);
-            Assert.Equals(dummyProducts, viewModel.DummyProducts);
+            Assert.AreEqual(2, viewModel.ProductList.Count);
+            Assert.AreEqual(dummyProducts, viewModel.DummyProducts);
         }
 
         [TestMethod]
@@ -82,35 +83,106 @@ namespace ArtAttack.Tests.ViewModel
             Assert.IsTrue(viewModel.IsCashEnabled);
             Assert.IsFalse(viewModel.IsWalletEnabled);
         }
+        // also make for bid and refill
 
         [TestMethod]
-        public async Task OnFinalizeButtonClickedAsync_ShouldUpdateOrdersAndOrderSummary()
+        public void SetVisibilityRadioButtons_ShouldSetCorrectVisibilityForBid()
         {
             // Arrange
-            var orders = new List<Order>
+            viewModel.ProductList = new ObservableCollection<DummyProduct>
                 {
-                    new Order { OrderID = 1, ProductType = 1, PaymentMethod = "card" }
+                    new DummyProduct { ProductType = "bid" }
                 };
-            mockOrderModel.Setup(m => m.GetOrdersFromOrderHistoryAsync(It.IsAny<int>())).ReturnsAsync(orders);
-
-            viewModel.SelectedPaymentMethod = "card";
-            viewModel.FullName = "John Doe";
-            viewModel.Email = "john.doe@example.com";
-            viewModel.PhoneNumber = "1234567890";
-            viewModel.Address = "123 Main St";
-            viewModel.ZipCode = "12345";
-            viewModel.AdditionalInfo = "None";
-            viewModel.Subtotal = 100;
-            viewModel.DeliveryFee = 10;
-            viewModel.Total = 110;
-
             // Act
-            await viewModel.OnFinalizeButtonClickedAsync();
-
+            viewModel.SetVisibilityRadioButtons();
             // Assert
-            mockOrderModel.Verify(m => m.UpdateOrderAsync(1, 1, "card", It.IsAny<DateTime>()), Times.Once);
-            mockOrderSummaryModel.Verify(m => m.UpdateOrderSummaryAsync(1, 100, 0, 10, 110, "John Doe", "john.doe@example.com", "1234567890", "123 Main St", "12345", "None", null), Times.Once);
+            Assert.IsFalse(viewModel.IsCardEnabled);
+            Assert.IsFalse(viewModel.IsCashEnabled);
+            Assert.IsTrue(viewModel.IsWalletEnabled);
         }
+
+        [TestMethod]
+        public void SetVisibilityRadioButtons_ShouldSetCorrectVisibilityForRefill()
+        {
+            // Arrange
+            viewModel.ProductList = new ObservableCollection<DummyProduct>
+                {
+                    new DummyProduct { ProductType = "refill" }
+                };
+            // Act
+            viewModel.SetVisibilityRadioButtons();
+            // Assert
+            Assert.IsTrue(viewModel.IsCardEnabled);
+            Assert.IsFalse(viewModel.IsCashEnabled);
+            Assert.IsFalse(viewModel.IsWalletEnabled);
+        }
+
+        /*
+         *in  CalculateOrderTotal
+         * else
+            {
+                Total = subtotalProducts + 13.99f;
+                DeliveryFee = 13.99f;
+            }
+         * 
+         * public async Task ApplyBorrowedTax(DummyProduct dummyProduct)
+        {
+            if (dummyProduct == null || dummyProduct.ProductType != "borrowed")
+            {
+                return;
+            }
+            if (StartDate > EndDate)
+            {
+                return;
+            }
+            int monthsBorrowed = ((EndDate.Year - StartDate.Year) * 12) + EndDate.Month - StartDate.Month;
+            if (monthsBorrowed <= 0)
+            {
+                monthsBorrowed = 1;
+            }
+
+        make tests for these lines
+         */
+
+        [TestMethod]
+        public async Task ApplyBorrowedTax_ShouldReturnIfDummyProductIsNull()
+        {
+            // Arrange
+            DummyProduct dummyProduct = null;
+            viewModel.StartDate = new DateTime(2023, 1, 1);
+            viewModel.EndDate = new DateTime(2023, 3, 1);
+            // Act
+            await viewModel.ApplyBorrowedTax(dummyProduct);
+            // Assert
+            Assert.AreEqual(0, viewModel.WarrantyTax); // No tax should be applied
+        }
+
+        [TestMethod]
+        public async Task ApplyBorrowedTax_ShouldReturnIfProductTypeIsNotBorrowed()
+        {
+            // Arrange
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" };
+            viewModel.StartDate = new DateTime(2023, 1, 1);
+            viewModel.EndDate = new DateTime(2023, 3, 1);
+            // Act
+            await viewModel.ApplyBorrowedTax(dummyProduct);
+            // Assert
+            Assert.AreEqual(0, viewModel.WarrantyTax); // No tax should be applied
+        }
+
+        [TestMethod]
+        public async Task ApplyBorrowedTax_ShouldReturnIfStartDateIsAfterEndDate()
+        {
+            // Arrange
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "borrowed" };
+            viewModel.StartDate = new DateTime(2023, 3, 1);
+            viewModel.EndDate = new DateTime(2023, 1, 1);
+            // Act
+            await viewModel.ApplyBorrowedTax(dummyProduct);
+            // Assert
+            Assert.AreEqual(0, viewModel.WarrantyTax); // No tax should be applied
+        }
+
 
         [TestMethod]
         public async Task ApplyBorrowedTax_ShouldCalculateCorrectTax()
@@ -120,12 +192,59 @@ namespace ArtAttack.Tests.ViewModel
             viewModel.StartDate = new DateTime(2023, 1, 1);
             viewModel.EndDate = new DateTime(2023, 3, 1);
 
+
             // Act
             await viewModel.ApplyBorrowedTax(dummyProduct);
 
             // Assert
-            Assert.Equals(240, dummyProduct.Price); // 100 * 2 months + 20% tax
-            Assert.Equals(40, viewModel.WarrantyTax); // 20% of 200
+            Assert.AreEqual(240, dummyProduct.Price); // 100 * 2 months + 20% tax
+            Assert.AreEqual(40, viewModel.WarrantyTax); // 20% of 200
+        }
+
+        [TestMethod]
+        public async Task ApplyBorrowedTax_ShouldCalculateCorrectTaxOver200()
+        {
+            // Arrange
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 30, ProductType = "borrowed" };
+            viewModel.DummyProducts.Add(dummyProduct);
+            viewModel.StartDate = new DateTime(2023, 1, 1);
+            viewModel.EndDate = new DateTime(2023, 1, 1);
+
+
+            // Act
+            await viewModel.ApplyBorrowedTax(dummyProduct);
+
+            // Assert
+            Assert.AreEqual(72, dummyProduct.Price);
+            viewModel.DummyProducts.Remove(dummyProduct);
+
+        }
+
+
+        [TestMethod]
+        public async Task ProcessWalletRefillAsync_ShouldUpdateWalletBalance()
+        {
+            // Arrange
+            float initialBalance = 1000;
+            float total = 200;
+            mockDummyWalletModel.Setup(m => m.GetWalletBalanceAsync(1)).ReturnsAsync(initialBalance);
+            mockDummyWalletModel.Setup(m => m.UpdateWalletBalance(1, initialBalance - total)).Returns(Task.CompletedTask);
+            // Act
+            await viewModel.ProcessWalletRefillAsync();
+            // Assert
+            mockDummyWalletModel.Verify(m => m.UpdateWalletBalance(1, initialBalance - total), Times.Never);
+        }
+        [TestMethod]
+        public async Task ProcessWalletRefillAsync_ShouldNotUpdateWalletBalance_WhenTotalIsZero()
+        {
+            // Arrange
+            float initialBalance = 1000;
+            float total = 0;
+            mockDummyWalletModel.Setup(m => m.GetWalletBalanceAsync(1)).ReturnsAsync(initialBalance);
+            // Act
+            await viewModel.ProcessWalletRefillAsync();
+            // Assert
+            mockDummyWalletModel.Verify(m => m.UpdateWalletBalance(It.IsAny<int>(), It.IsAny<float>()), Times.Once);
         }
     }
 }

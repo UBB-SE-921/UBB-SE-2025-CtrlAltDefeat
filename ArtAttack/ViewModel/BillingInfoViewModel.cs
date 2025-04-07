@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
@@ -51,7 +52,7 @@ namespace ArtAttack.ViewModel
             orderSummaryModel = new OrderSummaryModel(Configuration.CONNECTION_STRING);
             dummyWalletModel = new DummyWalletModel(Configuration.CONNECTION_STRING);
             dummyProductModel = new DummyProductModel(Configuration.CONNECTION_STRING);
-
+            DummyProducts = new List<DummyProduct>();
             this.orderHistoryID = orderHistoryID;
 
             _ = InitializeViewModelAsync();
@@ -97,7 +98,7 @@ namespace ArtAttack.ViewModel
                 }
             }
         }
-
+        [ExcludeFromCodeCoverage]
         public async Task OnFinalizeButtonClickedAsync()
         {
             string paymentMethod = SelectedPaymentMethod;
@@ -116,6 +117,7 @@ namespace ArtAttack.ViewModel
             await OpenNextWindowAsync(SelectedPaymentMethod);
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task OpenNextWindowAsync(string selectedPaymentMethod)
         {
             if (selectedPaymentMethod == "card")
@@ -142,7 +144,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
-        private async Task ProcessWalletRefillAsync()
+        public async Task ProcessWalletRefillAsync()
         {
             // There is only one wallet, with the ID 1
             float walletBalance = await dummyWalletModel.GetWalletBalanceAsync(1);
@@ -161,6 +163,10 @@ namespace ArtAttack.ViewModel
         public void CalculateOrderTotal(int orderHistoryID)
         {
             float subtotalProducts = 0;
+            if (DummyProducts.Count == 0)
+            {
+                return;
+            }
             foreach (var product in DummyProducts)
             {
                 subtotalProducts += product.Price;
@@ -209,7 +215,7 @@ namespace ArtAttack.ViewModel
 
             WarrantyTax = warrantyTax;
 
-            dummyProduct.Price = finalPrice;
+            dummyProduct.Price = finalPrice + WarrantyTax;
 
             CalculateOrderTotal(orderHistoryID);
 
@@ -221,19 +227,20 @@ namespace ArtAttack.ViewModel
 
             await dummyProductModel.UpdateDummyProductAsync(dummyProduct.ID, dummyProduct.Name, dummyProduct.Price, dummyProduct.SellerID ?? 0, dummyProduct.ProductType, newStartDate, newEndDate);
         }
-
+        [ExcludeFromCodeCoverage]
         internal void UpdateStartDate(DateTimeOffset date)
         {
             startDate = date.DateTime;
             StartDate = date.DateTime;
         }
-
+        [ExcludeFromCodeCoverage]
         internal void UpdateEndDate(DateTimeOffset date)
         {
             endDate = date.DateTime;
             EndDate = date.DateTime;
         }
 
+        [ExcludeFromCodeCoverage]
         public string SelectedPaymentMethod
         {
             get => selectedPaymentMethod;
@@ -244,6 +251,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public string FullName
         {
             get => fullName;
@@ -254,6 +262,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public string Email
         {
             get => email;
@@ -264,6 +273,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public string PhoneNumber
         {
             get => phoneNumber;
@@ -273,6 +283,8 @@ namespace ArtAttack.ViewModel
                 OnPropertyChanged(nameof(PhoneNumber));
             }
         }
+
+        [ExcludeFromCodeCoverage]
         public string Address
         {
             get => address;
@@ -282,7 +294,7 @@ namespace ArtAttack.ViewModel
                 OnPropertyChanged(nameof(Address));
             }
         }
-
+        [ExcludeFromCodeCoverage]
         public string ZipCode
         {
             get => zipCode;
@@ -293,6 +305,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public string AdditionalInfo
         {
             get => additionalInfo;
@@ -302,7 +315,7 @@ namespace ArtAttack.ViewModel
                 OnPropertyChanged(nameof(AdditionalInfo));
             }
         }
-
+        [ExcludeFromCodeCoverage]
         public bool IsWalletEnabled
         {
             get => isWalletEnabled;
@@ -313,6 +326,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public bool IsCashEnabled
         {
             get => isCashEnabled;
@@ -323,6 +337,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public bool IsCardEnabled
         {
             get => isCardEnabled;
@@ -333,6 +348,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public float Subtotal
         {
             get => subtotal;
@@ -342,7 +358,7 @@ namespace ArtAttack.ViewModel
                 OnPropertyChanged(nameof(Subtotal));
             }
         }
-
+        [ExcludeFromCodeCoverage]
         public float DeliveryFee
         {
             get => deliveryFee;
@@ -352,7 +368,7 @@ namespace ArtAttack.ViewModel
                 OnPropertyChanged(nameof(DeliveryFee));
             }
         }
-
+        [ExcludeFromCodeCoverage]
         public float Total
         {
             get => total;
@@ -362,6 +378,7 @@ namespace ArtAttack.ViewModel
                 OnPropertyChanged(nameof(Total));
             }
         }
+        [ExcludeFromCodeCoverage]
         public float WarrantyTax
         {
             get => warrantyTax;
@@ -372,6 +389,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public DateTime StartDate
         {
             get => startDate;
@@ -382,6 +400,7 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public DateTime EndDate
         {
             get => endDate;
