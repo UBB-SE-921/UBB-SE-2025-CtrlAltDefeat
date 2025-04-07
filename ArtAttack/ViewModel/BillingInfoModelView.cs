@@ -10,6 +10,9 @@ using ArtAttack.Utils;
 
 namespace ArtAttack.ViewModel
 {
+    /// <summary>
+    /// Represents the view model for billing information and processes order history and payment details.
+    /// </summary>
     public class BillingInfoModelView : IBillingInfoModelView, INotifyPropertyChanged
     {
         private readonly OrderHistoryModel orderHistoryModel;
@@ -44,6 +47,10 @@ namespace ArtAttack.ViewModel
         public ObservableCollection<DummyProduct> ProductList { get; set; }
         public List<DummyProduct> DummyProducts;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BillingInfoModelView"/> class and begins loading order history details.
+        /// </summary>
+        /// <param name="orderHistoryID">The unique identifier for the order history.</param>
         public BillingInfoModelView(int orderHistoryID)
         {
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
@@ -59,6 +66,10 @@ namespace ArtAttack.ViewModel
             warrantyTax = 0;
         }
 
+        /// <summary>
+        /// Asynchronously initializes the view model by loading dummy products, setting up the product list, and calculating order totals.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task InitializeViewModelAsync()
         {
             DummyProducts = await GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
@@ -71,6 +82,9 @@ namespace ArtAttack.ViewModel
             CalculateOrderTotal(orderHistoryID);
         }
 
+        /// <summary>
+        /// Sets the visibility of payment method radio buttons based on the first product's type.
+        /// </summary>
         public void SetVisibilityRadioButtons()
         {
             if (ProductList.Count > 0)
@@ -98,6 +112,10 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        /// <summary>
+        /// Handles the finalization button click event, updating orders and order summary, then opens the next window.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task OnFinalizeButtonClickedAsync()
         {
             string paymentMethod = SelectedPaymentMethod;
@@ -116,6 +134,11 @@ namespace ArtAttack.ViewModel
             await OpenNextWindowAsync(SelectedPaymentMethod);
         }
 
+        /// <summary>
+        /// Opens the next window based on the selected payment method.
+        /// </summary>
+        /// <param name="selectedPaymentMethod">The selected payment method (e.g. "card", "wallet").</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task OpenNextWindowAsync(string selectedPaymentMethod)
         {
             if (selectedPaymentMethod == "card")
@@ -142,9 +165,12 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        /// <summary>
+        /// Processes the wallet refill by deducting the order total from the current wallet balance.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         private async Task ProcessWalletRefillAsync()
         {
-            // There is only one wallet, with the ID 1
             float walletBalance = await dummyWalletModel.GetWalletBalanceAsync(1);
 
             float newBalance = walletBalance - Total;
@@ -152,12 +178,24 @@ namespace ArtAttack.ViewModel
             await dummyWalletModel.UpdateWalletBalance(1, newBalance);
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// Calculates the total order amount including applicable delivery fees.
+        /// </summary>
+        /// <param name="orderHistoryID">The order history identifier used for calculation.</param>
         public void CalculateOrderTotal(int orderHistoryID)
         {
             float subtotalProducts = 0;
@@ -180,11 +218,21 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        /// <summary>
+        /// Asynchronously retrieves dummy products associated with the specified order history.
+        /// </summary>
+        /// <param name="orderHistoryID">The unique identifier for the order history.</param>
+        /// <returns>A task representing the asynchronous operation that returns a list of <see cref="DummyProduct"/>.</returns>
         public async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
         {
             return await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
         }
 
+        /// <summary>
+        /// Applies the borrowed tax to the specified dummy product if applicable.
+        /// </summary>
+        /// <param name="dummyProduct">The dummy product on which to apply the borrowed tax.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task ApplyBorrowedTax(DummyProduct dummyProduct)
         {
             if (dummyProduct == null || dummyProduct.ProductType != "borrowed")
@@ -222,12 +270,20 @@ namespace ArtAttack.ViewModel
             await dummyProductModel.UpdateDummyProductAsync(dummyProduct.ID, dummyProduct.Name, dummyProduct.Price, dummyProduct.SellerID ?? 0, dummyProduct.ProductType, newStartDate, newEndDate);
         }
 
+        /// <summary>
+        /// Updates the start date for the product's rental period.
+        /// </summary>
+        /// <param name="date">The new start date as a <see cref="DateTimeOffset"/>.</param>
         internal void UpdateStartDate(DateTimeOffset date)
         {
             startDate = date.DateTime;
             StartDate = date.DateTime;
         }
 
+        /// <summary>
+        /// Updates the end date for the product's rental period.
+        /// </summary>
+        /// <param name="date">The new end date as a <see cref="DateTimeOffset"/>.</param>
         internal void UpdateEndDate(DateTimeOffset date)
         {
             endDate = date.DateTime;

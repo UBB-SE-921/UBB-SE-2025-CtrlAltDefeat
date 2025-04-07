@@ -10,17 +10,29 @@ using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.ViewModel
 {
+    /// <summary>
+    /// Represents the view model for orders and facilitates order management operations.
+    /// </summary>
     public class OrderViewModel : IOrderViewModel
     {
         private readonly IOrderModel model;
         private readonly string connectionString;
         private readonly IDatabaseProvider databaseProvider;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrderViewModel"/> class using the specified connection string and default SQL database provider.
+        /// </summary>
+        /// <param name="connectionString">The connection string used for database operations.</param>
         public OrderViewModel(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrderViewModel"/> class using the specified connection string and database provider.
+        /// </summary>
+        /// <param name="connectionString">The connection string used for database operations.</param>
+        /// <param name="databaseProvider">The database provider used for creating database connections.</param>
         public OrderViewModel(string connectionString, IDatabaseProvider databaseProvider)
         {
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
@@ -28,61 +40,130 @@ namespace ArtAttack.ViewModel
             model = new OrderModel(connectionString);
         }
 
+        /// <summary>
+        /// Asynchronously adds a new order with the specified parameters.
+        /// </summary>
+        /// <param name="productId">The unique identifier of the product.</param>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <param name="productType">The type of the product.</param>
+        /// <param name="paymentMethod">The payment method used for the order.</param>
+        /// <param name="orderSummaryId">The unique identifier of the order summary.</param>
+        /// <param name="orderDate">The date when the order was placed.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task AddOrderAsync(int productId, int buyerId, int productType, string paymentMethod, int orderSummaryId, DateTime orderDate)
         {
             await model.AddOrderAsync(productId, buyerId, productType, paymentMethod, orderSummaryId, orderDate);
         }
 
+        /// <summary>
+        /// Asynchronously updates the specified order with new values.
+        /// </summary>
+        /// <param name="orderId">The unique identifier of the order to update.</param>
+        /// <param name="productType">The new product type.</param>
+        /// <param name="paymentMethod">The new payment method.</param>
+        /// <param name="orderDate">The new order date.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task UpdateOrderAsync(int orderId, int productType, string paymentMethod, DateTime orderDate)
         {
             await model.UpdateOrderAsync(orderId, productType, paymentMethod, orderDate);
         }
 
+        /// <summary>
+        /// Asynchronously deletes the order specified by the order ID.
+        /// </summary>
+        /// <param name="orderId">The unique identifier of the order to delete.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task DeleteOrderAsync(int orderId)
         {
             await model.DeleteOrderAsync(orderId);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the borrowed order history for the specified buyer.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <returns>A task that returns a list of borrowed orders.</returns>
         public async Task<List<Order>> GetBorrowedOrderHistoryAsync(int buyerId)
         {
             return await model.GetBorrowedOrderHistoryAsync(buyerId);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the order history for new or used products for the specified buyer.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetNewOrUsedOrderHistoryAsync(int buyerId)
         {
             return await model.GetNewOrUsedOrderHistoryAsync(buyerId);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves orders from the last three months for the specified buyer.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetOrdersFromLastThreeMonthsAsync(int buyerId)
         {
             return await Task.Run(() => model.GetOrdersFromLastThreeMonths(buyerId));
         }
 
+        /// <summary>
+        /// Asynchronously retrieves orders from the last six months for the specified buyer.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetOrdersFromLastSixMonthsAsync(int buyerId)
         {
             return await Task.Run(() => model.GetOrdersFromLastSixMonths(buyerId));
         }
 
+        /// <summary>
+        /// Asynchronously retrieves orders from the year 2024 for the specified buyer.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetOrdersFrom2024Async(int buyerId)
         {
             return await Task.Run(() => model.GetOrdersFrom2024(buyerId));
         }
 
+        /// <summary>
+        /// Asynchronously retrieves orders from the year 2025 for the specified buyer.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetOrdersFrom2025Async(int buyerId)
         {
             return await Task.Run(() => model.GetOrdersFrom2025(buyerId));
         }
 
+        /// <summary>
+        /// Asynchronously retrieves orders for the specified buyer based on a text search.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <param name="text">The text to search for within orders.</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetOrdersByNameAsync(int buyerId, string text)
         {
             return await Task.Run(() => model.GetOrdersByName(buyerId, text));
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the orders associated with the specified order history ID.
+        /// </summary>
+        /// <param name="orderHistoryId">The unique identifier of the order history.</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetOrdersFromOrderHistoryAsync(int orderHistoryId)
         {
             return await model.GetOrdersFromOrderHistoryAsync(orderHistoryId);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the order summary for the specified order summary ID.
+        /// </summary>
+        /// <param name="orderSummaryId">The unique identifier of the order summary.</param>
+        /// <returns>A task that returns the <see cref="OrderSummary"/> object.</returns>
         public async Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId)
         {
             using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
@@ -120,6 +201,13 @@ namespace ArtAttack.ViewModel
             throw new KeyNotFoundException($"OrderSummary with ID {orderSummaryId} not found");
         }
 
+        /// <summary>
+        /// Asynchronously retrieves an order by its unique identifier.
+        /// </summary>
+        /// <param name="orderId">The unique identifier of the order.</param>
+        /// <returns>
+        /// A task that returns the <see cref="Order"/> object if found; otherwise, <c>null</c>.
+        /// </returns>
         public async Task<Order> GetOrderByIdAsync(int orderId)
         {
             var borrowedOrders = await model.GetBorrowedOrderHistoryAsync(0);
@@ -143,6 +231,12 @@ namespace ArtAttack.ViewModel
             return null;
         }
 
+        /// <summary>
+        /// Asynchronously retrieves a combined order history for the specified buyer using an optional time period filter.
+        /// </summary>
+        /// <param name="buyerId">The unique identifier of the buyer.</param>
+        /// <param name="timePeriodFilter">Optional filter specifying the time period ("3months", "6months", "2024", "2025", or "all").</param>
+        /// <returns>A task that returns a list of orders.</returns>
         public async Task<List<Order>> GetCombinedOrderHistoryAsync(int buyerId, string timePeriodFilter = "all")
         {
             List<Order> orders = new List<Order>();
@@ -174,16 +268,18 @@ namespace ArtAttack.ViewModel
         }
 
         /// <summary>
-        /// Retrieves order data with product information for a specified user.
+        /// Asynchronously retrieves order details along with product information for a specified user.
         /// </summary>
-        /// <param name="userId">The ID of the user whose orders to retrieve. Must be a positive integer.</param>
+        /// <param name="userId">The unique identifier of the user whose orders to retrieve. Must be a positive integer.</param>
         /// <param name="searchText">Optional. Text to filter orders by product name. Can be null or empty.</param>
         /// <param name="timePeriod">Optional. Time period filter ("Last 3 Months", "Last 6 Months", "This Year", etc.). Can be null or empty.</param>
-        /// <returns>A list of OrderDisplayInfo objects containing order details with product information.</returns>
+        /// <returns>
+        /// A task that returns a list of <see cref="OrderDisplayInfo"/> objects containing order details and product information.
+        /// </returns>
         /// <exception cref="SqlException">Thrown when there is an error executing the database command.</exception>
         /// <exception cref="ArgumentException">Thrown when userId is less than or equal to zero.</exception>
         /// <remarks>
-        /// The method returns an empty list if no orders are found matching the criteria.
+        /// The method returns an empty list if no orders match the specified criteria.
         /// Orders are categorized as either "new" or "borrowed" based on the product type.
         /// </remarks>
         public async Task<List<OrderDisplayInfo>> GetOrdersWithProductInfoAsync(int userId, string searchText = null, string timePeriod = null)
@@ -282,10 +378,12 @@ namespace ArtAttack.ViewModel
         }
 
         /// <summary>
-        /// Retrieves product category types (new/borrowed) for each order summary ID for a specific user.
+        /// Asynchronously retrieves product category types (new/borrowed) for each order summary ID for a specific user.
         /// </summary>
         /// <param name="userId">The ID of the user whose product categories to retrieve. Must be a positive integer.</param>
-        /// <returns>A dictionary mapping order summary IDs to product category types ("new" or "borrowed").</returns>
+        /// <returns>
+        /// A task that returns a dictionary mapping order summary IDs to product category types ("new" or "borrowed").
+        /// </returns>
         /// <exception cref="SqlException">Thrown when there is an error executing the database command.</exception>
         /// <exception cref="ArgumentException">Thrown when userId is less than or equal to zero.</exception>
         /// <remarks>
@@ -341,16 +439,43 @@ namespace ArtAttack.ViewModel
     }
 
     /// <summary>
-    /// Class representing order details with product information.
+    /// Represents order details along with product information.
     /// </summary>
     public class OrderDisplayInfo
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the order.
+        /// </summary>
         public int OrderID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the product.
+        /// </summary>
         public string ProductName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the product type name.
+        /// </summary>
         public string ProductTypeName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the order date as a formatted string.
+        /// </summary>
         public string OrderDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the payment method used for the order.
+        /// </summary>
         public string PaymentMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the order summary.
+        /// </summary>
         public int OrderSummaryID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the product category (either "new" or "borrowed").
+        /// </summary>
         public string ProductCategory { get; set; }
     }
 }

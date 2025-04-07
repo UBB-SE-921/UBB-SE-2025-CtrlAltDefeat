@@ -8,6 +8,9 @@ using ArtAttack.Shared;
 
 namespace ArtAttack.ViewModel
 {
+    /// <summary>
+    /// Represents the view model for card payment information and handles card payment processing.
+    /// </summary>
     public class CardInfoViewModel : ICardInfoViewModel, INotifyPropertyChanged
     {
         private readonly OrderHistoryModel orderHistoryModel;
@@ -30,6 +33,10 @@ namespace ArtAttack.ViewModel
         public ObservableCollection<DummyProduct> ProductList { get; set; }
         public List<DummyProduct> DummyProducts;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CardInfoViewModel"/> class and begins loading order history details.
+        /// </summary>
+        /// <param name="orderHistoryID">The unique identifier of the order history.</param>
         public CardInfoViewModel(int orderHistoryID)
         {
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
@@ -42,6 +49,10 @@ namespace ArtAttack.ViewModel
             _ = InitializeViewModelAsync();
         }
 
+        /// <summary>
+        /// Asynchronously initializes the card info view model by loading dummy products and order summary details.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task InitializeViewModelAsync()
         {
             DummyProducts = await GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
@@ -56,7 +67,15 @@ namespace ArtAttack.ViewModel
             Total = orderSummary.FinalTotal;
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -151,10 +170,20 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        /// <summary>
+        /// Asynchronously retrieves dummy products associated with the specified order history.
+        /// </summary>
+        /// <param name="orderHistoryID">The unique identifier for the order history.</param>
+        /// <returns>A task that represents the asynchronous operation, containing a list of <see cref="DummyProduct"/> objects.</returns>
         public async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
         {
             return await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
         }
+
+        /// <summary>
+        /// Processes the card payment by deducting the order total from the card balance.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task ProcessCardPaymentAsync()
         {
             float balance = await dummyCardModel.GetCardBalanceAsync(CardNumber);
@@ -168,6 +197,10 @@ namespace ArtAttack.ViewModel
             await dummyCardModel.UpdateCardBalanceAsync(CardNumber, newBalance);
         }
 
+        /// <summary>
+        /// Handles the pay button click event by processing the card payment and transitioning to the final purchase window.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         internal async Task OnPayButtonClickedAsync()
         {
             await ProcessCardPaymentAsync();
@@ -177,9 +210,6 @@ namespace ArtAttack.ViewModel
             b_window.Content = finalisePurchasePage;
 
             b_window.Activate();
-
-            // Some validation of the fields is required to make sure they are actually filled.
-            // Will update later
         }
     }
 }
