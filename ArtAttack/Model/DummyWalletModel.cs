@@ -88,6 +88,7 @@ namespace ArtAttack.Model
             return walletBalance;
         }
 
+        [ExcludeFromCodeCoverage]
         private void AddParameter(IDbCommand command, string name, object value)
         {
             var parameter = command.CreateParameter();

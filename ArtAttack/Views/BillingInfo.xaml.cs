@@ -1,11 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace ArtAttack
+namespace ArtAttack.Views
 {
     [ExcludeFromCodeCoverage]
     public sealed partial class BillingInfo : Page
@@ -13,7 +14,7 @@ namespace ArtAttack
         /// <summary>
         /// The view model for the BillingInfo page.
         /// </summary>
-        private BillingInfoViewModel viewModel;
+        private IBillingInfoViewModel viewModel;
 
         public BillingInfo(int orderHistoryID)
         {

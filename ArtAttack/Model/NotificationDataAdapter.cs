@@ -180,14 +180,7 @@ namespace ArtAttack.Model
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
 
-            if (value == null)
-            {
-                parameter.Value = DBNull.Value;
-            }
-            else
-            {
-                parameter.Value = value;
-            }
+            parameter.Value = value;
 
             command.Parameters.Add(parameter);
         }

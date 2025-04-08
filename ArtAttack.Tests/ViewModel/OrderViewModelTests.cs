@@ -133,6 +133,28 @@ namespace ArtAttack.Tests.ViewModel
             _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
         }
 
+        //create viewmodel with first parameter null then another test with second null
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task GetOrderSummaryAsync_ThrowsArgumentNullException_WhenConnectionStringIsNull()
+        {
+            // Arrange
+            string nullConnectionString = null;
+            // Act
+            var viewModel = new OrderViewModel(nullConnectionString, _mockDatabaseProvider.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task GetOrderSummaryAsync_ThrowsArgumentNullException_WhenDatabaseProviderIsNull()
+        {
+            // Arrange
+            string nullConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
+            // Act
+            var viewModel = new OrderViewModel(nullConnectionString, null);
+        }
+
 
         [TestMethod]
         [ExpectedException(typeof(KeyNotFoundException))]

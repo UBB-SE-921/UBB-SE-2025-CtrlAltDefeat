@@ -14,7 +14,7 @@ namespace ArtAttack.ViewModel
     /// <summary>
     /// Represents the view model for billing information and processes order history and payment details.
     /// </summary>
-    public class BillingInfoModelView : IBillingInfoModelView, INotifyPropertyChanged
+    public class BillingInfoViewModel : IBillingInfoViewModel, INotifyPropertyChanged
     {
         private readonly IOrderHistoryModel orderHistoryModel;
         private readonly IOrderSummaryModel orderSummaryModel;
@@ -49,10 +49,10 @@ namespace ArtAttack.ViewModel
         public List<DummyProduct> DummyProducts;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BillingInfoModelView"/> class and begins loading order history details.
+        /// Initializes a new instance of the <see cref="BillingInfoViewModel"/> class and begins loading order history details.
         /// </summary>
         /// <param name="orderHistoryID">The unique identifier for the order history.</param>
-        public BillingInfoModelView(int orderHistoryID)
+        public BillingInfoViewModel(int orderHistoryID)
         {
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
             orderModel = new OrderModel(Configuration.CONNECTION_STRING);
@@ -170,7 +170,7 @@ namespace ArtAttack.ViewModel
         /// Processes the wallet refill by deducting the order total from the current wallet balance.
         /// </summary>
         /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task ProcessWalletRefillAsync()
+        public async Task ProcessWalletRefillAsync()
         {
             float walletBalance = await dummyWalletModel.GetWalletBalanceAsync(1);
 
@@ -276,10 +276,6 @@ namespace ArtAttack.ViewModel
             {
                 dummyProduct.SellerID = 0;
             }
-            else
-            {
-                dummyProduct.SellerID = dummyProduct.SellerID.Value;
-            }
 
             await dummyProductModel.UpdateDummyProductAsync(dummyProduct.ID, dummyProduct.Name, dummyProduct.Price, (int)dummyProduct.SellerID, dummyProduct.ProductType, newStartDate, newEndDate);
         }
@@ -288,7 +284,7 @@ namespace ArtAttack.ViewModel
         /// Updates the start date for the product's rental period.
         /// </summary>
         /// <param name="date">The new start date as a <see cref="DateTimeOffset"/>.</param>
-        internal void UpdateStartDate(DateTimeOffset date)
+        public void UpdateStartDate(DateTimeOffset date)
         {
             startDate = date.DateTime;
             StartDate = date.DateTime;
@@ -299,7 +295,7 @@ namespace ArtAttack.ViewModel
         /// Updates the end date for the product's rental period.
         /// </summary>
         /// <param name="date">The new end date as a <see cref="DateTimeOffset"/>.</param>
-        internal void UpdateEndDate(DateTimeOffset date)
+        public void UpdateEndDate(DateTimeOffset date)
         {
             endDate = date.DateTime;
             EndDate = date.DateTime;

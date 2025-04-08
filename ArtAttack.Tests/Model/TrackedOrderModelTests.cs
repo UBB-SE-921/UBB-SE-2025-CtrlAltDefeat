@@ -44,6 +44,26 @@ namespace ArtAttack.Tests.Model
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
+        {
+            // Act
+            var model = new TrackedOrderModel(null, _mockDatabaseProvider.Object);
+
+            // Assert is handled by ExpectedException
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
+        {
+            // Act
+            var model = new TrackedOrderModel(ConnectionString, null);
+
+            // Assert is handled by ExpectedException
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(Exception))]
         public async Task AddTrackedOrderAsync_NegativeReturnValue_ThrowsException()
         {

@@ -879,6 +879,42 @@ namespace ArtAttack.Tests.Model
         }
 
         [TestMethod]
+        public void AddNotification_ContractRenewalRequestNotificationWithNull_AddsCorrectParameters()
+        {
+            // Arrange
+            var notification = new ContractRenewalRequestNotification(
+                recipientId: 1,
+                timestamp: DateTime.Now,
+                contractId: 101
+            );
+
+            // Capture parameters
+            var capturedParams = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParams);
+
+            // Act
+            _adapter.AddNotification(notification);
+
+            // Assert
+            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
+            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
+            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+
+            // Check parameters
+            AssertParameterExists(capturedParams, "@recipientID", 1);
+            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_REQ");
+            AssertParameterExists(capturedParams, "@contractID", 101);
+
+            // Check null parameters
+            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
+            AssertParameterExists(capturedParams, "@productID", DBNull.Value);
+            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
+            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
+            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
+            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
+        }
+
+        [TestMethod]
         public void AddNotification_HandlesConnectionClosed()
         {
             // Arrange

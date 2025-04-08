@@ -171,6 +171,19 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
+        public async Task ApplyBorrowedTaxSellerIdNull_ShouldReturnIfProductTypeIsNotBorrowed()
+        {
+            // Arrange
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" };
+            viewModel.StartDate = new DateTime(2023, 1, 1);
+            viewModel.EndDate = new DateTime(2023, 3, 1);
+            // Act
+            await viewModel.ApplyBorrowedTax(dummyProduct);
+            // Assert
+            Assert.AreEqual(0, viewModel.WarrantyTax); // No tax should be applied
+        }
+
+        [TestMethod]
         public async Task ApplyBorrowedTax_ShouldReturnIfStartDateIsAfterEndDate()
         {
             // Arrange
@@ -202,7 +215,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public async Task ApplyBorrowedTax_ShouldCalculateCorrectTaxOver200()
+            public async Task ApplyBorrowedTax_ShouldCalculateCorrectTaxOver200()
         {
             // Arrange
             var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 30, ProductType = "borrowed" };

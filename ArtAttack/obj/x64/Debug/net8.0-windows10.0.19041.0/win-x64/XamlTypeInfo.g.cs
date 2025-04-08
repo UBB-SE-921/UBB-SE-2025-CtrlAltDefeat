@@ -236,7 +236,7 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
             _typeNameTable[6] = "ArtAttack.Utils.SellerToVisibilityConverter";
             _typeNameTable[7] = "ArtAttack.Utils.BorrowedToVisibilityConverter";
             _typeNameTable[8] = "ArtAttack.Utils.StringToPaymentMethodConverter";
-            _typeNameTable[9] = "ArtAttack.BillingInfo";
+            _typeNameTable[9] = "ArtAttack.Views.BillingInfo";
             _typeNameTable[10] = "Microsoft.UI.Xaml.Controls.Page";
             _typeNameTable[11] = "Microsoft.UI.Xaml.Controls.UserControl";
             _typeNameTable[12] = "ArtAttack.BillingInfoWindow";
@@ -267,7 +267,7 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
             _typeTable[6] = typeof(global::ArtAttack.Utils.SellerToVisibilityConverter);
             _typeTable[7] = typeof(global::ArtAttack.Utils.BorrowedToVisibilityConverter);
             _typeTable[8] = typeof(global::ArtAttack.Utils.StringToPaymentMethodConverter);
-            _typeTable[9] = typeof(global::ArtAttack.BillingInfo);
+            _typeTable[9] = typeof(global::ArtAttack.Views.BillingInfo);
             _typeTable[10] = typeof(global::Microsoft.UI.Xaml.Controls.Page);
             _typeTable[11] = typeof(global::Microsoft.UI.Xaml.Controls.UserControl);
             _typeTable[12] = typeof(global::ArtAttack.BillingInfoWindow);
@@ -337,7 +337,7 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
         private void StaticInitializer_6_SellerToVisibilityConverter() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.Utils.SellerToVisibilityConverter).TypeHandle);
         private void StaticInitializer_7_BorrowedToVisibilityConverter() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.Utils.BorrowedToVisibilityConverter).TypeHandle);
         private void StaticInitializer_8_StringToPaymentMethodConverter() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.Utils.StringToPaymentMethodConverter).TypeHandle);
-        private void StaticInitializer_9_BillingInfo() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.BillingInfo).TypeHandle);
+        private void StaticInitializer_9_BillingInfo() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.Views.BillingInfo).TypeHandle);
         private void StaticInitializer_12_BillingInfoWindow() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.BillingInfoWindow).TypeHandle);
         private void StaticInitializer_13_BorrowProductWindow() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.BorrowProductWindow).TypeHandle);
         private void StaticInitializer_14_CardInfo() => global::System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(global::ArtAttack.CardInfo).TypeHandle);
@@ -434,7 +434,7 @@ namespace ArtAttack.ArtAttack_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 9:   //  ArtAttack.BillingInfo
+            case 9:   //  ArtAttack.Views.BillingInfo
                 userType = new global::ArtAttack.ArtAttack_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
                 userType.StaticInitializer = StaticInitializer_9_BillingInfo;
                 userType.SetIsLocalType();

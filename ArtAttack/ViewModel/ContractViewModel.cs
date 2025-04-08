@@ -183,12 +183,6 @@ namespace ArtAttack.ViewModel
                 throw new ArgumentNullException(nameof(predefinedContract));
             }
 
-            // Ensure fieldReplacements is not null.
-            if (fieldReplacements == null)
-            {
-                fieldReplacements = new Dictionary<string, string>();
-            }
-
             // Replace format variables in the content.
             string content = predefinedContract.ContractContent;
             foreach (var pair in fieldReplacements)

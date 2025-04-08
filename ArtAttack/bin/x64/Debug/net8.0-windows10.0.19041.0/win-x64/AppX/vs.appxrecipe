@@ -29,21 +29,21 @@
     <AppXManifest Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2025-04-06T22:00:10.068</Modified>
+      <Modified>2025-04-08T13:03:38.565</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2025-04-06T21:45:01.481</Modified>
+      <Modified>2025-04-08T12:15:51.632</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
       <PackagePath>ArtAttack.runtimeconfig.json</PackagePath>
-      <Modified>2025-04-06T14:32:22.323</Modified>
+      <Modified>2025-04-08T12:15:51.521</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
       <PackagePath>ArtAttack.dll</PackagePath>
-      <Modified>2025-04-06T22:00:09.631</Modified>
+      <Modified>2025-04-08T13:03:38.169</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
       <PackagePath>ArtAttack.dll.config</PackagePath>
@@ -51,7 +51,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
       <PackagePath>ArtAttack.exe</PackagePath>
-      <Modified>2025-04-06T22:00:09.639</Modified>
+      <Modified>2025-04-08T13:03:38.177</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.6\LatoFont\Lato-Black.ttf">
       <PackagePath>LatoFont\Lato-Black.ttf</PackagePath>
@@ -1251,7 +1251,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
       <PackagePath>ArtAttack.deps.json</PackagePath>
-      <Modified>2025-04-06T14:32:22.656</Modified>
+      <Modified>2025-04-08T12:15:51.886</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>

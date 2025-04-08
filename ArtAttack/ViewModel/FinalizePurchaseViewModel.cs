@@ -113,7 +113,7 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Handles the finish process by sending payment confirmation notifications for each order.
         /// </summary>
-        internal async void HandleFinish()
+        public async void HandleFinish()
         {
             foreach (var order in Orders)
             {

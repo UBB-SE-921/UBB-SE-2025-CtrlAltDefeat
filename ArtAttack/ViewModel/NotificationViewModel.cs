@@ -183,13 +183,5 @@ namespace ArtAttack.ViewModel
             get => "You've got #" + unreadCount + " unread notifications.";
         }
 
-        /// <summary>
-        /// Updates the unread notification count based on the current notifications.
-        /// </summary>
-        private void UpdateUnreadCount()
-        {
-            UnreadCount = Notifications.Count(n => !n.IsRead);
-            OnPropertyChanged(nameof(UnReadNotificationsCountText));
-        }
     }
 }

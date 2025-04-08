@@ -237,7 +237,7 @@ namespace ArtAttack.ViewModel
         /// Handles the pay button click event by processing the card payment and transitioning to the final purchase window.
         /// </summary>
         /// <returns>A task representing the asynchronous operation.</returns>
-        internal async Task OnPayButtonClickedAsync()
+        public async Task OnPayButtonClickedAsync()
         {
             await ProcessCardPaymentAsync();
 

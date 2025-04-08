@@ -65,6 +65,8 @@ namespace ArtAttack.Tests.Model
             Assert.AreEqual(_testConnectionString, value);
         }
 
+        
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
@@ -80,6 +82,7 @@ namespace ArtAttack.Tests.Model
             // Act - should throw ArgumentNullException
             var model = new DummyProductModel(_testConnectionString, null);
         }
+
 
         [TestMethod]
         public void Constructor_WithOnlyConnectionString_InitializesWithSqlDatabaseProvider()
@@ -139,6 +142,37 @@ namespace ArtAttack.Tests.Model
             VerifyParameterAdded("@StartDate", startDate);
             VerifyParameterAdded("@EndDate", endDate);
         }
+
+        [TestMethod]
+        public async Task AddDummyProductAsyncWithNullName_ExecutesCorrectProcedure()
+        {
+            // Arrange
+            string name = null;
+            float price = 99.99f;
+            int sellerId = 1;
+            string productType = "Test Type";
+            DateTime startDate = new DateTime(2023, 1, 1);
+            DateTime endDate = new DateTime(2023, 12, 31);
+
+            // Act
+            await _productModel.AddDummyProductAsync(name, price, sellerId, productType, startDate, endDate);
+
+            // Assert
+            _mockCommand.VerifySet(c => c.CommandText = "AddDummyProduct");
+            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
+            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+
+            // Verify parameters
+            VerifyParameterAdded("@Name", DBNull.Value);
+            VerifyParameterAdded("@Price", price);
+            VerifyParameterAdded("@SellerID", sellerId);
+            VerifyParameterAdded("@ProductType", productType);
+            VerifyParameterAdded("@StartDate", startDate);
+            VerifyParameterAdded("@EndDate", endDate);
+        }
+
+      
 
         [TestMethod]
         public async Task UpdateDummyProductAsync_ExecutesCorrectProcedure()

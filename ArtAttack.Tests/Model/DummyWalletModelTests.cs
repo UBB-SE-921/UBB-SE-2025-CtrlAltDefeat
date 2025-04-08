@@ -99,6 +99,7 @@ namespace ArtAttack.Tests.Model
             VerifyParameterAdded("@balance", balance);
         }
 
+
         [TestMethod]
         public async Task GetWalletBalanceAsync_ReturnsCorrectBalance()
         {
@@ -148,6 +149,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
             Assert.AreEqual(-1f, result);
         }
+
 
         private void VerifyParameterAdded(string name, object value)
         {

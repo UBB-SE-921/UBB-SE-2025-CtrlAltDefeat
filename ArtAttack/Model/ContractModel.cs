@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
@@ -225,7 +226,7 @@ namespace ArtAttack.Model
         /// <returns>The new contract.</returns>
         public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
-            IContract newContract = null;
+            IContract newContract = new Contract();
 
             using (var conn = databaseProvider.CreateConnection(connectionString))
             {
@@ -241,14 +242,7 @@ namespace ArtAttack.Model
                     cmd.Parameters.AddWithValue("@PredefinedContractID",
                         contract.PredefinedContractID.HasValue ? (object)contract.PredefinedContractID.Value : DBNull.Value);
                     cmd.Parameters.AddWithValue("@PDFID", contract.PDFID);
-                    if (pdfFile == null)
-                    {
-                        cmd.Parameters.AddWithValue("@PDFFile", DBNull.Value);
-                    }
-                    else
-                    {
-                        cmd.Parameters.AddWithValue("@PDFFile", pdfFile);
-                    }
+                    cmd.Parameters.AddWithValue("@PDFFile", pdfFile);
                     cmd.Parameters.AddWithValue("@RenewedFromContractID",
                         contract.RenewedFromContractID.HasValue ? (object)contract.RenewedFromContractID.Value : DBNull.Value);
 
@@ -275,11 +269,6 @@ namespace ArtAttack.Model
                         }
                     }
                 }
-            }
-
-            if (newContract == null)
-            {
-                return new Contract();
             }
 
             return newContract;

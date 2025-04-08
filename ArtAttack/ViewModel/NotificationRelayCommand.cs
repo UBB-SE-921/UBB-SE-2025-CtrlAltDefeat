@@ -39,10 +39,6 @@ namespace ArtAttack.ViewModel
             {
                 throw new ArgumentNullException(nameof(execute));
             }
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException(nameof(canExecute));
-            }
 
             this.execute = execute;
             this.canExecute = canExecute;
