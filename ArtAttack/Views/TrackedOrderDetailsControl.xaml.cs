@@ -8,6 +8,9 @@ namespace ArtAttack.Views
     [ExcludeFromCodeCoverage]
     public sealed partial class TrackedOrderDetailsControl : UserControl
     {
+        /// <summary>
+        /// User Control for the Tracked Order Details
+        /// </summary>
         public TrackedOrderDetailsControl()
         {
             this.InitializeComponent();

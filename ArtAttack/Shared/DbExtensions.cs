@@ -166,7 +166,12 @@ namespace ArtAttack.Shared
             // Handle SQL Server parameter collection natively
             if (parameters is SqlParameterCollection sqlParameters)
             {
-                return sqlParameters.AddWithValue(parameterName, value ?? DBNull.Value);
+                if (value == null)
+                {
+                    return sqlParameters.AddWithValue(parameterName, DBNull.Value);
+                }
+
+                return sqlParameters.AddWithValue(parameterName, value);
             }
 
             // For testing scenarios with mocks
@@ -178,7 +183,7 @@ namespace ArtAttack.Shared
                 var param = new DbExtensions.GenericDbParameter
                 {
                     ParameterName = parameterName,
-                    Value = value ?? DBNull.Value
+                    Value = value == null ? DBNull.Value : value
                 };
 
                 parameters.Add(param);
@@ -223,7 +228,16 @@ namespace ArtAttack.Shared
                 {
                     var param = dbCommand.CreateParameter();
                     param.ParameterName = parameterName;
-                    param.Value = value ?? DBNull.Value;
+
+                    if (value == null)
+                    {
+                        param.Value = DBNull.Value;
+                    }
+                    else
+                    {
+                        param.Value = value;
+                    }
+
                     parameters.Add(param);
                     return param;
                 }
@@ -234,10 +248,21 @@ namespace ArtAttack.Shared
             }
 
             // Generic fallback implementation that should work in most cases
+            object parameterValue;
+
+            if (value == null)
+            {
+                parameterValue = DBNull.Value;
+            }
+            else
+            {
+                parameterValue = value;
+            }
+
             var genericParam = new DbExtensions.GenericDbParameter
             {
                 ParameterName = parameterName,
-                Value = value ?? DBNull.Value
+                Value = parameterValue
             };
 
             parameters.Add(genericParam);

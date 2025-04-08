@@ -15,6 +15,9 @@ namespace ArtAttack
     [ExcludeFromCodeCoverage]
     public sealed partial class BorrowProductWindow : Window
     {
+        /// <summary>
+        /// The borrow product window view
+        /// </summary>
         private readonly string connectionString;
         private readonly int currentProductId;
         private readonly IWaitListViewModel waitListViewModel;
@@ -30,11 +33,20 @@ namespace ArtAttack
             this.Activated += this.Window_Activated;
         }
 
+        /// <summary>
+        /// Handles the window activated event, loads details for the product
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void Window_Activated(object sender, WindowActivatedEventArgs args)
         {
             await this.LoadProductDetails();
         }
 
+        /// <summary>
+        /// Loads the product details from the database
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadProductDetails()
         {
             try
@@ -61,6 +73,10 @@ namespace ArtAttack
             }
         }
 
+        /// <summary>
+        /// Updates the UI based on whether the user is on the waitlist
+        /// </summary>
+        /// <param name="isOnWaitlist">State of the user that we want to check for</param>
         private void UpdateWaitlistUI(bool isOnWaitlist)
         {
             this.ButtonJoinWaitList.Visibility = isOnWaitlist ? Visibility.Collapsed : Visibility.Visible;
@@ -68,6 +84,11 @@ namespace ArtAttack
             this.txtPositionInQueue.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Displays the product details in the UI
+        /// </summary>
+        /// <param name="product">The product for which we want to display the details</param>
+        /// <param name="sellerName">The name of the seller of that specific product</param>
         private void DisplayProduct(DummyProduct product, string sellerName)
         {
             this.txtProductName.Text = product.Name;
@@ -94,6 +115,12 @@ namespace ArtAttack
             }
         }
 
+        /// <summary>
+        /// Shows a message dialog with the specified title and message
+        /// </summary>
+        /// <param name="title">The title of the window</param>
+        /// <param name="message">The message to be displayed in the window</param>
+        /// <returns></returns>
         private async Task ShowMessageAsync(string title, string message)
         {
             try
@@ -120,6 +147,11 @@ namespace ArtAttack
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the join wait list button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonJoinWaitList_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -138,11 +170,20 @@ namespace ArtAttack
             }
         }
 
+        /// <summary>
+        /// Returns the id of the user currently logged in
+        /// </summary>
+        /// <returns></returns>
         private int GetCurrentUserId()
         {
             return 1;
         }
 
+        /// <summary>
+        /// Handles the click event for the leave wait list button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonLeaveWaitList_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -161,6 +202,11 @@ namespace ArtAttack
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the view position button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonViewPosition_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -184,6 +230,11 @@ namespace ArtAttack
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the notifications button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ButtonNotifications_Click(object sender, RoutedEventArgs e)
         {
             try

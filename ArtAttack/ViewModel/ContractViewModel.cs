@@ -184,7 +184,10 @@ namespace ArtAttack.ViewModel
             }
 
             // Ensure fieldReplacements is not null.
-            fieldReplacements ??= new Dictionary<string, string>();
+            if (fieldReplacements == null)
+            {
+                fieldReplacements = new Dictionary<string, string>();
+            }
 
             // Replace format variables in the content.
             string content = predefinedContract.ContractContent;

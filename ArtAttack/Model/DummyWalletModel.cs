@@ -20,8 +20,18 @@ namespace ArtAttack.Model
 
         public DummyWalletModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
         }
 
         /// <summary>
@@ -82,7 +92,16 @@ namespace ArtAttack.Model
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
-            parameter.Value = value ?? DBNull.Value;
+
+            if (value == null)
+            {
+                parameter.Value = DBNull.Value;
+            }
+            else
+            {
+                parameter.Value = value;
+            }
+
             command.Parameters.Add(parameter);
         }
     }

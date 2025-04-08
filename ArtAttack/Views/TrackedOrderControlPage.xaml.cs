@@ -30,6 +30,9 @@ namespace ArtAttack.Views
             LoadOrderData();
         }
 
+        /// <summary>
+        /// Loads the order data for the specified tracked order ID
+        /// </summary>
         private async void LoadOrderData()
         {
             var order = await ViewModel.GetTrackedOrderByIDAsync(TrackedOrderID);
@@ -50,6 +53,11 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Shows an error dialog with the specified error message
+        /// </summary>
+        /// <param name="errorMessage">The message to be displayed in the error dialog</param>
+        /// <returns></returns>
         private async Task ShowErrorDialog(string errorMessage)
         {
             var dialog = new ContentDialog
@@ -63,6 +71,11 @@ namespace ArtAttack.Views
             await dialog.ShowAsync();
         }
 
+        /// <summary>
+        /// Shows a success dialog with the specified message
+        /// </summary>
+        /// <param name="message">The message to be shown in the success dialog</param>
+        /// <returns></returns>
         private async Task ShowSuccessDialog(string message)
         {
             var dialog = new ContentDialog
@@ -75,6 +88,11 @@ namespace ArtAttack.Views
             await dialog.ShowAsync();
         }
 
+        /// <summary>
+        /// Handles the click event for the revert last checkpoint button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void RevertLastCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
             try
@@ -92,6 +110,11 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the change estimated delivery date button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ChangeEstimatedDeliveryDateButton_Clicked(object sender, RoutedEventArgs e)
         {
             if (deliveryCalendarDatePicker.Visibility == Visibility.Collapsed)
@@ -107,6 +130,11 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the confirm change estimated delivery date button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ConfirmChangeEstimatedDeliveryDateButton_Clicked(object sender, RoutedEventArgs e)
         {
             var pickedDate = deliveryCalendarDatePicker.Date;
@@ -133,6 +161,11 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the add new checkpoint button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddNewCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
             if (AddDetails.Visibility == Visibility.Collapsed)
@@ -145,6 +178,11 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the confirm add new checkpoint button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ConfirmAddNewCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
             try
@@ -184,6 +222,11 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the update current checkpoint button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void UpdateCurrentCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
             TrackedOrder order;
@@ -230,6 +273,11 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the manual timestamp radio button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ManualTimestampRadio_Checked(object sender, RoutedEventArgs e)
         {
             if (DateTimePickers != null)
@@ -238,11 +286,21 @@ namespace ArtAttack.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the auto timestamp radio button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AutoTimestampRadio_Checked(object sender, RoutedEventArgs e)
         {
             DateTimePickers.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Handles the click event for the confirm update current checkpoint button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ConfirmUpdateCurrentCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(DescriptionTextBoxUpdate.Text) || StatusComboBoxUpdate.SelectedItem == null)

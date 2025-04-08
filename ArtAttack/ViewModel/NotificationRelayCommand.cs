@@ -19,7 +19,16 @@ namespace ArtAttack.ViewModel
         }
         public NotificationRelayCommand(Action execute, Func<bool> canExecute)
         {
-            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            if (execute == null)
+            {
+                throw new ArgumentNullException(nameof(execute));
+            }
+            if (canExecute == null)
+            {
+                throw new ArgumentNullException(nameof(canExecute));
+            }
+
+            this.execute = execute;
             this.canExecute = canExecute;
         }
 
@@ -54,7 +63,12 @@ namespace ArtAttack.ViewModel
 
         public NotificationRelayCommand(Action<T> execute, Func<T, bool> canExecute)
         {
-            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            if (execute == null)
+            {
+                throw new ArgumentNullException(nameof(execute));
+            }
+
+            this.execute = execute;
             this.canExecute = canExecute;
         }
         [ExcludeFromCodeCoverage]

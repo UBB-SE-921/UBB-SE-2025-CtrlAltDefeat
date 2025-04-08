@@ -10,7 +10,10 @@ namespace ArtAttack
 
     public sealed partial class MainNotificationWindow : Window
     {
-        private const int CurrentUserId = 1; // Replace with your actual user ID
+        /// <summary>
+        /// The page for the main notification window
+        /// </summary>
+        private const int CurrentUserId = 1;
 
         public NotificationViewModel ViewModel = new NotificationViewModel(CurrentUserId);
 
@@ -24,6 +27,11 @@ namespace ArtAttack
             Activated += MainNotificationWindow_Activated;
         }
 
+        /// <summary>
+        /// Handles the window activation event. If the window is activated, it loads the notifications for the current user
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void MainNotificationWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
             if (args.WindowActivationState != WindowActivationState.Deactivated)
@@ -31,6 +39,13 @@ namespace ArtAttack
                 await ViewModel.LoadNotificationsAsync(CurrentUserId);
             }
         }
+
+        /// <summary>
+        /// Handles the selection changed event for the notification list. If a notification is selected,
+        /// it opens a secondary window with the notification details and marks the notification as read
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void NotificationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (notificationList.SelectedItem is Notification selectedNotification)
@@ -45,6 +60,12 @@ namespace ArtAttack
 
             this.Close();
         }
+
+        /// <summary>
+        /// Handles the click event for the back button. It closes the current window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             // Need to create main Window and activate it;
