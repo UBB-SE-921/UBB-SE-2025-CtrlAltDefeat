@@ -10,12 +10,15 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace ArtAttack.ViewModel
 {
+    /// <summary>
+    /// Represents the view model for finalizing a purchase and updating order history and notifications.
+    /// </summary>
     public class FinalizePurchaseViewModel : IFinalizePurchaseViewModel, INotifyPropertyChanged
     {
-        private readonly OrderHistoryModel orderHistoryModel;
-        private readonly OrderSummaryModel orderSummaryModel;
+        private readonly IOrderHistoryModel orderHistoryModel;
+        private readonly IOrderSummaryModel orderSummaryModel;
         private readonly IOrderModel orderModel;
-        private readonly NotificationViewModel notificationViewModel;
+        private readonly INotificationViewModel notificationViewModel;
 
         private int orderHistoryID;
 
@@ -32,6 +35,10 @@ namespace ArtAttack.ViewModel
         public List<DummyProduct> DummyProducts;
         public List<Order> Orders;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FinalizePurchaseViewModel"/> class and begins loading order details for finalization.
+        /// </summary>
+        /// <param name="orderHistoryID">The unique identifier for the order history.</param>
         public FinalizePurchaseViewModel(int orderHistoryID)
         {
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
@@ -44,6 +51,10 @@ namespace ArtAttack.ViewModel
             _ = InitializeViewModelAsync();
         }
 
+        /// <summary>
+        /// Asynchronously initializes the view model by loading dummy products, order summary details, and setting order history information.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task InitializeViewModelAsync()
         {
             DummyProducts = await GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
@@ -55,6 +66,12 @@ namespace ArtAttack.ViewModel
 
             await SetOrderHistoryInfo(orderSummary);
         }
+
+        /// <summary>
+        /// Sets the order history information by updating order summary details and order status.
+        /// </summary>
+        /// <param name="orderSummary">The order summary object containing order details.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task SetOrderHistoryInfo(OrderSummary orderSummary)
         {
             Orders = await orderModel.GetOrdersFromOrderHistoryAsync(orderHistoryID);
@@ -69,18 +86,34 @@ namespace ArtAttack.ViewModel
             OrderStatus = "Processing";
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event for the specified property.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// Asynchronously retrieves dummy products associated with the specified order history.
+        /// </summary>
+        /// <param name="orderHistoryID">The unique identifier for the order history.</param>
+        /// <returns>A task that returns a list of <see cref="DummyProduct"/> objects.</returns>
         public async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
         {
             return await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
         }
 
-        internal async void HandleFinish()
+        /// <summary>
+        /// Handles the finish process by sending payment confirmation notifications for each order.
+        /// </summary>
+        public async void HandleFinish()
         {
             foreach (var order in Orders)
             {

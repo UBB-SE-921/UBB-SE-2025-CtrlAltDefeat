@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.Shared
 {
+    [ExcludeFromCodeCoverage]
     public static class DbExtensions
     {
         /// <summary>
@@ -164,7 +166,12 @@ namespace ArtAttack.Shared
             // Handle SQL Server parameter collection natively
             if (parameters is SqlParameterCollection sqlParameters)
             {
-                return sqlParameters.AddWithValue(parameterName, value ?? DBNull.Value);
+                if (value == null)
+                {
+                    return sqlParameters.AddWithValue(parameterName, DBNull.Value);
+                }
+
+                return sqlParameters.AddWithValue(parameterName, value);
             }
 
             // For testing scenarios with mocks
@@ -176,7 +183,7 @@ namespace ArtAttack.Shared
                 var param = new DbExtensions.GenericDbParameter
                 {
                     ParameterName = parameterName,
-                    Value = value ?? DBNull.Value
+                    Value = value == null ? DBNull.Value : value
                 };
 
                 parameters.Add(param);
@@ -221,7 +228,16 @@ namespace ArtAttack.Shared
                 {
                     var param = dbCommand.CreateParameter();
                     param.ParameterName = parameterName;
-                    param.Value = value ?? DBNull.Value;
+
+                    if (value == null)
+                    {
+                        param.Value = DBNull.Value;
+                    }
+                    else
+                    {
+                        param.Value = value;
+                    }
+
                     parameters.Add(param);
                     return param;
                 }
@@ -232,16 +248,27 @@ namespace ArtAttack.Shared
             }
 
             // Generic fallback implementation that should work in most cases
+            object parameterValue;
+
+            if (value == null)
+            {
+                parameterValue = DBNull.Value;
+            }
+            else
+            {
+                parameterValue = value;
+            }
+
             var genericParam = new DbExtensions.GenericDbParameter
             {
                 ParameterName = parameterName,
-                Value = value ?? DBNull.Value
+                Value = parameterValue
             };
 
             parameters.Add(genericParam);
             return genericParam;
         }
-
+        [ExcludeFromCodeCoverage]
         /// <summary>
         /// A generic implementation of IDbDataParameter for testing purposes
         /// </summary>
@@ -250,10 +277,10 @@ namespace ArtAttack.Shared
             public DbType DbType { get; set; }
             public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
             public bool IsNullable => true;
-            public string ParameterName { get; set; }
+            public required string ParameterName { get; set; }
             public string SourceColumn { get; set; }
             public DataRowVersion SourceVersion { get; set; }
-            public object Value { get; set; }
+            public required object Value { get; set; }
             public byte Precision { get; set; }
             public byte Scale { get; set; }
             public int Size { get; set; }

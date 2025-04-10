@@ -1,10 +1,15 @@
+using System.Diagnostics.CodeAnalysis;
 using ArtAttack.Domain;
 using Microsoft.UI.Xaml;
 
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class SecondaryNotificationWindow : Window
     {
+        /// <summary>
+        /// The window for the secondary notification view
+        /// </summary>
         public Notification SelectedNotification { get; }
 
         public SecondaryNotificationWindow(Notification notification)
@@ -16,12 +21,20 @@ namespace ArtAttack
             this.Populate();
         }
 
+        /// <summary>
+        /// Populates the secondary notification window with the selected notification's details
+        /// </summary>
         private void Populate()
         {
             selectedNotificationTitle.Text = this.SelectedNotification.Title;
             selectedNotificationContent.Text = this.SelectedNotification.Content;
         }
 
+        /// <summary>
+        /// Handles the click event for the back button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = new MainNotificationWindow();
@@ -29,9 +42,8 @@ namespace ArtAttack
             this.Close();
         }
 
-        private async void GoToContractFile(object sender, RoutedEventArgs e)
+        private void GoToContractFile(object sender, RoutedEventArgs e)
         {
-            // AWAIT + Apelare functie Contract Darius!!!
         }
     }
 }

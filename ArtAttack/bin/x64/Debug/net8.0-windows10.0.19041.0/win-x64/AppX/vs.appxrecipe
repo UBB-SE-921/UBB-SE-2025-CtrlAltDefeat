@@ -10,14 +10,14 @@
     <PackageArchitecture>x64</PackageArchitecture>
     <PackageIdentityName>9d221516-0e84-4aea-b02e-19c92e0d2407</PackageIdentityName>
     <PackageIdentityPublisher>CN=User</PackageIdentityPublisher>
-    <IntermediateOutputPath>C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\</IntermediateOutputPath>
     <RemoteDeploymentType>CopyToDevice</RemoteDeploymentType>
     <PackageRegistrationPath>
     </PackageRegistrationPath>
     <RemoveNonLayoutFiles>false</RemoveNonLayoutFiles>
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
-    <LayoutDir>C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppX</LayoutDir>
+    <LayoutDir>C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppX</LayoutDir>
     <RegisteredManifestChecksum>45BBDAF575A202F0EE82258B5F5D905E22452E9158E5A3CF1C1D6B370E390907</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>9d221516-0e84-4aea-b02e-19c92e0d2407_1.0.0.0_x64__4sdaedqydyjdm</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>9d221516-0e84-4aea-b02e-19c92e0d2407_4sdaedqydyjdm!App</RegisteredUserModeAppID>
@@ -26,32 +26,32 @@
     <RegisteredVersion>1.0.0.0</RegisteredVersion>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2025-04-05T14:26:22.979</Modified>
+      <Modified>2025-04-08T13:03:38.565</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2025-04-05T14:26:22.559</Modified>
+      <Modified>2025-04-08T12:15:51.632</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
       <PackagePath>ArtAttack.runtimeconfig.json</PackagePath>
-      <Modified>2025-04-05T14:23:31.080</Modified>
+      <Modified>2025-04-08T12:15:51.521</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
       <PackagePath>ArtAttack.dll</PackagePath>
-      <Modified>2025-04-05T14:26:22.189</Modified>
+      <Modified>2025-04-08T13:03:38.169</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
       <PackagePath>ArtAttack.dll.config</PackagePath>
       <Modified>2025-04-03T10:14:20.400</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
       <PackagePath>ArtAttack.exe</PackagePath>
-      <Modified>2025-04-05T14:26:22.211</Modified>
+      <Modified>2025-04-08T13:03:38.177</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.6\LatoFont\Lato-Black.ttf">
       <PackagePath>LatoFont\Lato-Black.ttf</PackagePath>
@@ -877,6 +877,10 @@
       <PackagePath>Castle.Core.dll</PackagePath>
       <Modified>2022-12-30T09:16:54.000</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\dapper\2.1.66\lib\net8.0\Dapper.dll">
+      <PackagePath>Dapper.dll</PackagePath>
+      <Modified>2025-02-06T12:16:30.000</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\microsoft.bcl.asyncinterfaces\1.1.1\lib\netstandard2.1\Microsoft.Bcl.AsyncInterfaces.dll">
       <PackagePath>Microsoft.Bcl.AsyncInterfaces.dll</PackagePath>
       <Modified>2020-04-14T22:39:12.000</Modified>
@@ -1073,6 +1077,14 @@
       <PackagePath>System.Security.Cryptography.ProtectedData.dll</PackagePath>
       <Modified>2023-10-31T14:59:04.000</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\xunit.abstractions\2.0.3\lib\netstandard2.0\xunit.abstractions.dll">
+      <PackagePath>xunit.abstractions.dll</PackagePath>
+      <Modified>2018-08-25T19:54:14.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\xunit.extensibility.core\2.9.3\lib\netstandard1.1\xunit.core.dll">
+      <PackagePath>xunit.core.dll</PackagePath>
+      <Modified>2025-01-08T17:29:58.000</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\microsoft.data.sqlclient\6.0.1\lib\net8.0\cs\Microsoft.Data.SqlClient.resources.dll">
       <PackagePath>cs\Microsoft.Data.SqlClient.resources.dll</PackagePath>
       <Modified>2025-01-23T18:45:48.000</Modified>
@@ -1237,35 +1249,35 @@
       <PackagePath>Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml</PackagePath>
       <Modified>2025-03-17T12:04:10.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
       <PackagePath>ArtAttack.deps.json</PackagePath>
-      <Modified>2025-04-05T14:26:12.174</Modified>
+      <Modified>2025-04-08T12:15:51.886</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\LockScreenLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
       <Modified>2025-04-03T10:14:20.252</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
       <Modified>2025-04-03T10:14:20.252</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
       <Modified>2025-04-03T10:14:20.252</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
       <Modified>2025-04-03T10:14:20.252</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
       <Modified>2025-04-03T10:14:20.252</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
       <Modified>2025-04-03T10:14:20.252</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\source\repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
       <Modified>2025-04-03T10:14:20.252</Modified>
     </AppxPackagedFile>

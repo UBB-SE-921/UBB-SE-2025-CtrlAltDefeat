@@ -1,10 +1,9 @@
-﻿using ArtAttack.Domain;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data;
 using ArtAttack.Shared;
-
+using ArtAttack.Domain;
 namespace ArtAttack.Model
 {
     /// <summary>
@@ -12,8 +11,8 @@ namespace ArtAttack.Model
     /// </summary>
     public class TrackedOrderModel : ITrackedOrderModel
     {
-        private readonly string _connectionString;
-        private readonly IDatabaseProvider _databaseProvider;
+        private readonly string connectionString;
+        private readonly IDatabaseProvider databaseProvider;
 
         // SQL query constants
         private const string SELECT_ALL_ORDER_CHECKPOINTS = "SELECT * FROM OrderCheckpoints WHERE TrackedOrderID = @trackedOrderID";
@@ -55,8 +54,18 @@ namespace ArtAttack.Model
         /// <exception cref="ArgumentNullException">Thrown when connection string or provider is null</exception>
         public TrackedOrderModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            this._connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            this._databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
         }
 
         /// <summary>
@@ -67,7 +76,7 @@ namespace ArtAttack.Model
         /// <exception cref="Exception">Thrown when the checkpoint cannot be added</exception>
         public async Task<int> AddOrderCheckpointAsync(OrderCheckpoint checkpoint)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -91,7 +100,9 @@ namespace ArtAttack.Model
 
                     int newCheckpointId = Convert.ToInt32(outputParam.Value);
                     if (newCheckpointId <= ERROR_CODE_NEGATIVE)
+                    {
                         throw new Exception("Unexpected error when trying to add the OrderCheckpoint");
+                    }
                     return newCheckpointId;
                 }
             }
@@ -105,7 +116,7 @@ namespace ArtAttack.Model
         /// <exception cref="Exception">Thrown when the tracked order cannot be added</exception>
         public async Task<int> AddTrackedOrderAsync(TrackedOrder order)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -128,7 +139,9 @@ namespace ArtAttack.Model
 
                     int newTrackedOrderId = Convert.ToInt32(outputParam.Value);
                     if (newTrackedOrderId <= ERROR_CODE_NEGATIVE)
+                    {
                         throw new Exception("Unexpected error when trying to add the TrackedOrder");
+                    }
                     return newTrackedOrderId;
                 }
             }
@@ -141,7 +154,7 @@ namespace ArtAttack.Model
         /// <returns>True if deletion was successful, false otherwise</returns>
         public async Task<bool> DeleteOrderCheckpointAsync(int checkpointID)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -162,7 +175,7 @@ namespace ArtAttack.Model
         /// <returns>True if deletion was successful, false otherwise</returns>
         public async Task<bool> DeleteTrackedOrderAsync(int trackOrderID)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -184,7 +197,7 @@ namespace ArtAttack.Model
         public async Task<List<OrderCheckpoint>> GetAllOrderCheckpointsAsync(int trackedOrderID)
         {
             List<OrderCheckpoint> checkpoints = new List<OrderCheckpoint>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -219,7 +232,7 @@ namespace ArtAttack.Model
         public async Task<List<TrackedOrder>> GetAllTrackedOrdersAsync()
         {
             List<TrackedOrder> orders = new List<TrackedOrder>();
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -253,7 +266,7 @@ namespace ArtAttack.Model
         /// <exception cref="Exception">Thrown when the checkpoint is not found</exception>
         public async Task<OrderCheckpoint> GetOrderCheckpointByIdAsync(int checkpointID)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -289,7 +302,7 @@ namespace ArtAttack.Model
         /// <exception cref="Exception">Thrown when the tracked order is not found</exception>
         public async Task<TrackedOrder> GetTrackedOrderByIdAsync(int trackOrderID)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -326,7 +339,7 @@ namespace ArtAttack.Model
         /// <param name="status">New status for the checkpoint</param>
         public async Task UpdateOrderCheckpointAsync(int checkpointID, DateTime timestamp, string? location, string description, OrderStatus status)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -353,7 +366,7 @@ namespace ArtAttack.Model
         /// <param name="currentStatus">New order status</param>
         public async Task UpdateTrackedOrderAsync(int trackedOrderID, DateOnly estimatedDeliveryDate, OrderStatus currentStatus)
         {
-            using (IDbConnection connection = _databaseProvider.CreateConnection(_connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -381,7 +394,16 @@ namespace ArtAttack.Model
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = parameterName;
-            parameter.Value = value ?? DBNull.Value;
+
+            if (value == null)
+            {
+                parameter.Value = DBNull.Value;
+            }
+            else
+            {
+                parameter.Value = value;
+            }
+
             command.Parameters.Add(parameter);
         }
     }

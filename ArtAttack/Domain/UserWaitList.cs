@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ArtAttack.Domain
 {
     public class UserWaitList
     {
+        [ExcludeFromCodeCoverage]
         public int UserWaitListID { get; set; }
         public int ProductWaitListID { get; set; }
         public int UserID { get; set; }

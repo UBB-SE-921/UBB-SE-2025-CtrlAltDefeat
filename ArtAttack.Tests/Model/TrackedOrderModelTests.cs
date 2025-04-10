@@ -10,6 +10,7 @@ using System.ComponentModel.Design;
 using System.Data;
 using System.Threading.Tasks;
 
+
 namespace ArtAttack.Tests.Model
 {
     [TestClass]
@@ -43,6 +44,7 @@ namespace ArtAttack.Tests.Model
                 .Returns(_mockCommand.Object);
 
             // Create the TrackedOrderModel with the mocked database provider and connection string
+
             _trackedOrderModel = new TrackedOrderModel(ConnectionString, _mockDatabaseProvider.Object);
         }
 
@@ -52,6 +54,7 @@ namespace ArtAttack.Tests.Model
         {
             // Act
             var model = new TrackedOrderModel(null, _mockDatabaseProvider.Object);
+
             // Assert is handled by ExpectedException
         }
 
@@ -61,6 +64,7 @@ namespace ArtAttack.Tests.Model
         {
             // Act
             var model = new TrackedOrderModel(ConnectionString, null);
+
             // Assert is handled by ExpectedException
         }
 
@@ -91,11 +95,13 @@ namespace ArtAttack.Tests.Model
 
             // Act
             await _trackedOrderModel.AddTrackedOrderAsync(order);
+
             // Assert - Exception is expected
         }
 
         [TestMethod]
         public async Task AddOrderCheckpointAsync_WhenSuccessfulExecution_ReturnsNewId_()
+
         {
             // Arrange
             var checkpoint = new OrderCheckpoint
@@ -115,6 +121,7 @@ namespace ArtAttack.Tests.Model
 
             // Setup sequence of parameter creation so that the last one is our output parameter.
             _mockCommand.SetupSequence(command => command.CreateParameter())
+
                 .Returns(new Mock<IDbDataParameter>().Object)
                 .Returns(new Mock<IDbDataParameter>().Object)
                 .Returns(new Mock<IDbDataParameter>().Object)
@@ -129,6 +136,7 @@ namespace ArtAttack.Tests.Model
             _mockConnection.Setup(connection => connection.Open());
             _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
+
             // Act
             int result = await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
 
@@ -141,6 +149,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         public async Task AddTrackedOrderAsync_WhenSuccessfulExecution_ReturnsNewId_()
+
         {
             // Arrange
             var order = new TrackedOrder
@@ -157,6 +166,7 @@ namespace ArtAttack.Tests.Model
             outputDbParameter.Setup(parameter => parameter.Value).Returns(expectedTrackedOrderId);
 
             _mockCommand.SetupSequence(command => command.CreateParameter())
+
                 .Returns(new Mock<IDbDataParameter>().Object)
                 .Returns(new Mock<IDbDataParameter>().Object)
                 .Returns(new Mock<IDbDataParameter>().Object)
@@ -168,6 +178,7 @@ namespace ArtAttack.Tests.Model
 
             _mockConnection.Setup(connection => connection.Open());
             _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
+
 
             // Act
             int result = await _trackedOrderModel.AddTrackedOrderAsync(order);
@@ -182,6 +193,7 @@ namespace ArtAttack.Tests.Model
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public async Task AddOrderCheckpointAsync_WhenNegativeReturnValue_ThrowsException_()
+
         {
             // Arrange
             var checkpoint = new OrderCheckpoint
@@ -205,6 +217,7 @@ namespace ArtAttack.Tests.Model
 
             // Act
             await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
+
             // Assert - Exception is expected
         }
 
@@ -218,6 +231,7 @@ namespace ArtAttack.Tests.Model
 
             _mockConnection.Setup(connection => connection.Open());
             _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
+
 
             // Act
             bool result = await _trackedOrderModel.DeleteTrackedOrderAsync(trackOrderID);
@@ -246,6 +260,7 @@ namespace ArtAttack.Tests.Model
             _mockConnection.Setup(connection => connection.Open());
             _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(0);
 
+
             // Act
             bool result = await _trackedOrderModel.DeleteTrackedOrderAsync(trackOrderID);
 
@@ -255,6 +270,7 @@ namespace ArtAttack.Tests.Model
             _mockConnection.Verify(connection => connection.CreateCommand(), Times.Once);
             _mockConnection.Verify(connection => connection.Open(), Times.Once);
             _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
+
         }
 
         [TestMethod]
@@ -263,6 +279,7 @@ namespace ArtAttack.Tests.Model
             // Arrange
             SetupMockDataReaderForTrackedOrders();
             _mockConnection.Setup(connection => connection.Open());
+
 
             // Act
             List<TrackedOrder> result = await _trackedOrderModel.GetAllTrackedOrdersAsync();
@@ -279,6 +296,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         public async Task GetAllOrderCheckpointsAsync_WhenValidTrackedOrderID_ReturnsCheckpointList_()
+
         {
             // Arrange
             int trackedOrderID = 101;
@@ -288,6 +306,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
             _mockConnection.Setup(connection => connection.Open());
+
 
             // Act
             List<OrderCheckpoint> result = await _trackedOrderModel.GetAllOrderCheckpointsAsync(trackedOrderID);
@@ -307,6 +326,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         public async Task GetTrackedOrderByIdAsync_WhenValidID_ReturnsTrackedOrder_()
+
         {
             // Arrange
             int trackedOrderID = 101;
@@ -316,6 +336,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
             _mockConnection.Setup(connection => connection.Open());
+
 
             // Act
             TrackedOrder result = await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
@@ -329,6 +350,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.VerifySet(command => command.CommandText = "SELECT * FROM TrackedOrders WHERE TrackedOrderID = @trackedOrderID");
             _mockCommand.Verify(command => command.CreateParameter(), Times.Once);
             _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Once);
+
         }
 
         [TestMethod]
@@ -347,11 +369,13 @@ namespace ArtAttack.Tests.Model
 
             // Act
             await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
+
             // Assert - Exception is expected
         }
 
         [TestMethod]
         public async Task GetOrderCheckpointByIdAsync_WhenValidID_ReturnsOrderCheckpoint_()
+
         {
             // Arrange
             int checkpointID = 201;
@@ -361,6 +385,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
             _mockConnection.Setup(connection => connection.Open());
+
 
             // Act
             OrderCheckpoint result = await _trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
@@ -375,6 +400,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.VerifySet(command => command.CommandText = "SELECT * FROM OrderCheckpoints WHERE CheckpointID = @checkpointID");
             _mockCommand.Verify(command => command.CreateParameter(), Times.Once);
             _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Once);
+
         }
 
         [TestMethod]
@@ -393,11 +419,13 @@ namespace ArtAttack.Tests.Model
 
             // Act
             await _trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
+
             // Assert - Exception is expected
         }
 
         [TestMethod]
         public async Task UpdateTrackedOrderAsync_WhenValidParameters_ExecutesStoredProcedure_()
+
         {
             // Arrange
             int trackedOrderID = 101;
@@ -408,6 +436,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
             _mockConnection.Setup(connection => connection.Open());
             _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
+
 
             // Act
             await _trackedOrderModel.UpdateTrackedOrderAsync(trackedOrderID, estimatedDeliveryDate, currentStatus);
@@ -426,6 +455,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         public async Task UpdateOrderCheckpointAsync_WhenValidParameters_ExecutesStoredProcedure_()
+
         {
             // Arrange
             int checkpointID = 201;
@@ -438,6 +468,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
             _mockConnection.Setup(connection => connection.Open());
             _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
+
 
             // Act
             await _trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
@@ -456,6 +487,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         public async Task UpdateOrderCheckpointAsync_WhenNullLocation_HandlesNullValue_()
+
         {
             // Arrange
             int checkpointID = 201;
@@ -468,6 +500,7 @@ namespace ArtAttack.Tests.Model
             _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
             _mockConnection.Setup(connection => connection.Open());
             _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
+
 
             // Act
             await _trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
@@ -502,6 +535,7 @@ namespace ArtAttack.Tests.Model
             mockDataReader.Setup(reader => reader.GetString(4)).Returns("123 Test St, Test City");
 
             _mockCommand.Setup(command => command.ExecuteReader()).Returns(mockDataReader.Object);
+
         }
 
         private void SetupMockDataReaderForOrderCheckpoints()
@@ -534,3 +568,4 @@ namespace ArtAttack.Tests.Model
         }
     }
 }
+

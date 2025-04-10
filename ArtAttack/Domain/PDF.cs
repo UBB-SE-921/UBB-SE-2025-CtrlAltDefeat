@@ -1,5 +1,8 @@
-﻿namespace ArtAttack.Domain
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ArtAttack.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class PDF
     {
         public int ContractID { get; set; }

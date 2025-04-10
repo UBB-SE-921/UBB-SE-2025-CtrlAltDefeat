@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
@@ -12,6 +13,7 @@ using QuestPDF.Infrastructure;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     public sealed partial class MainWindow : Window
     {
         private IContract contract;
@@ -32,34 +34,34 @@ namespace ArtAttack
         private async void RootGrid_Loaded(object sender, RoutedEventArgs e)
         {
             // Asynchronously fetch the contract after the UI is ready.
-            contract = await contractViewModel.GetContractByIdAsync(2);
+            contract = await contractViewModel.GetContractByIdAsync(Constants.ContractID);
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // Now you await the async method.
-            contract = await contractViewModel.GetContractByIdAsync(1);
+            contract = await contractViewModel.GetContractByIdAsync(Constants.ContractID);
         }
 
         private void PurchaseButton_Clicked(object sender, RoutedEventArgs e)
         {
             BillingInfoWindow billingInfoWindow = new BillingInfoWindow();
-            var bp = new BillingInfo(1);
+            var bp = new BillingInfo(Constants.OrderHistoryID);
             billingInfoWindow.Content = bp;
             billingInfoWindow.Activate();
         }
 
-        private void OrderHitoryButton_Clicked(object sender, RoutedEventArgs e)
+        private void OrderHistoryButton_Clicked(object sender, RoutedEventArgs e)
         {
-            int user_id = 1;
-            var orderhistorywindow = new OrderHistoryUI(Configuration.CONNECTION_STRING, user_id);
+            int user_id = Constants.CurrentUserID;
+            var orderhistorywindow = new OrderHistoryView(Configuration.CONNECTION_STRING, user_id);
             orderhistorywindow.Activate();
         }
 
         private void BidProductButton_Clicked(object sender, RoutedEventArgs e)
         {
             BillingInfoWindow billingInfoWindow = new BillingInfoWindow();
-            var bp = new BillingInfo(2);
+            var bp = new BillingInfo(Constants.OrderHistoryIDBid);
             billingInfoWindow.Content = bp;
             billingInfoWindow.Activate();
         }
@@ -72,7 +74,7 @@ namespace ArtAttack
         private void WalletRefillButton_Clicked(object sender, RoutedEventArgs e)
         {
             BillingInfoWindow billingInfoWindow = new BillingInfoWindow();
-            var bp = new BillingInfo(3);
+            var bp = new BillingInfo(Constants.OrderHistoryIDWalletRefill);
             billingInfoWindow.Content = bp;
             billingInfoWindow.Activate();
         }
@@ -81,7 +83,7 @@ namespace ArtAttack
         {
             if (contract != null)
             {
-                await contractViewModel.GenerateAndSaveContractAsync(contract, PredefinedContractType.BorrowContract);
+                await contractViewModel.GenerateAndSaveContractAsync(contract, PredefinedContractType.BorrowingContract);
 
                 // Optionally, show a success dialog after generating the contract.
                 var successDialog = new ContentDialog
@@ -116,7 +118,7 @@ namespace ArtAttack
         {
             try
             {
-                int productId = 2;
+                int productId = Constants.ProductID;
 
                 var borrowWindow = new BorrowProductWindow(Configuration.CONNECTION_STRING, productId);
                 borrowWindow.Activate();

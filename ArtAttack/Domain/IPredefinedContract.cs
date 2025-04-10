@@ -2,7 +2,8 @@
 {
     public interface IPredefinedContract
     {
-        string Content { get; set; }
+        int ContractID { get; set; }
+        string ContractContent { get; set; }
         int ID { get; set; }
     }
 }

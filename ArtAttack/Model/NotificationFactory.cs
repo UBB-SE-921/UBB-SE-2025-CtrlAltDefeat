@@ -1,12 +1,20 @@
 using System;
+using System.Data;
 using ArtAttack.Domain;
-using Microsoft.Data.SqlClient;
+using ArtAttack.Model;
+using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
-    public static class NotificationFactory
+    public class NotificationFactory : INotificationFactory
     {
-        public static Notification CreateFromDataReader(SqlDataReader reader)
+        /// <summary>
+        /// Creates a Notification object from a data reader
+        /// </summary>
+        /// <param name="reader">The reader to create a notification from</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static Notification CreateFromDataReader(IDataReader reader)
         {
             int notificationId = reader.GetInt32(reader.GetOrdinal("notificationID"));
             int recipientId = reader.GetInt32(reader.GetOrdinal("recipientID"));

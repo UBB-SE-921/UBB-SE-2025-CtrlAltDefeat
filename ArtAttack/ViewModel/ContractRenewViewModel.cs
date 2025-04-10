@@ -1,41 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
-using Microsoft.Data.SqlClient;
+using ArtAttack.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 
 namespace ArtAttack.ViewModel
 {
-    public class ContractRenewViewModel
+    public class ContractRenewViewModel : IContractRenewViewModel
     {
         private readonly IContractModel contractModel;
         private readonly IContractRenewalModel renewalModel;
-        private readonly NotificationDataAdapter notificationAdapter;
+        private readonly INotificationDataAdapter notificationAdapter;
+        private readonly IDatabaseProvider databaseProvider;
         private readonly string connectionString;
+        private readonly IFileSystem fileSystem;
+        private readonly IDateTimeProvider dateTimeProvider;
 
         public List<IContract> BuyerContracts { get; private set; }
         public IContract SelectedContract { get; private set; } = null!;
 
+        [ExcludeFromCodeCoverage]
         public ContractRenewViewModel(string connectionString)
+            : this(
+                  new ContractModel(connectionString),
+                  new ContractRenewalModel(connectionString),
+                  new NotificationDataAdapter(connectionString),
+                  new SqlDatabaseProvider(),
+                  connectionString,
+                  new FileSystemWrapper(),
+                  new DateTimeProvider())
         {
-            contractModel = new ContractModel(connectionString);
-            renewalModel = new ContractRenewalModel(connectionString);
-            notificationAdapter = new NotificationDataAdapter(connectionString);
+        }
+
+        // Constructor with dependency injection for testing
+        public ContractRenewViewModel(
+            IContractModel contractModel,
+            IContractRenewalModel renewalModel,
+            INotificationDataAdapter notificationAdapter,
+            IDatabaseProvider databaseProvider,
+            string connectionString,
+            IFileSystem fileSystem,
+            IDateTimeProvider dateTimeProvider)
+        {
+            if (contractModel == null)
+            {
+                throw new ArgumentNullException(nameof(contractModel));
+            }
+            if (renewalModel == null)
+            {
+                throw new ArgumentNullException(nameof(renewalModel));
+            }
+            if (notificationAdapter == null)
+            {
+                throw new ArgumentNullException(nameof(notificationAdapter));
+            }
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+            if (fileSystem == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystem));
+            }
+            if (dateTimeProvider == null)
+            {
+                throw new ArgumentNullException(nameof(dateTimeProvider));
+            }
+
+            this.contractModel = contractModel;
+            this.renewalModel = renewalModel;
+            this.notificationAdapter = notificationAdapter;
+            this.databaseProvider = databaseProvider;
             this.connectionString = connectionString;
+            this.fileSystem = fileSystem;
+            this.dateTimeProvider = dateTimeProvider;
             BuyerContracts = new List<IContract>();
         }
 
         /// <summary>
         /// Loads all contracts for the given buyer and filters them to include only those with status "ACTIVE" or "RENEWED".
         /// </summary>
-        /// <param name="buyerID" >The ID of the buyer to load contracts for.</param>
-        /// <returns >A task representing the asynchronous operation.</returns>
+        /// <param name="buyerID">The ID of the buyer to load contracts for.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task LoadContractsForBuyerAsync(int buyerID)
         {
             // Load all contracts for the buyer
@@ -48,8 +105,8 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Retrieves and sets the selected contract by its ID.
         /// </summary>
-        /// <param name="contractID" >The ID of the contract to select.</param>
-        /// <returns >A task representing the asynchronous operation.</returns>
+        /// <param name="contractID">The ID of the contract to select.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task SelectContractAsync(long contractID)
         {
             SelectedContract = await contractModel.GetContractByIdAsync(contractID);
@@ -66,16 +123,22 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Checks whether the current date is within the valid renewal period (between 2 and 7 days before contract end).
         /// </summary>
-        /// <returns >A task representing the asynchronous operation.</returns>
-        public async Task<bool> IsRenewalPeriodValidAsync()
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public virtual async Task<bool> IsRenewalPeriodValidAsync()
         {
+            if (SelectedContract == null)
+            {
+                return false;
+            }
+
             var dates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
             if (dates == null)
             {
                 return false;
             }
+
             DateTime oldEndDate = dates.Value.EndDate;
-            DateTime currentDate = DateTime.Now.Date;
+            DateTime currentDate = dateTimeProvider.Now.Date;
             int daysUntilEnd = (oldEndDate - currentDate).Days;
 
             return daysUntilEnd <= 7 && daysUntilEnd >= 2;
@@ -85,8 +148,8 @@ namespace ArtAttack.ViewModel
         /// Simulates a check to determine if a product is available.
         /// </summary>
         /// <param name="productId">The ID of the product to check.</param>
-        /// <returns >True if the product is available; false otherwise.</returns>
-        public bool IsProductAvailable(int productId)
+        /// <returns>True if the product is available; false otherwise.</returns>
+        public virtual bool IsProductAvailable(int productId)
         {
             return true;
         }
@@ -94,9 +157,9 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Simulates a check to determine if the seller can approve a renewal based on the renewal count.
         /// </summary>
-        /// <param name="renewalCount" > The current renewal count of the contract.</param>
-        /// <returns >True if the seller can approve the renewal; false otherwise.</returns>
-        public bool CanSellerApproveRenewal(int renewalCount)
+        /// <param name="renewalCount">The current renewal count of the contract.</param>
+        /// <returns>True if the seller can approve the renewal; false otherwise.</returns>
+        public virtual bool CanSellerApproveRenewal(int renewalCount)
         {
             return renewalCount < 1;
         }
@@ -104,35 +167,46 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Inserts a PDF file into the database and returns the newly generated PDF ID.
         /// </summary>
-        /// <param name="fileBytes" >The byte array representing the PDF file.</param>
-        /// <returns >The ID of the newly inserted PDF.</returns>
-        private async Task<int> InsertPdfAsync(byte[] fileBytes)
+        /// <param name="fileBytes">The byte array representing the PDF file.</param>
+        /// <returns>The ID of the newly inserted PDF.</returns>
+        public virtual async Task<int> InsertPdfAsync(byte[] fileBytes)
         {
-            using (var conn = new SqlConnection(connectionString))
-            using (var cmd = new SqlCommand("INSERT INTO PDF ([file]) OUTPUT INSERTED.ID VALUES (@file)", conn))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
+            using (IDbCommand command = connection.CreateCommand())
             {
-                cmd.Parameters.AddWithValue("@file", fileBytes);
-                await conn.OpenAsync();
-                return (int)await cmd.ExecuteScalarAsync();
+                command.CommandText = "INSERT INTO PDF ([file]) OUTPUT INSERTED.ID VALUES (@file)";
+                var parameter = command.CreateParameter();
+                parameter.ParameterName = "@file";
+                parameter.Value = fileBytes;
+                command.Parameters.Add(parameter);
+
+                await connection.OpenAsync();
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result);
             }
         }
 
         /// <summary>
         /// Checks whether the currently selected contract has already been renewed.
         /// </summary>
-        /// <returns >True if the contract has been renewed; false otherwise.</returns>
+        /// <returns>True if the contract has been renewed; false otherwise.</returns>
         public async Task<bool> HasContractBeenRenewedAsync()
         {
+            if (SelectedContract == null)
+            {
+                return false;
+            }
+
             return await renewalModel.HasContractBeenRenewedAsync(SelectedContract.ContractID);
         }
 
         /// <summary>
         /// Generates a PDF document containing the contract content.
         /// </summary>
-        /// <param name="content" >The content of the contract to include in the PDF.</param>
-        /// <param name="contract" >The contract object to include in the PDF.</param>
-        /// <returns >The byte array representing the generated PDF.</returns>
-        private byte[] GenerateContractPdf(IContract contract, string content)
+        /// <param name="contract">The contract object to include in the PDF.</param>
+        /// <param name="content">The content of the contract to include in the PDF.</param>
+        /// <returns>The byte array representing the generated PDF.</returns>
+        public virtual byte[] GenerateContractPdf(IContract contract, string content)
         {
             var document = Document.Create(container =>
             {
@@ -153,12 +227,12 @@ namespace ArtAttack.ViewModel
         /// Submits a request to renew the selected contract if all business rules are satisfied.
         /// Also generates and saves a new PDF and sends notifications.
         /// </summary>
-        /// <param name="buyerID" >The ID of the buyer submitting the renewal request.</param>
-        /// <param name="newEndDate" >The new end date for the contract.</param>
-        /// <param name="productID" >The ID of the product associated with the contract.</param>
-        /// <param name="sellerID" >The ID of the seller associated with the contract.</param>
-        /// <returns >A tuple containing a boolean indicating success and a message describing the result.</returns>
-        public async Task<(bool Success, string Message)> SubmitRenewalRequestAsync(DateTime newEndDate, int buyerID, int productID, int sellerID)
+        /// <param name="newEndDate">The new end date for the contract.</param>
+        /// <param name="buyerID">The ID of the buyer submitting the renewal request.</param>
+        /// <param name="productID">The ID of the product associated with the contract.</param>
+        /// <param name="sellerID">The ID of the seller associated with the contract.</param>
+        /// <returns>A tuple containing a boolean indicating success and a message describing the result.</returns>
+        public virtual async Task<(bool Success, string Message)> SubmitRenewalRequestAsync(DateTime newEndDate, int buyerID, int productID, int sellerID)
         {
             try
             {
@@ -215,10 +289,10 @@ namespace ArtAttack.ViewModel
                 int newPdfId = await InsertPdfAsync(pdfBytes);
 
                 // Save PDF locally in Downloads folder
-                string downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+                string downloadsPath = fileSystem.GetDownloadsPath();
                 string fileName = $"RenewedContract_{SelectedContract.ContractID}_to_{newEndDate:yyyyMMdd}.pdf";
-                string filePath = Path.Combine(downloadsPath, fileName);
-                await File.WriteAllBytesAsync(filePath, pdfBytes);
+                string filePath = fileSystem.CombinePath(downloadsPath, fileName);
+                await fileSystem.WriteAllBytesAsync(filePath, pdfBytes);
 
                 // Prepare and insert the new renewed contract into the database
                 var updatedContract = new Contract
@@ -235,7 +309,7 @@ namespace ArtAttack.ViewModel
                 await renewalModel.AddRenewedContractAsync(updatedContract, pdfBytes);
 
                 // Send notifications to seller, buyer, and waitlist
-                var now = DateTime.Now;
+                var now = dateTimeProvider.Now;
                 notificationAdapter.AddNotification(new ContractRenewalRequestNotification(sellerID, now, (int)SelectedContract.ContractID));
                 notificationAdapter.AddNotification(new ContractRenewalAnswerNotification(buyerID, now, (int)SelectedContract.ContractID, true));
                 notificationAdapter.AddNotification(new ContractRenewalWaitlistNotification(999, now, productID));
@@ -249,5 +323,43 @@ namespace ArtAttack.ViewModel
             }
         }
     }
-}
 
+    // Interface for file system operations to enable testing
+    public interface IFileSystem
+    {
+        string GetDownloadsPath();
+        string CombinePath(string path1, string path2);
+        Task WriteAllBytesAsync(string path, byte[] bytes);
+    }
+
+    // Concrete implementation of IFileSystem that uses actual file system
+    public class FileSystemWrapper : IFileSystem
+    {
+        public string GetDownloadsPath()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        }
+
+        public string CombinePath(string path1, string path2)
+        {
+            return Path.Combine(path1, path2);
+        }
+
+        public async Task WriteAllBytesAsync(string path, byte[] bytes)
+        {
+            await File.WriteAllBytesAsync(path, bytes);
+        }
+    }
+
+    // Interface for DateTime operations to enable testing
+    public interface IDateTimeProvider
+    {
+        DateTime Now { get; }
+    }
+
+    // Concrete implementation of IDateTimeProvider that uses actual DateTime
+    public class DateTimeProvider : IDateTimeProvider
+    {
+        public DateTime Now => DateTime.Now;
+    }
+}

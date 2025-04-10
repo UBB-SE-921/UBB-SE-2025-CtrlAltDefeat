@@ -3,58 +3,70 @@
   "WorkspaceRootPath": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack.tests\\artattack.tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\model\\contractmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:model\\contractmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\artattack.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:artattack.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\domain\\userwaitlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:domain\\userwaitlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\alexe\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250310001\\buildTransitive\\Microsoft.WinUI.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\viewmodel\\contractviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\contractviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\obj\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\Views\\BorrowProductWindow.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:obj\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\Views\\BorrowProductWindow.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\viewmodel\\billinginfoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\billinginfoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\views\\borrowproductwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:views\\borrowproductwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack.tests\\viewmodel\\billinginfoviewmodeltests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\views\\borrowproductwindow.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:views\\borrowproductwindow.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\viewmodel\\waitlistviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\waitlistviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\model\\waitlistmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:model\\waitlistmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack.tests\\viewmodel\\orderviewmodeltests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\viewmodel\\notificationviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\notificationviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\OrderModelView.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack.tests\\model\\dummyproductmodeltests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ContractRenewViewModelTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack.tests\\model\\dummywalletmodeltests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\model\\dummywalletmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:model\\dummywalletmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\GenerateContractTest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack.tests\\model\\notificationmodeltests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\viewmodel\\finalizepurchaseviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\finalizepurchaseviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{79ABB679-623A-4D5C-A6FC-B37E54CAD05D}|..\\ArtAttack.Tests\\ArtAttack.Tests.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack.tests\\model\\notificationtests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\viewmodel\\notificationrelaycommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:viewmodel\\notificationrelaycommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\views\\billinginfo.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:views\\billinginfo.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\views\\billinginfo.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:views\\billinginfo.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|c:\\users\\alexe\\source\\repos\\ctrlaltdefeat-main-artattack\\artattack\\views\\billinginfowindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F3D4A7CE-EABA-4500-AC57-5E86B5C762F3}|ArtAttack.csproj|solutionrelative:views\\billinginfowindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -63,9 +75,191 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 261,
-          "SelectedChildIndex": 6,
+          "DockedWidth": 533,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserWaitList.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Domain\\UserWaitList.cs",
+              "RelativeDocumentMoniker": "Domain\\UserWaitList.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Domain\\UserWaitList.cs",
+              "RelativeToolTip": "Domain\\UserWaitList.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T13:00:36.151Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ContractViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\ContractViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModel\\ContractViewModel.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\ContractViewModel.cs",
+              "RelativeToolTip": "ViewModel\\ContractViewModel.cs",
+              "ViewState": "AgIAAFcBAAAAAAAAAAAuwGABAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:59:42.117Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ContractModel.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Model\\ContractModel.cs",
+              "RelativeDocumentMoniker": "Model\\ContractModel.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Model\\ContractModel.cs",
+              "RelativeToolTip": "Model\\ContractModel.cs",
+              "ViewState": "AgIAABQBAAAAAAAAAAAAAA8BAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:58:43.12Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "BillingInfoViewModelTests.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ViewModel\\BillingInfoViewModelTests.cs",
+              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\ViewModel\\BillingInfoViewModelTests.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ViewModel\\BillingInfoViewModelTests.cs",
+              "RelativeToolTip": "..\\ArtAttack.Tests\\ViewModel\\BillingInfoViewModelTests.cs",
+              "ViewState": "AgIAAKcAAAAAAAAAAAAqwLAAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:56:23.086Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "OrderViewModelTests.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ViewModel\\OrderViewModelTests.cs",
+              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\ViewModel\\OrderViewModelTests.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ViewModel\\OrderViewModelTests.cs",
+              "RelativeToolTip": "..\\ArtAttack.Tests\\ViewModel\\OrderViewModelTests.cs",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAwwJsAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:51:59.519Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BillingInfoViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\BillingInfoViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModel\\BillingInfoViewModel.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\BillingInfoViewModel.cs",
+              "RelativeToolTip": "ViewModel\\BillingInfoViewModel.cs",
+              "ViewState": "AgIAAA0BAAAAAAAAAAAAABYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T11:41:49.488Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "NotificationViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\NotificationViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModel\\NotificationViewModel.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\NotificationViewModel.cs",
+              "RelativeToolTip": "ViewModel\\NotificationViewModel.cs",
+              "ViewState": "AgIAALEAAAAAAAAAAAAAALsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:49:24.396Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DummyProductModelTests.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\DummyProductModelTests.cs",
+              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\Model\\DummyProductModelTests.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\DummyProductModelTests.cs",
+              "RelativeToolTip": "..\\ArtAttack.Tests\\Model\\DummyProductModelTests.cs",
+              "ViewState": "AgIAAJIAAAAAAAAAAIA5wKQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:46:56.229Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DummyWalletModel.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Model\\DummyWalletModel.cs",
+              "RelativeDocumentMoniker": "Model\\DummyWalletModel.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Model\\DummyWalletModel.cs",
+              "RelativeToolTip": "Model\\DummyWalletModel.cs",
+              "ViewState": "AgIAAFUAAAAAAAAAAAAAAFoAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:43:32.828Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "NotificationModelTests.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\NotificationModelTests.cs",
+              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\Model\\NotificationModelTests.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\NotificationModelTests.cs",
+              "RelativeToolTip": "..\\ArtAttack.Tests\\Model\\NotificationModelTests.cs",
+              "ViewState": "AgIAAG8DAAAAAAAAAAAAwHYDAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:37:20.702Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DummyWalletModelTests.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\DummyWalletModelTests.cs",
+              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\Model\\DummyWalletModelTests.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\DummyWalletModelTests.cs",
+              "RelativeToolTip": "..\\ArtAttack.Tests\\Model\\DummyWalletModelTests.cs",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAAAGgAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:35:27.617Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "FinalizePurchaseViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\FinalizePurchaseViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModel\\FinalizePurchaseViewModel.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\FinalizePurchaseViewModel.cs",
+              "RelativeToolTip": "ViewModel\\FinalizePurchaseViewModel.cs",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAYwG4AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:15:29.472Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "NotificationTests.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\NotificationTests.cs",
+              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\Model\\NotificationTests.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\Model\\NotificationTests.cs",
+              "RelativeToolTip": "..\\ArtAttack.Tests\\Model\\NotificationTests.cs",
+              "ViewState": "AgIAAGEAAAAAAAAAAAAwwBAAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:36:39.789Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "NotificationRelayCommand.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\NotificationRelayCommand.cs",
+              "RelativeDocumentMoniker": "ViewModel\\NotificationRelayCommand.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\NotificationRelayCommand.cs",
+              "RelativeToolTip": "ViewModel\\NotificationRelayCommand.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAA9wCkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T12:17:14.219Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -80,198 +274,75 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Microsoft.WinUI.targets",
-              "DocumentMoniker": "C:\\Users\\alexe\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250310001\\buildTransitive\\Microsoft.WinUI.targets",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250310001\\buildTransitive\\Microsoft.WinUI.targets",
-              "ToolTip": "C:\\Users\\alexe\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250310001\\buildTransitive\\Microsoft.WinUI.targets",
-              "RelativeToolTip": "..\\..\\..\\..\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250310001\\buildTransitive\\Microsoft.WinUI.targets",
-              "ViewState": "AgIAADYAAAAAAAAAAAAIwEMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2025-04-05T14:25:20.31Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ArtAttack.Tests",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
-              "RelativeDocumentMoniker": "..\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
-              "RelativeToolTip": "..\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-04-05T14:24:22.114Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ArtAttack",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj",
-              "RelativeDocumentMoniker": "ArtAttack.csproj",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj",
-              "RelativeToolTip": "ArtAttack.csproj",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAnwAkAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-04-05T14:23:51.299Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "BorrowProductWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BorrowProductWindow.xaml",
-              "RelativeDocumentMoniker": "Views\\BorrowProductWindow.xaml",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BorrowProductWindow.xaml",
-              "RelativeToolTip": "Views\\BorrowProductWindow.xaml",
-              "ViewState": "AgIAAEoAAAAAAAAAAAAnwFsAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-04-05T14:21:39.882Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "WaitListViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\WaitListViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModel\\WaitListViewModel.cs",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\WaitListViewModel.cs",
-              "RelativeToolTip": "ViewModel\\WaitListViewModel.cs",
-              "ViewState": "AgIAABcAAAAAAAAAAADgvx4AAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-05T14:19:44.888Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 15,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAGsAAAAAAAAAAAArwHsAAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAACIAAAAAAAAAAAAuwDQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-05T14:14:02.413Z",
+              "WhenOpened": "2025-04-08T12:04:36.237Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "BorrowProductWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BorrowProductWindow.xaml.cs",
-              "RelativeDocumentMoniker": "Views\\BorrowProductWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BorrowProductWindow.xaml.cs",
-              "RelativeToolTip": "Views\\BorrowProductWindow.xaml.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAswBcAAAA1AAAAAAAAAA==",
+              "DocumentIndex": 17,
+              "Title": "BillingInfoWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BillingInfoWindow.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\BillingInfoWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BillingInfoWindow.xaml.cs",
+              "RelativeToolTip": "Views\\BillingInfoWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-05T14:09:44.548Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-08T12:03:52.233Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "BorrowProductWindow.g.cs",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\obj\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\Views\\BorrowProductWindow.g.cs",
-              "RelativeDocumentMoniker": "obj\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\Views\\BorrowProductWindow.g.cs",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\obj\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\Views\\BorrowProductWindow.g.cs",
-              "RelativeToolTip": "obj\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\Views\\BorrowProductWindow.g.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAvwDkAAACAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-05T14:09:30.814Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "WaitListModel.cs",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Model\\WaitListModel.cs",
-              "RelativeDocumentMoniker": "Model\\WaitListModel.cs",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Model\\WaitListModel.cs",
-              "RelativeToolTip": "Model\\WaitListModel.cs",
-              "ViewState": "AgIAADAAAAAAAAAAAADgvzQAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-05T14:20:02.758Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "NotificationViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\NotificationViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModel\\NotificationViewModel.cs",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ViewModel\\NotificationViewModel.cs",
-              "RelativeToolTip": "ViewModel\\NotificationViewModel.cs",
-              "ViewState": "AgIAAHgAAAAAAAAAAAAzwB4AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-05T14:11:29.822Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\MainWindow.xaml",
-              "RelativeToolTip": "MainWindow.xaml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 16,
+              "Title": "BillingInfo.xaml",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BillingInfo.xaml",
+              "RelativeDocumentMoniker": "Views\\BillingInfo.xaml",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BillingInfo.xaml",
+              "RelativeToolTip": "Views\\BillingInfo.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-04-05T14:13:57.703Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "OrderModelView.cs",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\OrderModelView.cs",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack\\ViewModel\\OrderModelView.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAIwBsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-04T19:25:21.962Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "ContractRenewViewModelTests.cs",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ContractRenewViewModelTests.cs",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ContractRenewViewModelTests.cs",
-              "ViewState": "AgIAAH8CAAAAAAAAAAAuwJECAABhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-04T16:24:59.538Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "ArtAttack.Tests.csproj",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\ArtAttack.Tests.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-04-04T15:41:05.313Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-08T11:56:27.175Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 14,
-              "Title": "GenerateContractTest.cs",
-              "DocumentMoniker": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\GenerateContractTest.cs",
-              "ToolTip": "D:\\Faculty\\CtrlAltDefeatMarketplace\\ArtAttack.Tests\\GenerateContractTest.cs",
-              "ViewState": "AgIAAKQAAAAAAAAAAAAUwLAAAAAHAAAAAAAAAA==",
+              "Title": "BillingInfo.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BillingInfo.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\BillingInfo.xaml.cs",
+              "ToolTip": "C:\\Users\\alexe\\source\\repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\Views\\BillingInfo.xaml.cs",
+              "RelativeToolTip": "Views\\BillingInfo.xaml.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAAApwEgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-04T15:28:07.122Z",
+              "WhenOpened": "2025-04-08T11:40:27.307Z",
               "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 35,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
             }
           ]
         }

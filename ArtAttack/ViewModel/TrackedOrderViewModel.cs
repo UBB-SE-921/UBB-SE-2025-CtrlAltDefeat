@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
+using ArtAttack.Shared;
 
 namespace ArtAttack.ViewModel
 {
@@ -46,8 +47,7 @@ namespace ArtAttack.ViewModel
                     DateTime.Now,
                     trackedOrderId,
                     status,
-                    estimatedDeliveryDate
-                );
+                    estimatedDeliveryDate);
                 await buyerNotificationViewModel.AddNotificationAsync(orderShippingNotification);
             }
             catch (Exception)
@@ -63,9 +63,9 @@ namespace ArtAttack.ViewModel
     /// </summary>
     public class TrackedOrderViewModel : ITrackedOrderViewModel
     {
-        private readonly ITrackedOrderModel _trackedOrderModel;
-        private readonly IOrderViewModel _orderViewModel;
-        private readonly INotificationService _notificationService;
+        private readonly ITrackedOrderModel trackedOrderModel;
+        private readonly IOrderViewModel orderViewModel;
+        private readonly INotificationService notificationService;
 
         /// <summary>
         /// Initializes a new instance of the TrackedOrderViewModel with default implementations
@@ -73,13 +73,10 @@ namespace ArtAttack.ViewModel
         /// <param name="connectionString">Database connection string</param>
         public TrackedOrderViewModel(string connectionString)
         {
-            if (string.IsNullOrEmpty(connectionString))
-                throw new ArgumentNullException(nameof(connectionString));
-
             IDatabaseProvider databaseProvider = new SqlDatabaseProvider();
-            _trackedOrderModel = new TrackedOrderModel(connectionString, databaseProvider);
-            _orderViewModel = new OrderViewModel(connectionString);
-            _notificationService = new DefaultNotificationService();
+            trackedOrderModel = new TrackedOrderModel(connectionString, databaseProvider);
+            orderViewModel = new OrderViewModel(connectionString);
+            notificationService = new DefaultNotificationService();
         }
 
         /// <summary>
@@ -93,9 +90,22 @@ namespace ArtAttack.ViewModel
             IOrderViewModel orderViewModel,
             INotificationService notificationService)
         {
-            _trackedOrderModel = trackedOrderModel ?? throw new ArgumentNullException(nameof(trackedOrderModel));
-            _orderViewModel = orderViewModel ?? throw new ArgumentNullException(nameof(orderViewModel));
-            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            if (trackedOrderModel == null)
+            {
+                throw new ArgumentNullException(nameof(trackedOrderModel));
+            }
+            if (orderViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(orderViewModel));
+            }
+            if (notificationService == null)
+            {
+                throw new ArgumentNullException(nameof(notificationService));
+            }
+
+            this.trackedOrderModel = trackedOrderModel;
+            this.orderViewModel = orderViewModel;
+            this.notificationService = notificationService;
         }
 
         /// <summary>
@@ -107,7 +117,7 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                return await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
+                return await trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
             }
             catch (Exception)
             {
@@ -124,7 +134,7 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                return await _trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
+                return await trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
             }
             catch (Exception)
             {
@@ -138,7 +148,7 @@ namespace ArtAttack.ViewModel
         /// <returns>A list of all tracked orders</returns>
         public async Task<List<TrackedOrder>> GetAllTrackedOrdersAsync()
         {
-            return await _trackedOrderModel.GetAllTrackedOrdersAsync();
+            return await trackedOrderModel.GetAllTrackedOrdersAsync();
         }
 
         /// <summary>
@@ -148,7 +158,7 @@ namespace ArtAttack.ViewModel
         /// <returns>A list of all checkpoints for the specified tracked order</returns>
         public async Task<List<OrderCheckpoint>> GetAllOrderCheckpointsAsync(int trackedOrderID)
         {
-            return await _trackedOrderModel.GetAllOrderCheckpointsAsync(trackedOrderID);
+            return await trackedOrderModel.GetAllOrderCheckpointsAsync(trackedOrderID);
         }
 
         /// <summary>
@@ -158,7 +168,7 @@ namespace ArtAttack.ViewModel
         /// <returns>True if deletion was successful, false otherwise</returns>
         public async Task<bool> DeleteTrackedOrderAsync(int trackedOrderID)
         {
-            return await _trackedOrderModel.DeleteTrackedOrderAsync(trackedOrderID);
+            return await trackedOrderModel.DeleteTrackedOrderAsync(trackedOrderID);
         }
 
         /// <summary>
@@ -168,7 +178,7 @@ namespace ArtAttack.ViewModel
         /// <returns>True if deletion was successful, false otherwise</returns>
         public async Task<bool> DeleteOrderCheckpointAsync(int checkpointID)
         {
-            return await _trackedOrderModel.DeleteOrderCheckpointAsync(checkpointID);
+            return await trackedOrderModel.DeleteOrderCheckpointAsync(checkpointID);
         }
 
         /// <summary>
@@ -181,20 +191,19 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                int newTrackedOrderID = await _trackedOrderModel.AddTrackedOrderAsync(trackedOrder);
+                int newTrackedOrderID = await trackedOrderModel.AddTrackedOrderAsync(trackedOrder);
                 trackedOrder.TrackedOrderID = newTrackedOrderID;
 
                 try
                 {
-                    Order order = await _orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
+                    Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
                     if (order != null)
                     {
-                        await _notificationService.SendShippingProgressNotificationAsync(
+                        await notificationService.SendShippingProgressNotificationAsync(
                             order.BuyerID,
                             trackedOrder.TrackedOrderID,
                             trackedOrder.CurrentStatus.ToString(),
-                            trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now))
-                        );
+                            trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));
                     }
                 }
                 catch
@@ -220,23 +229,22 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                int newCheckpointID = await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
-                TrackedOrder trackedOrder = await _trackedOrderModel.GetTrackedOrderByIdAsync(checkpoint.TrackedOrderID);
+                int newCheckpointID = await trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
+                TrackedOrder trackedOrder = await trackedOrderModel.GetTrackedOrderByIdAsync(checkpoint.TrackedOrderID);
                 await UpdateTrackedOrderAsync(trackedOrder.TrackedOrderID, trackedOrder.EstimatedDeliveryDate, checkpoint.Status);
 
                 if (checkpoint.Status == OrderStatus.SHIPPED || checkpoint.Status == OrderStatus.OUT_FOR_DELIVERY)
                 {
                     try
                     {
-                        Order order = await _orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
+                        Order order = await orderViewModel.GetOrderByIdAsync(trackedOrder.OrderID);
                         if (order != null)
                         {
-                            await _notificationService.SendShippingProgressNotificationAsync(
+                            await notificationService.SendShippingProgressNotificationAsync(
                                 order.BuyerID,
                                 trackedOrder.TrackedOrderID,
                                 trackedOrder.CurrentStatus.ToString(),
-                                trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now))
-                            );
+                                trackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));
                         }
                     }
                     catch
@@ -266,16 +274,15 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                await _trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
+                await trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
 
-                OrderCheckpoint updatedCheckpoint = await _trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
-                TrackedOrder associatedTrackedOrder = await _trackedOrderModel.GetTrackedOrderByIdAsync(updatedCheckpoint.TrackedOrderID);
+                OrderCheckpoint updatedCheckpoint = await trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
+                TrackedOrder associatedTrackedOrder = await trackedOrderModel.GetTrackedOrderByIdAsync(updatedCheckpoint.TrackedOrderID);
 
                 await UpdateTrackedOrderAsync(
                     associatedTrackedOrder.TrackedOrderID,
                     associatedTrackedOrder.EstimatedDeliveryDate,
-                    updatedCheckpoint.Status
-                );
+                    updatedCheckpoint.Status);
             }
             catch (Exception exception)
             {
@@ -298,20 +305,19 @@ namespace ArtAttack.ViewModel
             try
             {
                 // First verify that the checkpoint belongs to the specified tracked order
-                OrderCheckpoint checkpoint = await _trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
+                OrderCheckpoint checkpoint = await trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
                 if (checkpoint.TrackedOrderID != trackedOrderID)
                 {
                     return false;
                 }
 
-                await _trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
+                await trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
 
-                TrackedOrder associatedTrackedOrder = await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
+                TrackedOrder associatedTrackedOrder = await trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
                 await UpdateTrackedOrderAsync(
                     associatedTrackedOrder.TrackedOrderID,
                     associatedTrackedOrder.EstimatedDeliveryDate,
-                    status
-                );
+                    status);
 
                 return true;
             }
@@ -332,22 +338,21 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                await _trackedOrderModel.UpdateTrackedOrderAsync(trackedOrderID, estimatedDeliveryDate, currentStatus);
-                TrackedOrder updatedTrackedOrder = await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
+                await trackedOrderModel.UpdateTrackedOrderAsync(trackedOrderID, estimatedDeliveryDate, currentStatus);
+                TrackedOrder updatedTrackedOrder = await trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
 
                 if (updatedTrackedOrder.CurrentStatus == OrderStatus.SHIPPED || updatedTrackedOrder.CurrentStatus == OrderStatus.OUT_FOR_DELIVERY)
                 {
                     try
                     {
-                        Order order = await _orderViewModel.GetOrderByIdAsync(updatedTrackedOrder.OrderID);
+                        Order order = await orderViewModel.GetOrderByIdAsync(updatedTrackedOrder.OrderID);
                         if (order != null)
                         {
-                            await _notificationService.SendShippingProgressNotificationAsync(
+                            await notificationService.SendShippingProgressNotificationAsync(
                                 order.BuyerID,
                                 updatedTrackedOrder.TrackedOrderID,
                                 updatedTrackedOrder.CurrentStatus.ToString(),
-                                updatedTrackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now))
-                            );
+                                updatedTrackedOrder.EstimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));
                         }
                     }
                     catch
@@ -376,10 +381,10 @@ namespace ArtAttack.ViewModel
             try
             {
                 // First update the tracked order status and delivery date
-                await _trackedOrderModel.UpdateTrackedOrderAsync(trackedOrderID, estimatedDeliveryDate, currentStatus);
+                await trackedOrderModel.UpdateTrackedOrderAsync(trackedOrderID, estimatedDeliveryDate, currentStatus);
 
                 // Then get the updated tracked order to verify and send notifications if needed
-                TrackedOrder updatedTrackedOrder = await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
+                TrackedOrder updatedTrackedOrder = await trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
 
                 // Verify that the order ID matches
                 if (updatedTrackedOrder.OrderID != orderID)
@@ -392,15 +397,14 @@ namespace ArtAttack.ViewModel
                 {
                     try
                     {
-                        Order order = await _orderViewModel.GetOrderByIdAsync(orderID);
+                        Order order = await orderViewModel.GetOrderByIdAsync(orderID);
                         if (order != null)
                         {
-                            await _notificationService.SendShippingProgressNotificationAsync(
+                            await notificationService.SendShippingProgressNotificationAsync(
                                 order.BuyerID,
                                 trackedOrderID,
                                 currentStatus.ToString(),
-                                estimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now))
-                            );
+                                estimatedDeliveryDate.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)));
                         }
                     }
                     catch
@@ -424,7 +428,7 @@ namespace ArtAttack.ViewModel
         /// <returns>The most recent checkpoint, or null if none exists</returns>
         public async Task<OrderCheckpoint?> GetLastCheckpoint(TrackedOrder order)
         {
-            List<OrderCheckpoint> allCheckpoints = await _trackedOrderModel.GetAllOrderCheckpointsAsync(order.TrackedOrderID);
+            List<OrderCheckpoint> allCheckpoints = await trackedOrderModel.GetAllOrderCheckpointsAsync(order.TrackedOrderID);
             return allCheckpoints.OrderByDescending(c => c.Timestamp).FirstOrDefault();
         }
 
@@ -435,7 +439,7 @@ namespace ArtAttack.ViewModel
         /// <returns>The number of checkpoints</returns>
         public async Task<int> GetNumberOfCheckpoints(TrackedOrder order)
         {
-            List<OrderCheckpoint> allCheckpoints = await _trackedOrderModel.GetAllOrderCheckpointsAsync(order.TrackedOrderID);
+            List<OrderCheckpoint> allCheckpoints = await trackedOrderModel.GetAllOrderCheckpointsAsync(order.TrackedOrderID);
             return allCheckpoints.Count;
         }
 
@@ -455,7 +459,9 @@ namespace ArtAttack.ViewModel
             const int minimumCheckpointsForReversion = 1;
 
             if (checkpointCount <= minimumCheckpointsForReversion)
+            {
                 throw new Exception("Cannot revert further");
+            }
 
             var currentCheckpoint = await GetLastCheckpoint(order);
             if (currentCheckpoint != null)
@@ -504,8 +510,7 @@ namespace ArtAttack.ViewModel
                 await UpdateTrackedOrderAsync(
                     order.TrackedOrderID,
                     order.EstimatedDeliveryDate,
-                    lastCheckpoint.Status
-                );
+                    lastCheckpoint.Status);
 
                 return true;
             }

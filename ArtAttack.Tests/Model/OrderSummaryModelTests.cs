@@ -78,6 +78,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         public void Constructor_WhenWithConnectionString_InitializesCorrectly()
+
         {
             // Act
             var model = new OrderSummaryModel(_testConnectionString);
@@ -101,7 +102,6 @@ namespace ArtAttack.Tests.Model
             // Act
             new OrderSummaryModel(_testConnectionString, null);
         }
-
 
         [TestMethod]
         public async Task AddOrderSummaryAsync_ExecutesCorrectCommand()
@@ -183,9 +183,11 @@ namespace ArtAttack.Tests.Model
 
             // We expect 1 parameter to be set
             Assert.AreEqual(1, _mockParameter.Invocations.Count(inv => inv.Method.Name == "set_ParameterName"));
+
             Assert.IsTrue(capturedParameterValues.ContainsKey("@ID"));
             Assert.AreEqual(id, capturedParameterValues["@ID"]);
         }
+
 
         [TestMethod]
         public async Task UpdateOrderSummaryAsync_ExecutesCorrectCommand()
@@ -227,6 +229,7 @@ namespace ArtAttack.Tests.Model
             Assert.IsTrue(capturedParameterValues.ContainsKey("@FullName"));
             Assert.AreEqual(fullName, capturedParameterValues["@FullName"]);
 
+
             Assert.IsTrue(capturedParameterValues.ContainsKey("@Email"));
             Assert.AreEqual(email, capturedParameterValues["@Email"]);
         }
@@ -236,6 +239,7 @@ namespace ArtAttack.Tests.Model
         {
             // Arrange
             Dictionary<string, object> capturedParameterValues = CaptureParameterValues();
+
 
             // Act
             await _orderSummaryModel.UpdateOrderSummaryAsync(
@@ -271,15 +275,18 @@ namespace ArtAttack.Tests.Model
                 });
 
             // Act 
+
             var result = await _orderSummaryModel.GetOrderSummaryByIDAsync(nonExistentOrderSummaryId);
 
             // Assert
             Assert.IsNull(result, "Method should return null when no order summary is found");
             _mockConnection.Verify(connection => connection.Open(), Times.Once);
             _mockCommand.Verify(cmd => cmd.ExecuteReader(), Times.Once);
+
             Assert.IsTrue(capturedParameterValues.ContainsKey("@ID"));
             Assert.AreEqual(nonExistentOrderSummaryId, capturedParameterValues["@ID"]);
         }
+
 
         [TestMethod]
         public async Task GetOrderSummaryByIDAsync_WhenOrderExists_ReturnsOrderSummary()
@@ -384,6 +391,7 @@ namespace ArtAttack.Tests.Model
                 .Returns(true)
                 .Returns(false);
             _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
+
 
             // Act
             var result = await _orderSummaryModel.GetOrderSummaryByIDAsync(1);

@@ -23,14 +23,14 @@ namespace ArtAttack.Tests.ViewModel
             _mockWaitListModel = new Mock<IWaitListModel>();
             _mockDummyProductModel = new Mock<IDummyProductModel>();
 
-            // Use reflection to set the private fields with our mocks
+            // Create a new instance of WaitListViewModel
             var waitListViewModel = new WaitListViewModel(_testConnectionString);
 
-            // Get private fields via reflection
-            var waitListModelField = typeof(WaitListViewModel).GetField("_waitListModel",
+            // Get private fields via reflection - note the field names don't have underscores
+            var waitListModelField = typeof(WaitListViewModel).GetField("waitListModel",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-            var dummyProductModelField = typeof(WaitListViewModel).GetField("_dummyProductModel",
+            var dummyProductModelField = typeof(WaitListViewModel).GetField("dummyProductModel",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             // Set our mocks into the private fields

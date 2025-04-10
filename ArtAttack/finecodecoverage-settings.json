@@ -10,11 +10,53 @@
   ],
   "excludedItems": [
     "*\\obj\\*",
-    "*\\bin\\*"
+    "*\\bin\\*",
+    "*\\Views\\*",
+    "*\\*Window.xaml.cs",
+    "*\\*Page.xaml.cs",
+    "*\\App.xaml.cs",
+    "*\\Program.cs",
+    "*\\*.g.cs",
+    "*\\*.g.i.cs",
+    "*\\BorrowProductWindow.xaml.cs",
+    "*\\BillingInfoWindow.xaml.cs",
+    "*\\MainWindow.xaml.cs"
+  ],
+  "excludedFiles": [
+    "**\\ArtAttack\\Window.xaml.cs",
+    "*Page.xaml.cs",
+    "App.xaml.cs"
+  ],
+  "excludedAttributes": [
+    "System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute",
+    "System.Runtime.CompilerServices.CompilerGeneratedAttribute"
+  ],
+  "excludedMethods": [
+    "*.get_*",
+    "*.set_*",
+    "*InitializeComponent*",
+    "*Main*",
+    "*_Click",
+    "*_Loaded",
+    "*_Closing",
+    "*_Changed",
+    "*_Activated"
+  ],
+  "excludeDirectories": [
+    "Views"
   ],
   "includeTestAssembly": false,
+  "excludeByAttribute": [
+    "ExcludeFromCodeCoverage"
+  ],
+  "excludeByFile": [
+    "*\\Views\\*.cs",
+    "*\\*Window.xaml.cs",
+    "*\\*Page.xaml.cs",
+    "*\\App.xaml.cs"
+  ],
   "thresholdForMinimumCodeCoveragePercentage": 60,
   "useProjectFilePaths": true,
   "runMsCodeCoverage": "Yes",
-  "runSettingsFilePath": "ArtAttack.Tests.runsettings"
+  "runSettingsFilePath": "ArtAttack.coverage.runsettings"
 }

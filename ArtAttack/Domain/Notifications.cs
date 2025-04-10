@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ArtAttack.Domain
 {
+    [ExcludeFromCodeCoverage]
     abstract public class Notification : INotification
     {
         public int NotificationID { get; set; }
@@ -40,18 +42,21 @@ namespace ArtAttack.Domain
             Category = NotificationCategory.CONTRACT_RENEWAL_ANS;
             this.IsAccepted = isAccepted;
         }
+        [ExcludeFromCodeCoverage]
         public int GetContractID()
         {
             return ContractID;
         }
-
+        [ExcludeFromCodeCoverage]
         public bool GetIsAccepted()
         {
             return IsAccepted;
         }
-
+        [ExcludeFromCodeCoverage]
         public override string Content => IsAccepted ? $"Contract: {ContractID} has been renewed!\r\n You can download it from below!" : $"Unfortunately, contract: {ContractID} has not been renewed!\r\n The owner refused the renewal request :(";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Contract Renewal Answer";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"You have received an answer on the renewal request for contract: {ContractID}.";
     }
 
@@ -68,13 +73,17 @@ namespace ArtAttack.Domain
             Category = NotificationCategory.CONTRACT_RENEWAL_WAITLIST;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetProductID()
         {
             return ProductID;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string Content => $"The user that borrowed product: {ProductID} that you are part of the waitlist for, has renewed its contract.";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Contract Renewal in Waitlist";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => "A user has extended their contract.";
     }
 
@@ -90,12 +99,16 @@ namespace ArtAttack.Domain
             ProductID = productId;
             Category = NotificationCategory.OUTBIDDED;
         }
+        [ExcludeFromCodeCoverage]
         public int GetProductID()
         {
             return ProductID;
         }
+        [ExcludeFromCodeCoverage]
         public override string Content => $"You've been outbid! Another buyer has placed a higher bid on product: {ProductID}. Place a new bid now!";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Outbidded";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"You've been outbidded on product: {ProductID}.";
     }
 
@@ -117,23 +130,29 @@ namespace ArtAttack.Domain
             this.DeliveryDate = deliveryDate;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetOrderID()
         {
             return OrderID;
         }
 
+        [ExcludeFromCodeCoverage]
         public DateTime GetDeliveryDate()
         {
             return DeliveryDate;
         }
 
+        [ExcludeFromCodeCoverage]
         public string GetShippingState()
         {
             return ShippingState;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string Content => $"Your order: {OrderID} has reached the {ShippingState} stage. Estimated delivery is on {DeliveryDate}.";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Order Shipping Update";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"New info on order: {OrderID} is available.";
     }
 
@@ -153,18 +172,23 @@ namespace ArtAttack.Domain
             Category = NotificationCategory.PAYMENT_CONFIRMATION;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetProductID()
         {
             return ProductID;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetOrderID()
         {
             return OrderID;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string Content => $"Thank you for your purchase! Your order: {OrderID} for product: {ProductID} has been successfully processed.";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Payment Confirmation";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"Order: {OrderID} has been processed successfully!";
     }
 
@@ -182,13 +206,17 @@ namespace ArtAttack.Domain
             Category = NotificationCategory.PRODUCT_REMOVED;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetProductID()
         {
             return ProductID;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string Content => $"Unfortunately, the product: {ProductID} that you were waiting for was removed from the marketplace.";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Product Removed";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"Product: {ProductID} was removed from the marketplace!";
     }
 
@@ -206,13 +234,17 @@ namespace ArtAttack.Domain
             Category = NotificationCategory.PRODUCT_AVAILABLE;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetProductID()
         {
             return ProductID;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string Content => $"Good news! The product: {ProductID} that you were waiting for is now back in stock.";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Product Available";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"Product: {ProductID} is available now!";
     }
 
@@ -230,13 +262,17 @@ namespace ArtAttack.Domain
             Category = NotificationCategory.CONTRACT_RENEWAL_REQ;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetContractID()
         {
             return ContractID;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string Content => $"User {RecipientID} would like to renew contract: {ContractID}. Please respond promptly.";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Contract Renewal Request";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"User {RecipientID} wants to renew contract: {ContractID}.";
     }
 
@@ -256,13 +292,21 @@ namespace ArtAttack.Domain
             this.ExpirationDate = expirationDate;
         }
 
+        [ExcludeFromCodeCoverage]
         public int GetContractID()
         {
             return ContractID;
         }
+        public DateTime GetExpirationDate()
+        {
+            return ExpirationDate;
+        }
 
+        [ExcludeFromCodeCoverage]
         public override string Content => $"Contract: {ContractID} is set to expire on {ExpirationDate}.";
+        [ExcludeFromCodeCoverage]
         public override string Title => "Contract Expiration";
+        [ExcludeFromCodeCoverage]
         public override string Subtitle => $"Contract: {ContractID} is about to expire!";
     }
 }

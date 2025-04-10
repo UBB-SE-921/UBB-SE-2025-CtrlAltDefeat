@@ -135,6 +135,9 @@ namespace ArtAttack.Tests.Model
             _waitListModel.AddUserToWaitlist(userId, productWaitListId);
         }
 
+
+        #region RemoveUserFromWaitlist Tests
+
         [TestMethod]
         public void RemoveUserFromWaitlist_ExecutesCorrectStoredProcedure()
         {

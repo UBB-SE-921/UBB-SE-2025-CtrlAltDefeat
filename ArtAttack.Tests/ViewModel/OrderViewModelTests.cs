@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace ArtAttack.Tests
+namespace ArtAttack.Tests.ViewModel
 {
     [TestClass]
     public class OrderViewModelTests
@@ -131,6 +131,28 @@ namespace ArtAttack.Tests
 
             _mockConnection.Verify(c => c.Open(), Times.Once);
             _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
+        }
+
+        //create viewmodel with first parameter null then another test with second null
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task GetOrderSummaryAsync_ThrowsArgumentNullException_WhenConnectionStringIsNull()
+        {
+            // Arrange
+            string nullConnectionString = null;
+            // Act
+            var viewModel = new OrderViewModel(nullConnectionString, _mockDatabaseProvider.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task GetOrderSummaryAsync_ThrowsArgumentNullException_WhenDatabaseProviderIsNull()
+        {
+            // Arrange
+            string nullConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
+            // Act
+            var viewModel = new OrderViewModel(nullConnectionString, null);
         }
 
 
@@ -328,7 +350,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -358,7 +380,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -387,7 +409,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -414,7 +436,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -441,7 +463,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -483,7 +505,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -507,8 +529,20 @@ namespace ArtAttack.Tests
 
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
-            // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            // Use reflection to replace the private model field with our mock
+            // Field name might be 'model' without underscore prefix
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            // Add null check to help debug
+            if (modelField == null)
+            {
+                // Try alternative field naming conventions
+                modelField = typeof(OrderViewModel).GetField("_orderModel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                if (modelField == null)
+                    throw new InvalidOperationException("Could not find the model field in OrderViewModel class. Check the field name.");
+            }
+
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -517,6 +551,7 @@ namespace ArtAttack.Tests
             // Assert
             _mockOrderModel.Verify(m => m.UpdateOrderAsync(orderId, productType, paymentMethod, orderDate), Times.Once);
         }
+
 
         [TestMethod]
         public async Task DeleteOrderAsync_CallsModelMethod()
@@ -530,7 +565,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -553,7 +588,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -578,7 +613,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -603,7 +638,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -628,7 +663,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -653,7 +688,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -678,7 +713,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -704,7 +739,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -729,7 +764,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -758,7 +793,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -788,7 +823,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -816,7 +851,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -842,7 +877,7 @@ namespace ArtAttack.Tests
             var viewModel = new OrderViewModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Use reflection to replace the private _model field with our mock
-            var modelField = typeof(OrderViewModel).GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var modelField = typeof(OrderViewModel).GetField("model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             modelField.SetValue(viewModel, _mockOrderModel.Object);
 
             // Act
@@ -997,13 +1032,6 @@ namespace ArtAttack.Tests
 
             // Assert
             Assert.AreEqual(1, results.Count);
-
-            // Verify SQL text contains the correct filter
-            //_mockCommand.Verify(c => c.set_CommandText(It.Is<string>(
-            //    sql => sql.Contains("AND YEAR(o.OrderDate) = YEAR(GETDATE())"))),
-            //    Times.Once);
         }
-
-
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Diagnostics.CodeAnalysis;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -20,6 +21,7 @@ using Microsoft.UI.Xaml.Shapes;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace ArtAttack
 {
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>

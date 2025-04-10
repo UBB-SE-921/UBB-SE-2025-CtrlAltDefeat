@@ -50,21 +50,29 @@ namespace ArtAttack.Model
         /// </summary>
         /// <param name="userId">The ID of the user to be added to the waitlist. Must be a positive integer.</param>
         /// <param name="productWaitListId">The ID of the product waitlist. Must be a positive integer.</param>
-        // <summary>
-        /// Adds a user to the waitlist for a specific product.
         public void AddUserToWaitlist(int userId, int productWaitListId)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("AddUserToWaitlist", conn))
+                connection.Open();
+                using (IDbCommand command = connection.CreateCommand())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
-                    cmd.Parameters.Add("@ProductWaitListID", SqlDbType.Int).Value = productWaitListId;
+                    command.CommandText = "AddUserToWaitlist";
+                    command.CommandType = CommandType.StoredProcedure;
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    IDbDataParameter userIdParam = command.CreateParameter();
+                    userIdParam.ParameterName = "@UserID";
+                    userIdParam.Value = userId;
+                    command.Parameters.Add(userIdParam);
+
+                    IDbDataParameter productIdParam = command.CreateParameter();
+                    productIdParam.ParameterName = "@ProductWaitListID";
+                    productIdParam.Value = productWaitListId;
+                    command.Parameters.Add(productIdParam);
+
+                    command.ExecuteNonQuery();
                 }
+                connection.Close();
             }
         }
 
@@ -129,7 +137,8 @@ namespace ArtAttack.Model
                         {
                             var userWaitListEntry = new UserWaitList
                             {
-                                UserWaitListID = reader.GetInt32(reader.GetOrdinal("userID")),
+                                UserID = reader.GetInt32(reader.GetOrdinal("userID")),
+                                ProductWaitListID = waitListProductId, // Add this line
                                 PositionInQueue = reader.GetInt32(reader.GetOrdinal("positionInQueue")),
                                 JoinedTime = reader.GetDateTime(reader.GetOrdinal("joinedTime"))
                             };
@@ -198,6 +207,7 @@ namespace ArtAttack.Model
         {
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
+                int waitListSize = 0;
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -219,11 +229,11 @@ namespace ArtAttack.Model
                     // Get the output parameter value
                     if (totalUsersParam.Value != DBNull.Value)
                     {
-                        return Convert.ToInt32(totalUsersParam.Value);
+                        waitListSize = Convert.ToInt32(totalUsersParam.Value);
                     }
-                    return 0;
                 }
                 connection.Close();
+                return waitListSize;
             }
         }
 
@@ -238,6 +248,7 @@ namespace ArtAttack.Model
         {
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
+                bool isInWaitlist = false;
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -255,9 +266,10 @@ namespace ArtAttack.Model
                     command.Parameters.Add(productIdParam);
 
                     object result = command.ExecuteScalar();
-                    return result != null && result != DBNull.Value;
+                    isInWaitlist = result != null && result != DBNull.Value;
                 }
                 connection.Close();
+                return isInWaitlist;
             }
         }
 
@@ -273,6 +285,7 @@ namespace ArtAttack.Model
             Debug.WriteLine($"GetUserWaitlistPosition: UserID: {userId}, ProductID: {productId}");
             using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
             {
+                int userWaitListposition = -1;
                 connection.Open();
                 using (IDbCommand command = connection.CreateCommand())
                 {
@@ -299,11 +312,11 @@ namespace ArtAttack.Model
                     // Get the output parameter value
                     if (positionParam.Value != DBNull.Value)
                     {
-                        return Convert.ToInt32(positionParam.Value);
+                        userWaitListposition = Convert.ToInt32(positionParam.Value);
                     }
-                    return -1;
                 }
                 connection.Close();
+                return userWaitListposition;
             }
         }
 

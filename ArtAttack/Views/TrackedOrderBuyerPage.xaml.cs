@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.UI.Xaml.Controls;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace ArtAttack.Views
 {
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -26,6 +28,12 @@ namespace ArtAttack.Views
             Checkpoints = new List<OrderCheckpoint>();
             LoadOrderData();
         }
+
+        /// <summary>
+        /// Shows an error dialog with the specified error message
+        /// </summary>
+        /// <param name="errorMessage">The message of the error to be shown</param>
+        /// <returns></returns>
         private async Task ShowErrorDialog(string errorMessage)
         {
             var dialog = new ContentDialog
@@ -39,6 +47,9 @@ namespace ArtAttack.Views
             await dialog.ShowAsync();
         }
 
+        /// <summary>
+        /// Loads the order data asynchronously
+        /// </summary>
         private async void LoadOrderData()
         {
             try
