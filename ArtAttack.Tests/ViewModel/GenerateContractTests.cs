@@ -54,25 +54,25 @@ namespace ArtAttack.Tests.ViewModel
             };
 
             // Setup mock model responses
-            mockContractModel.Setup(m => m.GetContractByIdAsync(It.IsAny<long>()))
+            mockContractModel.Setup(mockModel => mockModel.GetContractByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(mockContract);
 
-            mockContractModel.Setup(m => m.GetPredefinedContractByPredefineContractTypeAsync(It.IsAny<PredefinedContractType>()))
+            mockContractModel.Setup(mockModel => mockModel.GetPredefinedContractByPredefineContractTypeAsync(It.IsAny<PredefinedContractType>()))
                 .ReturnsAsync(mockPredefinedContract);
 
-            mockContractModel.Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
+            mockContractModel.Setup(mockModel => mockModel.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync((DateTime.Now, DateTime.Now.AddDays(30), 99.99, "Test Product"));
 
-            mockContractModel.Setup(m => m.GetContractBuyerAsync(It.IsAny<long>()))
+            mockContractModel.Setup(mockModel => mockModel.GetContractBuyerAsync(It.IsAny<long>()))
                 .ReturnsAsync((1, "Test Buyer"));
 
-            mockContractModel.Setup(m => m.GetContractSellerAsync(It.IsAny<long>()))
+            mockContractModel.Setup(mockModel => mockModel.GetContractSellerAsync(It.IsAny<long>()))
                 .ReturnsAsync((2, "Test Seller"));
 
-            mockContractModel.Setup(m => m.GetOrderDetailsAsync(It.IsAny<long>()))
+            mockContractModel.Setup(mockModel => mockModel.GetOrderDetailsAsync(It.IsAny<long>()))
                 .ReturnsAsync(("Credit Card", DateTime.Now));
 
-            mockContractModel.Setup(m => m.GetOrderSummaryInformationAsync(It.IsAny<long>()))
+            mockContractModel.Setup(mockModel => mockModel.GetOrderSummaryInformationAsync(It.IsAny<long>()))
                 .ReturnsAsync(mockOrderSummary);
         }
 
@@ -88,7 +88,7 @@ namespace ArtAttack.Tests.ViewModel
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(mockContract.ContractID, result.ContractID);
-            mockContractModel.Verify(m => m.GetContractByIdAsync(contractId), Times.Once);
+            mockContractModel.Verify(mockModel => mockModel.GetContractByIdAsync(contractId), Times.Once);
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace ArtAttack.Tests.ViewModel
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(mockPredefinedContract.ID, result.ID);
-            mockContractModel.Verify(m => m.GetPredefinedContractByPredefineContractTypeAsync(contractType), Times.Once);
+            mockContractModel.Verify(mockModel => mockModel.GetPredefinedContractByPredefineContractTypeAsync(contractType), Times.Once);
         }
 
        
@@ -131,18 +131,18 @@ namespace ArtAttack.Tests.ViewModel
             Assert.AreEqual("99,99", result["Price"]);
 
             // Verify all the necessary methods were called
-            mockContractModel.Verify(m => m.GetProductDetailsByContractIdAsync(mockContract.ContractID), Times.Once);
-            mockContractModel.Verify(m => m.GetContractBuyerAsync(mockContract.ContractID), Times.Once);
-            mockContractModel.Verify(m => m.GetContractSellerAsync(mockContract.ContractID), Times.Once);
-            mockContractModel.Verify(m => m.GetOrderDetailsAsync(mockContract.ContractID), Times.Once);
-            mockContractModel.Verify(m => m.GetOrderSummaryInformationAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(mockModel => mockModel.GetProductDetailsByContractIdAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(mockModel => mockModel.GetContractBuyerAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(mockModel => mockModel.GetContractSellerAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(mockModel => mockModel.GetOrderDetailsAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(mockModel => mockModel.GetOrderSummaryInformationAsync(mockContract.ContractID), Times.Once);
         }
 
         [TestMethod]
         public async Task GetFieldReplacements_WhenProductDetailsNull_ShouldUseDefaultValues()
         {
             // Arrange - Setup null product details
-            mockContractModel.Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
+            mockContractModel.Setup(mockModel => mockModel.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
         .ReturnsAsync(default((DateTime, DateTime, double, string)?));
 
             // We need to test the private _GetFieldReplacements method
