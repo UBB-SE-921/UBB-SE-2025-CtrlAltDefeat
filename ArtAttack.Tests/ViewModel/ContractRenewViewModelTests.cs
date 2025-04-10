@@ -17,49 +17,49 @@ namespace ArtAttack.Tests.ViewModel
     [TestClass]
     public class ContractRenewViewModelTests
     {
-        private Mock<IContractModel> _mockContractModel;
-        private Mock<IContractRenewalModel> _mockRenewalModel;
-        private Mock<INotificationDataAdapter> _mockNotificationAdapter;
-        private Mock<IDatabaseProvider> _mockDatabaseProvider;
-        private Mock<IDbConnection> _mockConnection;
-        private Mock<IDbCommand> _mockCommand;
-        private Mock<IDbDataParameter> _mockParameter;
-        private Mock<IFileSystem> _mockFileSystem;
-        private Mock<IDataParameterCollection> _mockParameters;
-        private Mock<IDateTimeProvider> _mockDateTimeProvider;
-        private ContractRenewViewModel _viewModel;
-        private readonly string _testConnectionString = "TestConnectionString";
+        private Mock<IContractModel> mockContractModel;
+        private Mock<IContractRenewalModel> mockRenewalModel;
+        private Mock<INotificationDataAdapter> mockNotificationAdapter;
+        private Mock<IDatabaseProvider> mockDatabaseProvider;
+        private Mock<IDbConnection> mockConnection;
+        private Mock<IDbCommand> mockCommand;
+        private Mock<IDbDataParameter> mockParameter;
+        private Mock<IFileSystem> mockFileSystem;
+        private Mock<IDataParameterCollection> mockParameters;
+        private Mock<IDateTimeProvider> mockDateTimeProvider;
+        private ContractRenewViewModel contractRenewViewModel;
+        private readonly string testConnectionString = "TestConnectionString";
 
         // Sample data for tests
-        private IContract _mockContract;
-        private List<IContract> _mockContracts;
-        private readonly int _testBuyerId = 42;
-        private readonly long _testContractId = 123;
-        private readonly DateTime _testFixedDate = new DateTime(2023, 6, 15);
-        private readonly DateTime _testEndDate = new DateTime(2023, 6, 22);
-        private readonly DateTime _testOldEndDate = new DateTime(2023, 6, 20);
+        private IContract mockContract;
+        private List<IContract> mockContracts;
+        private readonly int testBuyerId = 42;
+        private readonly long testContractId = 123;
+        private readonly DateTime testFixedDate = new DateTime(2023, 6, 15);
+        private readonly DateTime testEndDate = new DateTime(2023, 6, 22);
+        private readonly DateTime testOldEndDate = new DateTime(2023, 6, 20);
 
         [TestInitialize]
         public void Initialize()
         {
             // Setup mock objects
-            _mockContractModel = new Mock<IContractModel>();
-            _mockRenewalModel = new Mock<IContractRenewalModel>();
-            _mockNotificationAdapter = new Mock<INotificationDataAdapter>();
-            _mockDatabaseProvider = new Mock<IDatabaseProvider>();
-            _mockConnection = new Mock<IDbConnection>();
-            _mockCommand = new Mock<IDbCommand>();
-            _mockParameter = new Mock<IDbDataParameter>();
-            _mockFileSystem = new Mock<IFileSystem>();
-            _mockDateTimeProvider = new Mock<IDateTimeProvider>();
-            _mockParameters = new Mock<IDataParameterCollection>();
+            mockContractModel = new Mock<IContractModel>();
+            mockRenewalModel = new Mock<IContractRenewalModel>();
+            mockNotificationAdapter = new Mock<INotificationDataAdapter>();
+            mockDatabaseProvider = new Mock<IDatabaseProvider>();
+            mockConnection = new Mock<IDbConnection>();
+            mockCommand = new Mock<IDbCommand>();
+            mockParameter = new Mock<IDbDataParameter>();
+            mockFileSystem = new Mock<IFileSystem>();
+            mockDateTimeProvider = new Mock<IDateTimeProvider>();
+            mockParameters = new Mock<IDataParameterCollection>();
 
-            _mockParameters.Setup(p => p.Add(It.IsAny<object>())).Returns(0);
+            mockParameters.Setup(dataParameter => dataParameter.Add(It.IsAny<object>())).Returns(0);
 
             // Setup contract data
-            _mockContract = new Contract
+            mockContract = new Contract
             {
-                ContractID = _testContractId,
+                ContractID = testContractId,
                 OrderID = 456,
                 ContractStatus = "ACTIVE",
                 ContractContent = "Test contract content",
@@ -67,9 +67,9 @@ namespace ArtAttack.Tests.ViewModel
                 PDFID = 789
             };
 
-            _mockContracts = new List<IContract>
+            mockContracts = new List<IContract>
             {
-                _mockContract,
+                mockContract,
                 new Contract
                 {
                     ContractID = 124,
@@ -85,240 +85,240 @@ namespace ArtAttack.Tests.ViewModel
             };
 
             // Setup mock behaviors
-            _mockDateTimeProvider.Setup(p => p.Now).Returns(_testFixedDate);
+            mockDateTimeProvider.Setup(dateTimeProvider => dateTimeProvider.Now).Returns(testFixedDate);
 
-            _mockContractModel
-                .Setup(m => m.GetContractsByBuyerAsync(_testBuyerId))
-                .ReturnsAsync(_mockContracts);
+            mockContractModel
+                .Setup(contractModel => contractModel.GetContractsByBuyerAsync(testBuyerId))
+                .ReturnsAsync(mockContracts);
 
-            _mockContractModel
-                .Setup(m => m.GetContractByIdAsync(_testContractId))
-                .ReturnsAsync(_mockContract);
+            mockContractModel
+                .Setup(contractModel => contractModel.GetContractByIdAsync(testContractId))
+                .ReturnsAsync(mockContract);
 
-            var productDetails = new ValueTuple<DateTime, DateTime, double, string>(_testFixedDate, _testOldEndDate, 99.99, "Test Product");
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(_testContractId))
+            var productDetails = new ValueTuple<DateTime, DateTime, double, string>(testFixedDate, testOldEndDate, 99.99, "Test Product");
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(testContractId))
                 .ReturnsAsync(productDetails);
 
             // Setup database mocks
-            _mockDatabaseProvider
-                .Setup(p => p.CreateConnection(It.IsAny<string>()))
-                .Returns(_mockConnection.Object);
+            mockDatabaseProvider
+                .Setup(databaseProvider => databaseProvider.CreateConnection(It.IsAny<string>()))
+                .Returns(mockConnection.Object);
 
-            _mockConnection
-                .Setup(c => c.CreateCommand())
-                .Returns(_mockCommand.Object);
+            mockConnection
+                .Setup(databaseConnection => databaseConnection.CreateCommand())
+                .Returns(mockCommand.Object);
 
-            _mockCommand
-                .Setup(c => c.CreateParameter())
-                .Returns(_mockParameter.Object);
+            mockCommand
+                .Setup(databaseCommand => databaseCommand.CreateParameter())
+                .Returns(mockParameter.Object);
 
             // Setup file system mocks
-            _mockFileSystem
-                .Setup(fs => fs.GetDownloadsPath())
+            mockFileSystem
+                .Setup(fileSystem => fileSystem.GetDownloadsPath())
                 .Returns(@"C:\Users\Test\Downloads");
 
-            _mockFileSystem
-                .Setup(fs => fs.CombinePath(It.IsAny<string>(), It.IsAny<string>()))
+            mockFileSystem
+                .Setup(fileSystem => fileSystem.CombinePath(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<string, string>((path1, path2) => $"{path1}\\{path2}");
 
-            _mockFileSystem
-                .Setup(fs => fs.WriteAllBytesAsync(It.IsAny<string>(), It.IsAny<byte[]>()))
+            mockFileSystem
+                .Setup(fileSystem => fileSystem.WriteAllBytesAsync(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(Task.CompletedTask);
 
             // Create view model with mocked dependencies
-            _viewModel = new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object);
+            contractRenewViewModel = new ContractRenewViewModel(
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object);
         }
 
         [TestMethod]
         public async Task LoadContractsForBuyerAsync_ShouldFilterActiveAndRenewedContracts()
         {
             // Act
-            await _viewModel.LoadContractsForBuyerAsync(_testBuyerId);
+            await contractRenewViewModel.LoadContractsForBuyerAsync(testBuyerId);
 
             // Assert
-            Assert.AreEqual(2, _viewModel.BuyerContracts.Count);
-            Assert.IsTrue(_viewModel.BuyerContracts.All(c => c.ContractStatus == "ACTIVE" || c.ContractStatus == "RENEWED"));
-            _mockContractModel.Verify(m => m.GetContractsByBuyerAsync(_testBuyerId), Times.Once);
+            Assert.AreEqual(2, contractRenewViewModel.BuyerContracts.Count);
+            Assert.IsTrue(contractRenewViewModel.BuyerContracts.All(buyerContracts => buyerContracts.ContractStatus == "ACTIVE" || buyerContracts.ContractStatus == "RENEWED"));
+            mockContractModel.Verify(contractModel => contractModel.GetContractsByBuyerAsync(testBuyerId), Times.Once);
         }
 
         [TestMethod]
         public async Task SelectContractAsync_ShouldSetSelectedContract()
         {
             // Act
-            await _viewModel.SelectContractAsync(_testContractId);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
 
             // Assert
-            Assert.IsNotNull(_viewModel.SelectedContract);
-            Assert.AreEqual(_testContractId, _viewModel.SelectedContract.ContractID);
-            _mockContractModel.Verify(m => m.GetContractByIdAsync(_testContractId), Times.Once);
+            Assert.IsNotNull(contractRenewViewModel.SelectedContract);
+            Assert.AreEqual(testContractId, contractRenewViewModel.SelectedContract.ContractID);
+            mockContractModel.Verify(contractModel => contractModel.GetContractByIdAsync(testContractId), Times.Once);
         }
 
         [TestMethod]
         public async Task GetProductDetailsByContractIdAsync_ShouldReturnProductDetails()
         {
             // Act
-            var result = await _viewModel.GetProductDetailsByContractIdAsync(_testContractId);
+            var result = await contractRenewViewModel.GetProductDetailsByContractIdAsync(testContractId);
 
             // Assert
             Assert.IsTrue(result.HasValue);
-            Assert.AreEqual(_testFixedDate, result.Value.StartDate);
-            Assert.AreEqual(_testOldEndDate, result.Value.EndDate);
+            Assert.AreEqual(testFixedDate, result.Value.StartDate);
+            Assert.AreEqual(testOldEndDate, result.Value.EndDate);
             Assert.AreEqual(99.99, result.Value.price);
             Assert.AreEqual("Test Product", result.Value.name);
-            _mockContractModel.Verify(m => m.GetProductDetailsByContractIdAsync(_testContractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetProductDetailsByContractIdAsync(testContractId), Times.Once);
         }
 
         [TestMethod]
-        public async Task IsRenewalPeriodValidAsync_WhenNoSelectedContract_ReturnsFalse()
+        public async Task IsRenewalPeriodValidAsync_WhenNoSelectedContract_ShouldReturnFalse()
         {
             // Act
-            var result = await _viewModel.IsRenewalPeriodValidAsync();
+            var result = await contractRenewViewModel.IsRenewalPeriodValidAsync();
 
             // Assert
             Assert.IsFalse(result);
         }
 
         [TestMethod]
-        public async Task IsRenewalPeriodValidAsync_WhenNoProductDetails_ReturnsFalse()
+        public async Task IsRenewalPeriodValidAsync_WhenNoProductDetails_ShouldReturnFalse()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(_testContractId))
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(testContractId))
                 .ReturnsAsync((ValueTuple<DateTime, DateTime, double, string>?)null);
 
             // Act
-            var result = await _viewModel.IsRenewalPeriodValidAsync();
+            var result = await contractRenewViewModel.IsRenewalPeriodValidAsync();
 
             // Assert
             Assert.IsFalse(result);
         }
 
         [TestMethod]
-        public async Task IsRenewalPeriodValidAsync_WhenDateOutOfRange_ReturnsFalse()
+        public async Task IsRenewalPeriodValidAsync_WhenDateOutOfRange_ShouldReturnFalse()
         {
             // Arrange - Set end date too far in the future
-            await _viewModel.SelectContractAsync(_testContractId);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
             var outOfRangeDate = new ValueTuple<DateTime, DateTime, double, string>(
-                _testFixedDate, _testFixedDate.AddDays(10), 99.99, "Test Product");
+                testFixedDate, testFixedDate.AddDays(10), 99.99, "Test Product");
 
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(_testContractId))
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(testContractId))
                 .ReturnsAsync(outOfRangeDate);
 
             // Act
-            var result = await _viewModel.IsRenewalPeriodValidAsync();
+            var result = await contractRenewViewModel.IsRenewalPeriodValidAsync();
 
             // Assert
             Assert.IsFalse(result);
         }
 
         [TestMethod]
-        public async Task IsRenewalPeriodValidAsync_WhenWithinValidRange_ReturnsTrue()
+        public async Task IsRenewalPeriodValidAsync_WhenWithinValidRange_ShouldReturnTrue()
         {
             // Arrange - Set end date 5 days from now (within the 2-7 day range)
-            await _viewModel.SelectContractAsync(_testContractId);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
             var validRangeDate = new ValueTuple<DateTime, DateTime, double, string>(
-                _testFixedDate, _testFixedDate.AddDays(5), 99.99, "Test Product");
+                testFixedDate, testFixedDate.AddDays(5), 99.99, "Test Product");
 
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(_testContractId))
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(testContractId))
                 .ReturnsAsync(validRangeDate);
 
             // Act
-            var result = await _viewModel.IsRenewalPeriodValidAsync();
+            var result = await contractRenewViewModel.IsRenewalPeriodValidAsync();
 
             // Assert
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsProductAvailable_AlwaysReturnsTrue()
+        public void IsProductAvailable_ShouldAlwaysReturnsTrue()
         {
             // Act
-            var result = _viewModel.IsProductAvailable(999);
+            var result = contractRenewViewModel.IsProductAvailable(999);
 
             // Assert
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void CanSellerApproveRenewal_WithZeroRenewalCount_ReturnsTrue()
+        public void CanSellerApproveRenewal_WhenZeroRenewalCount_ShouldReturnTrue()
         {
             // Act
-            var result = _viewModel.CanSellerApproveRenewal(0);
+            var result = contractRenewViewModel.CanSellerApproveRenewal(0);
 
             // Assert
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void CanSellerApproveRenewal_WithOneOrMoreRenewalCount_ReturnsFalse()
+        public void CanSellerApproveRenewal_WhenOneOrMoreRenewalCount_ShouldReturnFalse()
         {
             // Act
-            var result = _viewModel.CanSellerApproveRenewal(1);
+            var result = contractRenewViewModel.CanSellerApproveRenewal(1);
 
             // Assert
             Assert.IsFalse(result);
         }
 
         [TestMethod]
-        public async Task HasContractBeenRenewedAsync_WhenNoSelectedContract_ReturnsFalse()
+        public async Task HasContractBeenRenewedAsync_WhenNoSelectedContract_ShouldReturnFalse()
         {
             // Act
-            var result = await _viewModel.HasContractBeenRenewedAsync();
+            var result = await contractRenewViewModel.HasContractBeenRenewedAsync();
 
             // Assert
             Assert.IsFalse(result);
         }
 
         [TestMethod]
-        public async Task HasContractBeenRenewedAsync_DelegatesCallToRenewalModel()
+        public async Task HasContractBeenRenewedAsync_ShouldDelegateCallToRenewalModel()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(true);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(true);
 
             // Act
-            var result = await _viewModel.HasContractBeenRenewedAsync();
+            var result = await contractRenewViewModel.HasContractBeenRenewedAsync();
 
             // Assert
             Assert.IsTrue(result);
-            _mockRenewalModel.Verify(m => m.HasContractBeenRenewedAsync(_testContractId), Times.Once);
+            mockRenewalModel.Verify(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId), Times.Once);
         }
 
         [TestMethod]
-        public void GenerateContractPdf_ReturnsNonEmptyByteArray()
+        public void GenerateContractPdf_ShouldReturnNonEmptyByteArray()
         {
             // Arrange
             string testContent = "Test contract content";
 
             // Create a mock ContractRenewViewModel with overridden GenerateContractPdf
             var mockViewModel = new Mock<ContractRenewViewModel>(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object)
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object)
             { CallBase = true };
 
             // Mock the PDF generation to return a sample byte array
             byte[] samplePdf = { 1, 2, 3, 4, 5 };
-            mockViewModel.Setup(vm => vm.GenerateContractPdf(It.IsAny<IContract>(), It.IsAny<string>()))
+            mockViewModel.Setup(contractRenewViewModel => contractRenewViewModel.GenerateContractPdf(It.IsAny<IContract>(), It.IsAny<string>()))
                 .Returns(samplePdf);
 
             // Act
-            byte[] result = mockViewModel.Object.GenerateContractPdf(_mockContract, testContent);
+            byte[] result = mockViewModel.Object.GenerateContractPdf(mockContract, testContent);
 
             // Assert
             Assert.IsNotNull(result);
@@ -326,12 +326,11 @@ namespace ArtAttack.Tests.ViewModel
             CollectionAssert.AreEqual(samplePdf, result);
         }
 
-
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WithNoSelectedContract_ReturnsFalseWithMessage()
+        public async Task SubmitRenewalRequestAsync_WithNoSelectedContract_ShouldReturnFalseWithMessage()
         {
             // Act
-            var result = await _viewModel.SubmitRenewalRequestAsync(_testEndDate, _testBuyerId, 999, 888);
+            var result = await contractRenewViewModel.SubmitRenewalRequestAsync(testEndDate, testBuyerId, 999, 888);
 
             // Assert
             Assert.IsFalse(result.Success);
@@ -339,14 +338,14 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenContractAlreadyRenewed_ReturnsFalseWithMessage()
+        public async Task SubmitRenewalRequestAsync_WhenContractAlreadyRenewed_ShouldReturnFalseWithMessage()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(true);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(true);
 
             // Act
-            var result = await _viewModel.SubmitRenewalRequestAsync(_testEndDate, _testBuyerId, 999, 888);
+            var result = await contractRenewViewModel.SubmitRenewalRequestAsync(testEndDate, testBuyerId, 999, 888);
 
             // Assert
             Assert.IsFalse(result.Success);
@@ -354,32 +353,32 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenRenewalPeriodInvalid_ReturnsFalseWithMessage()
+        public async Task SubmitRenewalRequestAsync_WhenRenewalPeriodInvalid_ShouldReturnFalseWithMessage()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(false);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(false);
 
             // Setup the mock view model to return false for IsRenewalPeriodValidAsync
             var mockViewModel = new Mock<ContractRenewViewModel>(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object)
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object)
             { CallBase = true };
-            mockViewModel.Setup(vm => vm.IsRenewalPeriodValidAsync()).ReturnsAsync(false);
+            mockViewModel.Setup(contractRenewViewModel => contractRenewViewModel.IsRenewalPeriodValidAsync()).ReturnsAsync(false);
 
             // Set SelectedContract property using reflection
             var selectedContractProperty = typeof(ContractRenewViewModel).GetProperty("SelectedContract",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty);
-            selectedContractProperty?.SetValue(mockViewModel.Object, _mockContract);
+            selectedContractProperty?.SetValue(mockViewModel.Object, mockContract);
 
             // Act
-            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(_testEndDate, _testBuyerId, 999, 888);
+            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(testEndDate, testBuyerId, 999, 888);
 
             // Assert
             Assert.IsFalse(result.Success);
@@ -387,52 +386,52 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenSellerCannotApproveRenewal_ReturnsFalseWithMessage()
+        public async Task SubmitRenewalRequestAsync_WhenSellerCannotApproveRenewal_ShouldReturnFalseWithMessage()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(false);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(false);
 
             // Directly set up the contract model for any contract ID
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(new ValueTuple<DateTime, DateTime, double, string>(
-                    _testFixedDate, _testOldEndDate, 99.99, "Test Product"));
+                    testFixedDate, testOldEndDate, 99.99, "Test Product"));
 
             // Set up your view model - don't try to mock methods on the ViewModel itself
             var testViewModel = new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object);
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object);
 
             // Manually set the properties needed for the test
             // First select the contract to initialize SelectedContract
-            await testViewModel.SelectContractAsync(_testContractId);
+            await testViewModel.SelectContractAsync(testContractId);
 
             // Override only the method we need to test this specific scenario
             // Use a mock that uses CallBase for CanSellerApproveRenewal only
             var mockViewModel = new Mock<ContractRenewViewModel>(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object)
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object)
             { CallBase = true };
 
             // Only mock this one method to return false
-            mockViewModel.Setup(vm => vm.CanSellerApproveRenewal(It.IsAny<int>())).Returns(false);
+            mockViewModel.Setup(contractRenewViewModel => contractRenewViewModel.CanSellerApproveRenewal(It.IsAny<int>())).Returns(false);
 
             // Make sure the mock has a selected contract
-            await mockViewModel.Object.SelectContractAsync(_testContractId);
+            await mockViewModel.Object.SelectContractAsync(testContractId);
 
             // Act
-            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(_testEndDate, _testBuyerId, 999, 888);
+            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(testEndDate, testBuyerId, 999, 888);
 
             // Assert
             Assert.IsFalse(result.Success);
@@ -440,38 +439,38 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenExceptionOccurs_ReturnsErrorMessage()
+        public async Task SubmitRenewalRequestAsync_WhenExceptionOccurs_ShouldReturnErrorMessage()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(false);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(false);
 
             // Set up the contract model to return valid product details
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(new ValueTuple<DateTime, DateTime, double, string>(
-                    _testFixedDate, _testOldEndDate, 99.99, "Test Product"));
+                    testFixedDate, testOldEndDate, 99.99, "Test Product"));
 
             // Set up a view model that will throw an exception in GenerateContractPdf
             var mockViewModel = new Mock<ContractRenewViewModel>(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object)
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object)
             { CallBase = true };
 
             // Only mock the methods we need to for this specific scenario
-            mockViewModel.Setup(vm => vm.GenerateContractPdf(It.IsAny<IContract>(), It.IsAny<string>()))
+            mockViewModel.Setup(contractRenewViewModel => contractRenewViewModel.GenerateContractPdf(It.IsAny<IContract>(), It.IsAny<string>()))
                 .Throws(new Exception("Test exception"));
 
             // Make sure the mock has a selected contract
-            await mockViewModel.Object.SelectContractAsync(_testContractId);
+            await mockViewModel.Object.SelectContractAsync(testContractId);
 
             // Act
-            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(_testEndDate, 101, 303, 202);
+            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(testEndDate, 101, 303, 202);
 
             // Assert
             Assert.IsFalse(result.Success);
@@ -479,7 +478,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenAllConditionsMet_ReturnsSuccessAndSavesContract()
+        public async Task SubmitRenewalRequestAsync_WhenAllConditionsMet_ShouldReturnSuccessAndSavesContract()
         {
             // Arrange
             int testPdfId = 42;
@@ -488,109 +487,108 @@ namespace ArtAttack.Tests.ViewModel
             int testProductId = 303;
             byte[] mockPdfBytes = { 1, 2, 3, 4, 5 };
 
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(false);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(false);
 
             // Set up the contract model to return valid product details
-            _mockContractModel
+            mockContractModel
                 .Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(new ValueTuple<DateTime, DateTime, double, string>(
-                    _testFixedDate, _testOldEndDate, 99.99, "Test Product"));
+                    testFixedDate, testOldEndDate, 99.99, "Test Product"));
 
             // Set up a view model with the behaviors we need for this test
             var mockViewModel = new Mock<ContractRenewViewModel>(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object)
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object)
             { CallBase = true };
 
             // Only mock the methods we need to for this specific scenario
-            mockViewModel.Setup(vm => vm.GenerateContractPdf(It.IsAny<IContract>(), It.IsAny<string>()))
+            mockViewModel.Setup(contractRenewViewModel => contractRenewViewModel.GenerateContractPdf(It.IsAny<IContract>(), It.IsAny<string>()))
                 .Returns(mockPdfBytes);
-            mockViewModel.Setup(vm => vm.InsertPdfAsync(It.IsAny<byte[]>()))
+            mockViewModel.Setup(contractRenewViewModel => contractRenewViewModel.InsertPdfAsync(It.IsAny<byte[]>()))
                 .ReturnsAsync(testPdfId);
 
             // Make sure the mock has a selected contract
-            await mockViewModel.Object.SelectContractAsync(_testContractId);
+            await mockViewModel.Object.SelectContractAsync(testContractId);
 
             // Act
-            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(_testEndDate, testBuyerId, testProductId, testSellerId);
+            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(testEndDate, testBuyerId, testProductId, testSellerId);
 
             // Assert
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Contract renewed successfully!", result.Message);
 
             // Verify file was saved
-            _mockFileSystem.Verify(fs => fs.WriteAllBytesAsync(It.IsAny<string>(), It.IsAny<byte[]>()), Times.Once);
+            mockFileSystem.Verify(fileSystem => fileSystem.WriteAllBytesAsync(It.IsAny<string>(), It.IsAny<byte[]>()), Times.Once);
 
             // Verify contract was added to the database
-            _mockRenewalModel.Verify(m => m.AddRenewedContractAsync(
+            mockRenewalModel.Verify(contractRenewalModel => contractRenewalModel.AddRenewedContractAsync(
                 It.IsAny<IContract>(), It.IsAny<byte[]>()),
                 Times.Once);
 
             // Verify notifications were sent
-            _mockNotificationAdapter.Verify(n => n.AddNotification(It.IsAny<Notification>()), Times.Exactly(3));
+            mockNotificationAdapter.Verify(notificationAdapter => notificationAdapter.AddNotification(It.IsAny<Notification>()), Times.Exactly(3));
         }
 
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenProductDetailsNotFound_ReturnsFalseWithMessage()
+        public async Task SubmitRenewalRequestAsync_WhenProductDetailsNotFound_ShouldReturnFalseWithMessage()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(false);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(false);
 
             // Setup the mock view model to bypass the renewal period check
             var mockViewModel = new Mock<ContractRenewViewModel>(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object)
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object)
             { CallBase = true };
 
-            mockViewModel.Setup(vm => vm.IsRenewalPeriodValidAsync()).ReturnsAsync(true);
+            mockViewModel.Setup(contractViewModel => contractViewModel.IsRenewalPeriodValidAsync()).ReturnsAsync(true);
 
             // Setup for product details to be null
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync((ValueTuple<DateTime, DateTime, double, string>?)null);
 
             // Set SelectedContract property using reflection
             var selectedContractProperty = typeof(ContractRenewViewModel).GetProperty("SelectedContract",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty);
-            selectedContractProperty?.SetValue(mockViewModel.Object, _mockContract);
+            selectedContractProperty?.SetValue(mockViewModel.Object, mockContract);
 
             // Act
-            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(_testEndDate, _testBuyerId, 999, 888);
+            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(testEndDate, testBuyerId, 999, 888);
 
             // Assert
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Could not retrieve current contract dates.", result.Message);
         }
 
-
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenNewEndDateNotAfterOldDate_ReturnsFalseWithMessage()
+        public async Task SubmitRenewalRequestAsync_WhenNewEndDateNotAfterOldDate_ShouldReturnFalseWithMessage()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(false);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(false);
 
             // Set up the contract model to return valid product details
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(new ValueTuple<DateTime, DateTime, double, string>(
-                    _testFixedDate, _testOldEndDate, 99.99, "Test Product"));
+                    testFixedDate, testOldEndDate, 99.99, "Test Product"));
 
             // Act - Use a date equal to the old end date
-            var result = await _viewModel.SubmitRenewalRequestAsync(_testOldEndDate, _testBuyerId, 999, 888);
+            var result = await contractRenewViewModel.SubmitRenewalRequestAsync(testOldEndDate, testBuyerId, 999, 888);
 
             // Assert
             Assert.IsFalse(result.Success);
@@ -598,37 +596,37 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public async Task SubmitRenewalRequestAsync_WhenProductUnavailable_ReturnsFalseWithMessage()
+        public async Task SubmitRenewalRequestAsync_WhenProductUnavailable_ShouldReturnFalseWithMessage()
         {
             // Arrange
-            await _viewModel.SelectContractAsync(_testContractId);
-            _mockRenewalModel.Setup(m => m.HasContractBeenRenewedAsync(_testContractId)).ReturnsAsync(false);
+            await contractRenewViewModel.SelectContractAsync(testContractId);
+            mockRenewalModel.Setup(contractRenewalModel => contractRenewalModel.HasContractBeenRenewedAsync(testContractId)).ReturnsAsync(false);
 
             // Set up the contract model to return valid product details
-            _mockContractModel
-                .Setup(m => m.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
+            mockContractModel
+                .Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(new ValueTuple<DateTime, DateTime, double, string>(
-                    _testFixedDate, _testOldEndDate, 99.99, "Test Product"));
+                    testFixedDate, testOldEndDate, 99.99, "Test Product"));
 
             // Set up a view model that returns false for IsProductAvailable
             var mockViewModel = new Mock<ContractRenewViewModel>(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object)
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object)
             { CallBase = true };
 
             // Only mock the methods we need to for this specific scenario
-            mockViewModel.Setup(vm => vm.IsProductAvailable(It.IsAny<int>())).Returns(false);
+            mockViewModel.Setup(contractViewModel => contractViewModel.IsProductAvailable(It.IsAny<int>())).Returns(false);
 
             // Make sure the mock has a selected contract
-            await mockViewModel.Object.SelectContractAsync(_testContractId);
+            await mockViewModel.Object.SelectContractAsync(testContractId);
 
             // Act
-            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(_testEndDate, _testBuyerId, 999, 888);
+            var result = await mockViewModel.Object.SubmitRenewalRequestAsync(testEndDate, testBuyerId, 999, 888);
 
             // Assert
             Assert.IsFalse(result.Success);
@@ -636,7 +634,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void GenerateContractPdf_WithRealImplementation_GeneratesPdfBytes()
+        public void GenerateContractPdf_ShouldGeneratePdfBytes()
         {
             // Arrange - Set QuestPDF license for testing
             QuestPDF.Settings.License = LicenseType.Community;
@@ -654,13 +652,13 @@ namespace ArtAttack.Tests.ViewModel
 
             // Create an instance with real implementation (not mocked)
             var viewModel = new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object);
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object);
 
             // Act - Call the real implementation
             byte[] result = viewModel.GenerateContractPdf(contract, testContent);
@@ -671,7 +669,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void FileSystemWrapper_GetDownloadsPath_ReturnsValidPath()
+        public void GetDownloadPathFileSystemWrapper_ShouldReturnValidPath()
         {
             // Arrange
             var fileSystem = new FileSystemWrapper();
@@ -686,22 +684,22 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void FileSystemWrapper_CombinePath_JoinsPathsCorrectly()
+        public void CombinePathFileSystemWrapper_ShouldJoinPathsCorrectly()
         {
             // Arrange
             var fileSystem = new FileSystemWrapper();
-            string path1 = @"C:\Folder";
-            string path2 = "File.txt";
+            string firstPath = @"C:\Folder";
+            string secondPath = "File.txt";
 
             // Act
-            string result = fileSystem.CombinePath(path1, path2);
+            string result = fileSystem.CombinePath(firstPath, secondPath);
 
             // Assert
             Assert.AreEqual(@"C:\Folder\File.txt", result);
         }
 
         [TestMethod]
-        public async Task FileSystemWrapper_WriteAllBytesAsync_WritesToFileSystem()
+        public async Task WriteAllBytesAsyncFileSystemWrapper_ShouldWriteToFileSystem()
         {
             // This test requires mocking of File.WriteAllBytesAsync which is static
             // We'll use a wrapper approach with dependency injection to test this
@@ -732,7 +730,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void DateTimeProvider_Now_ReturnsCurrentDateTime()
+        public void DateTimeProvider_ShouldReturnCurrentDateTime()
         {
             // Arrange
             var provider = new DateTimeProvider();
@@ -747,161 +745,159 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void Constructor_WithNullContractModel_ThrowsArgumentNullException()
+        public void Constructor_WhenNullContractModel_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new ContractRenewViewModel(
                 null,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object));
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object));
         }
 
         [TestMethod]
-        public void Constructor_WithNullRenewalModel_ThrowsArgumentNullException()
+        public void Constructor_WhenNullRenewalModel_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new ContractRenewViewModel(
-                _mockContractModel.Object,
+                mockContractModel.Object,
                 null,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object));
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object));
         }
 
         [TestMethod]
-        public void Constructor_WithNullNotificationAdapter_ThrowsArgumentNullException()
+        public void Constructor_WhenNullNotificationAdapter_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
+                mockContractModel.Object,
+                mockRenewalModel.Object,
                 null,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object));
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object));
         }
 
         [TestMethod]
-        public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
+        public void Constructor_WhenNullDatabaseProvider_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
                 null,
-                _testConnectionString,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object));
+                testConnectionString,
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object));
         }
 
         [TestMethod]
-        public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
+        public void Constructor_WhenNullConnectionString_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
                 null,
-                _mockFileSystem.Object,
-                _mockDateTimeProvider.Object));
+                mockFileSystem.Object,
+                mockDateTimeProvider.Object));
         }
 
         [TestMethod]
-        public void Constructor_WithNullFileSystem_ThrowsArgumentNullException()
+        public void Constructor_WhenNullFileSystem_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
                 null,
-                _mockDateTimeProvider.Object));
+                mockDateTimeProvider.Object));
         }
 
         [TestMethod]
-        public void Constructor_WithNullDateTimeProvider_ThrowsArgumentNullException()
+        public void Constructor_WhenNullDateTimeProvider_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new ContractRenewViewModel(
-                _mockContractModel.Object,
-                _mockRenewalModel.Object,
-                _mockNotificationAdapter.Object,
-                _mockDatabaseProvider.Object,
-                _testConnectionString,
-                _mockFileSystem.Object,
+                mockContractModel.Object,
+                mockRenewalModel.Object,
+                mockNotificationAdapter.Object,
+                mockDatabaseProvider.Object,
+                testConnectionString,
+                mockFileSystem.Object,
                 null));
         }
 
         [TestMethod]
-        public async Task InsertPdfAsync_WithNullBytes_HandlesCorrectly()
+        public async Task InsertPdfAsync_WhenNullBytes_ShouldHandleCorrectly()
         {
             // Arrange
             byte[] nullBytes = null;
             int expectedPdfId = 1;
 
             // Setup mocks
-            _mockConnection.Setup(c => c.Open());
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(expectedPdfId);
+            mockConnection.Setup(connection => connection.Open());
+            mockCommand.Setup(command => command.ExecuteScalar()).Returns(expectedPdfId);
 
             // This is the key fix - need to setup the command mock parameters
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
+            mockCommand.Setup(command => command.Parameters).Returns(mockParameters.Object);
 
             // Act
-            int result = await _viewModel.InsertPdfAsync(nullBytes);
+            int result = await contractRenewViewModel.InsertPdfAsync(nullBytes);
 
             // Assert
             Assert.AreEqual(expectedPdfId, result);
-            _mockParameter.VerifySet(p => p.Value = nullBytes);
+            mockParameter.VerifySet(parameter => parameter.Value = nullBytes);
         }
 
-
         [TestMethod]
-        public async Task InsertPdfAsync_WhenScalarReturnsNull_ThrowsException()
+        public async Task InsertPdfAsync_WhenScalarReturnsNull_ShouldThrowException()
         {
             // Arrange
             byte[] testBytes = { 1, 2, 3 };
 
-            _mockConnection.Setup(c => c.Open());
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(null);
+            mockConnection.Setup(connection => connection.Open());
+            mockCommand.Setup(command => command.ExecuteScalar()).Returns(null);
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
-                await _viewModel.InsertPdfAsync(testBytes));
+                await contractRenewViewModel.InsertPdfAsync(testBytes));
         }
 
         [TestMethod]
-        public async Task InsertPdfAsync_WithEmptyBytes_HandlesCorrectly()
+        public async Task InsertPdfAsync_WhenEmptyBytes_ShouldHandleCorrectly()
         {
             // Arrange
             byte[] emptyBytes = new byte[0];
             int expectedPdfId = 1;
 
             // Setup mocks
-            _mockConnection.Setup(c => c.Open());
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(expectedPdfId);
+            mockConnection.Setup(connection => connection.Open());
+            mockCommand.Setup(command => command.ExecuteScalar()).Returns(expectedPdfId);
 
             // This is the key fix - need to setup the command mock parameters
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
+            mockCommand.Setup(command => command.Parameters).Returns(mockParameters.Object);
 
             // Act
-            int result = await _viewModel.InsertPdfAsync(emptyBytes);
+            int result = await contractRenewViewModel.InsertPdfAsync(emptyBytes);
 
             // Assert
             Assert.AreEqual(expectedPdfId, result);
-            _mockParameter.VerifySet(p => p.Value = emptyBytes);
+            mockParameter.VerifySet(parameter => parameter.Value = emptyBytes);
         }
-
     }
 }

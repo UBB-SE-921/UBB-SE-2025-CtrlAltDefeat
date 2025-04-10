@@ -1,38 +1,38 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using ArtAttack.ViewModel;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using ArtAttack.Model;
+using ArtAttack.ViewModel;
+using Moq;
 
 namespace ArtAttack.Tests.ViewModel
 {
     [TestClass]
     public class ContractViewModelTests
     {
-        private Mock<IContractModel> _mockContractModel;
-        private IContractViewModel viewModel;
+        private Mock<IContractModel> mockContractModel;
+        private IContractViewModel contractViewModel;
         private IContract mockContract;
-        private List<IContract> _mockContracts;
-        private byte[] _mockPdfData;
-        private object _mockPredefinedContract;
+        private List<IContract> mockContracts;
+        private byte[] mockPdfData;
+        private object mockPredefinedContract;
 
         [TestInitialize]
         public void TestInitialize()
         {
             // Setup mock contract model
-            _mockContractModel = new Mock<IContractModel>();
+            mockContractModel = new Mock<IContractModel>();
 
             // Create the view model with the mocked model
-            viewModel = new ContractViewModel("mock_connection_string");
+            contractViewModel = new ContractViewModel("Test_Connection_String");
 
             // Set private field via reflection
             var fieldInfo = typeof(ContractViewModel).GetField("model", BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo?.SetValue(viewModel, _mockContractModel.Object);
+            fieldInfo?.SetValue(contractViewModel, mockContractModel.Object);
 
             // Setup mock contract
             mockContract = new Contract
@@ -47,37 +47,37 @@ namespace ArtAttack.Tests.ViewModel
             };
 
             // Setup mock contracts list
-            _mockContracts = new List<IContract>
-                        {
-                            mockContract,
-                            new Contract
-                            {
-                                ContractID = 124,
-                                OrderID = 457,
-                                ContractStatus = "ACTIVE"
-                            }
-                        };
+            mockContracts = new List<IContract>
+            {
+                mockContract,
+                new Contract
+                {
+                    ContractID = 124,
+                    OrderID = 457,
+                    ContractStatus = "ACTIVE"
+                }
+            };
 
             // Setup mock PDF data
-            _mockPdfData = new byte[] { 1, 2, 3, 4, 5 };
+            mockPdfData = new byte[] { 1, 2, 3, 4, 5 };
 
             // Setup common mocks
-            _mockContractModel.Setup(m => m.GetAllContractsAsync())
-                .ReturnsAsync(_mockContracts);
+            mockContractModel.Setup(contractModel => contractModel.GetAllContractsAsync())
+                .ReturnsAsync(mockContracts);
 
-            _mockContractModel.Setup(m => m.GetContractHistoryAsync(It.IsAny<long>()))
-                .ReturnsAsync(_mockContracts);
+            mockContractModel.Setup(contractModel => contractModel.GetContractHistoryAsync(It.IsAny<long>()))
+                .ReturnsAsync(mockContracts);
 
-            _mockContractModel.Setup(m => m.GetContractsByBuyerAsync(It.IsAny<int>()))
-                .ReturnsAsync(_mockContracts);
+            mockContractModel.Setup(contractModel => contractModel.GetContractsByBuyerAsync(It.IsAny<int>()))
+                .ReturnsAsync(mockContracts);
 
-            _mockContractModel.Setup(m => m.GetPdfByContractIdAsync(It.IsAny<long>()))
-                .ReturnsAsync(_mockPdfData);
+            mockContractModel.Setup(contractModel => contractModel.GetPdfByContractIdAsync(It.IsAny<long>()))
+                .ReturnsAsync(mockPdfData);
 
-            _mockContractModel.Setup(m => m.AddContractAsync(It.IsAny<IContract>(), It.IsAny<byte[]>()))
+            mockContractModel.Setup(contractModel => contractModel.AddContractAsync(It.IsAny<IContract>(), It.IsAny<byte[]>()))
                 .ReturnsAsync(mockContract);
 
-            _mockContractModel.Setup(m => m.GetDeliveryDateByContractIdAsync(It.IsAny<long>()))
+            mockContractModel.Setup(contractModel => contractModel.GetDeliveryDateByContractIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(DateTime.Now.AddDays(7));
         }
 
@@ -85,12 +85,12 @@ namespace ArtAttack.Tests.ViewModel
         public async Task GetAllContractsAsync_ShouldReturnAllContracts()
         {
             // Act
-            var result = await viewModel.GetAllContractsAsync();
+            var result = await contractViewModel.GetAllContractsAsync();
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count);
-            _mockContractModel.Verify(m => m.GetAllContractsAsync(), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetAllContractsAsync(), Times.Once);
         }
 
         [TestMethod]
@@ -100,12 +100,12 @@ namespace ArtAttack.Tests.ViewModel
             long contractId = 123;
 
             // Act
-            var result = await viewModel.GetContractHistoryAsync(contractId);
+            var result = await contractViewModel.GetContractHistoryAsync(contractId);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count);
-            _mockContractModel.Verify(m => m.GetContractHistoryAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractHistoryAsync(contractId), Times.Once);
         }
 
         [TestMethod]
@@ -115,12 +115,12 @@ namespace ArtAttack.Tests.ViewModel
             int buyerId = 42;
 
             // Act
-            var result = await viewModel.GetContractsByBuyerAsync(buyerId);
+            var result = await contractViewModel.GetContractsByBuyerAsync(buyerId);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count);
-            _mockContractModel.Verify(m => m.GetContractsByBuyerAsync(buyerId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractsByBuyerAsync(buyerId), Times.Once);
         }
 
         [TestMethod]
@@ -130,12 +130,12 @@ namespace ArtAttack.Tests.ViewModel
             byte[] pdfData = new byte[] { 1, 2, 3 };
 
             // Act
-            var result = await viewModel.AddContractAsync(mockContract, pdfData);
+            var result = await contractViewModel.AddContractAsync(mockContract, pdfData);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(mockContract.ContractID, result.ContractID);
-            _mockContractModel.Verify(m => m.AddContractAsync(mockContract, pdfData), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.AddContractAsync(mockContract, pdfData), Times.Once);
         }
 
         [TestMethod]
@@ -144,16 +144,16 @@ namespace ArtAttack.Tests.ViewModel
             // Arrange
             long contractId = 123;
             var expectedDate = DateTime.Now.AddDays(7);
-            _mockContractModel.Setup(m => m.GetDeliveryDateByContractIdAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetDeliveryDateByContractIdAsync(contractId))
                 .ReturnsAsync(expectedDate);
 
             // Act
-            var result = await viewModel.GetDeliveryDateByContractIdAsync(contractId);
+            var result = await contractViewModel.GetDeliveryDateByContractIdAsync(contractId);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedDate.Date, result.Value.Date);
-            _mockContractModel.Verify(m => m.GetDeliveryDateByContractIdAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetDeliveryDateByContractIdAsync(contractId), Times.Once);
         }
 
         [TestMethod]
@@ -163,13 +163,13 @@ namespace ArtAttack.Tests.ViewModel
             long contractId = 123;
 
             // Act
-            var result = await viewModel.GetPdfByContractIdAsync(contractId);
+            var result = await contractViewModel.GetPdfByContractIdAsync(contractId);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(_mockPdfData.Length, result.Length);
-            CollectionAssert.AreEqual(_mockPdfData, result);
-            _mockContractModel.Verify(m => m.GetPdfByContractIdAsync(contractId), Times.Once);
+            Assert.AreEqual(mockPdfData.Length, result.Length);
+            CollectionAssert.AreEqual(mockPdfData, result);
+            mockContractModel.Verify(contractModel => contractModel.GetPdfByContractIdAsync(contractId), Times.Once);
         }
 
         [TestMethod]
@@ -186,16 +186,17 @@ namespace ArtAttack.Tests.ViewModel
                 ContractContent = "Test content"
             };
 
-            _mockContractModel.Setup(m => m.GetPredefinedContractByPredefineContractTypeAsync(contractType))
+            mockContractModel.Setup(contractModel => contractModel.GetPredefinedContractByPredefineContractTypeAsync(contractType))
                 .ReturnsAsync(mockPredefinedContract);
 
             // We'll use reflection to access and test the private methods
             var getFieldReplacementsMethod = typeof(ContractViewModel).GetMethod("GetFieldReplacements");
             // Debug helper to find actual method names
             var methods = typeof(ContractViewModel)
-            .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
-            .Select(m => $"{m.Name} ({m.ReturnType.Name})")
-            .ToList();
+                .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+                .Select(methodInfo => $"{methodInfo.Name} ({methodInfo.ReturnType.Name})")
+                .ToList();
+
             Console.WriteLine("Available methods: " + string.Join(", ", methods),
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -212,7 +213,7 @@ namespace ArtAttack.Tests.ViewModel
             // Act - Call the method but catch the expected exception for file operations
             try
             {
-                await viewModel.GenerateAndSaveContractAsync(mockContract, contractType);
+                await contractViewModel.GenerateAndSaveContractAsync(mockContract, contractType);
             }
             catch (Exception)
             {
@@ -220,35 +221,30 @@ namespace ArtAttack.Tests.ViewModel
             }
 
             // Assert - Verify the model methods were called
-            _mockContractModel.Verify(m => m.GetPredefinedContractByPredefineContractTypeAsync(contractType), Times.Once);
-            _mockContractModel.Verify(m => m.GetProductDetailsByContractIdAsync(mockContract.ContractID), Times.Once);
-            _mockContractModel.Verify(m => m.GetContractBuyerAsync(mockContract.ContractID), Times.Once);
-            _mockContractModel.Verify(m => m.GetContractSellerAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetPredefinedContractByPredefineContractTypeAsync(contractType), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetProductDetailsByContractIdAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractBuyerAsync(mockContract.ContractID), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractSellerAsync(mockContract.ContractID), Times.Once);
         }
 
-
-
         [TestMethod]
-        public void GenerateContractPdf_WithNulldContract_ShouldThrowException()
+        public void GenerateContractPdf_WhenNullContract_ShouldThrowException()
         {
             // Arrange
             Dictionary<string, string> fieldReplacements = new Dictionary<string, string>();
             var methodInfo = typeof(ContractViewModel).GetMethod("GenerateContractPdf",
                 BindingFlags.NonPublic | BindingFlags.Instance);
+
             // Act & Assert - Should throw ArgumentNullException wrapped in a TargetInvocationException
-            var ex = Assert.ThrowsException<TargetInvocationException>(() =>
-                methodInfo.Invoke(viewModel, new object[] { null, _mockPredefinedContract, fieldReplacements }));
-            Assert.IsInstanceOfType(ex.InnerException, typeof(ArgumentNullException));
-            Assert.AreEqual("contract", ((ArgumentNullException)ex.InnerException).ParamName);
+            var exception = Assert.ThrowsException<TargetInvocationException>(() =>
+                methodInfo.Invoke(contractViewModel, new object[] { null, mockPredefinedContract, fieldReplacements }));
+
+            Assert.IsInstanceOfType(exception.InnerException, typeof(ArgumentNullException));
+            Assert.AreEqual("contract", ((ArgumentNullException)exception.InnerException).ParamName);
         }
 
-
-
-
-
-        //get predefined contract by type
         [TestMethod]
-        public void PredefinedContractID_NullableProperty_CanSetAndGetNullValue()
+        public void PredefinedContractIDNullableProperty_ShouldSetAndGetNullValue()
         {
             // Arrange
             var contract = new Contract();
@@ -263,7 +259,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void PredefinedContractID_NullableProperty_CanSetAndGetValue()
+        public void PredefinedContractIDNullableProperty_ShouldSetAndGetValue()
         {
             // Arrange
             var contract = new Contract();
@@ -278,7 +274,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void RenewedFromContractID_NullableProperty_CanSetAndGetNullValue()
+        public void RenewedFromContractIDNullableProperty_ShouldSetAndGetNullValue()
         {
             // Arrange
             var contract = new Contract();
@@ -293,7 +289,7 @@ namespace ArtAttack.Tests.ViewModel
         }
 
         [TestMethod]
-        public void RenewedFromContractID_NullableProperty_CanSetAndGetValue()
+        public void RenewedFromContractIDNullableProperty_ShouldSetAndGetValue()
         {
             // Arrange
             var contract = new Contract();
@@ -306,43 +302,41 @@ namespace ArtAttack.Tests.ViewModel
             // Assert
             Assert.AreEqual(expectedValue, actualValue, "RenewedFromContractID should store the assigned value");
         }
-    
 
         [TestMethod]
-        public async Task GetContractByIdAsync_ReturnsCorrectContract()
+        public async Task GetContractByIdAsync_ShouldReturnCorrectContract()
         {
             // Arrange
             long contractId = 123;
-            _mockContractModel.Setup(m => m.GetContractByIdAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetContractByIdAsync(contractId))
                 .ReturnsAsync(mockContract);
 
             // Act
-            var result = await viewModel.GetContractByIdAsync(contractId);
+            var result = await contractViewModel.GetContractByIdAsync(contractId);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(mockContract.ContractID, result.ContractID);
-            _mockContractModel.Verify(m => m.GetContractByIdAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractByIdAsync(contractId), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetContractByIdAsync_WithInvalidId_ReturnsNull()
+        public async Task GetContractByIdAsync_WhenInvalidId_ShouldReturnNull()
         {
             // Arrange
             long contractId = 999;
-            _mockContractModel.Setup(m => m.GetContractByIdAsync(contractId))
-                .ReturnsAsync((IContract)null);
+            mockContractModel.Setup(contractModel => contractModel.GetContractByIdAsync(contractId)).ReturnsAsync((IContract)null);
 
             // Act
-            var result = await viewModel.GetContractByIdAsync(contractId);
+            var result = await contractViewModel.GetContractByIdAsync(contractId);
 
             // Assert
             Assert.IsNull(result);
-            _mockContractModel.Verify(m => m.GetContractByIdAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractByIdAsync(contractId), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetOrderSummaryInformationAsync_ReturnsCorrectData()
+        public async Task GetOrderSummaryInformationAsync_ShouldReturnCorrectData()
         {
             // Arrange
             long contractId = 123;
@@ -353,11 +347,11 @@ namespace ArtAttack.Tests.ViewModel
                 { "shipping", 5.99 }
             };
 
-            _mockContractModel.Setup(m => m.GetOrderSummaryInformationAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetOrderSummaryInformationAsync(contractId))
                 .ReturnsAsync(expected);
 
             // Act
-            var result = await viewModel.GetOrderSummaryInformationAsync(contractId);
+            var result = await contractViewModel.GetOrderSummaryInformationAsync(contractId);
 
             // Assert
             Assert.IsNotNull(result);
@@ -367,49 +361,49 @@ namespace ArtAttack.Tests.ViewModel
                 Assert.IsTrue(result.ContainsKey(key));
                 Assert.AreEqual(expected[key], result[key]);
             }
-            _mockContractModel.Verify(m => m.GetOrderSummaryInformationAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetOrderSummaryInformationAsync(contractId), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetContractSellerAsync_ReturnsCorrectData()
+        public async Task GetContractSellerAsync_ShouldReturnCorrectData()
         {
             // Arrange
             long contractId = 123;
             var expected = (5, "John Doe");
 
-            _mockContractModel.Setup(m => m.GetContractSellerAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetContractSellerAsync(contractId))
                 .ReturnsAsync(expected);
 
             // Act
-            var result = await viewModel.GetContractSellerAsync(contractId);
+            var result = await contractViewModel.GetContractSellerAsync(contractId);
 
             // Assert
             Assert.AreEqual(expected.Item1, result.SellerID);
             Assert.AreEqual(expected.Item2, result.SellerName);
-            _mockContractModel.Verify(m => m.GetContractSellerAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractSellerAsync(contractId), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetContractBuyerAsync_ReturnsCorrectData()
+        public async Task GetContractBuyerAsync_ShouldReturnCorrectData()
         {
             // Arrange
             long contractId = 123;
             var expected = (10, "Jane Smith");
 
-            _mockContractModel.Setup(m => m.GetContractBuyerAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetContractBuyerAsync(contractId))
                 .ReturnsAsync(expected);
 
             // Act
-            var result = await viewModel.GetContractBuyerAsync(contractId);
+            var result = await contractViewModel.GetContractBuyerAsync(contractId);
 
             // Assert
             Assert.AreEqual(expected.Item1, result.BuyerID);
             Assert.AreEqual(expected.Item2, result.BuyerName);
-            _mockContractModel.Verify(m => m.GetContractBuyerAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractBuyerAsync(contractId), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetProductDetailsByContractIdAsync_ReturnsCorrectData()
+        public async Task GetProductDetailsByContractIdAsync_ShouldReturnCorrectData()
         {
             // Arrange
             long contractId = 123;
@@ -420,11 +414,11 @@ namespace ArtAttack.Tests.ViewModel
 
             var expected = (startDate, endDate, price, name);
 
-            _mockContractModel.Setup(m => m.GetProductDetailsByContractIdAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetProductDetailsByContractIdAsync(contractId))
                 .ReturnsAsync(expected);
 
             // Act
-            var result = await viewModel.GetProductDetailsByContractIdAsync(contractId);
+            var result = await contractViewModel.GetProductDetailsByContractIdAsync(contractId);
 
             // Assert
             Assert.IsNotNull(result);
@@ -432,11 +426,11 @@ namespace ArtAttack.Tests.ViewModel
             Assert.AreEqual(expected.endDate, result.Value.EndDate);
             Assert.AreEqual(expected.price, result.Value.price);
             Assert.AreEqual(expected.name, result.Value.name);
-            _mockContractModel.Verify(m => m.GetProductDetailsByContractIdAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetProductDetailsByContractIdAsync(contractId), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetOrderDetailsAsync_ReturnsCorrectData()
+        public async Task GetOrderDetailsAsync_ShouldReturnCorrectData()
         {
             // Arrange
             long contractId = 123;
@@ -445,38 +439,37 @@ namespace ArtAttack.Tests.ViewModel
 
             var expected = (paymentMethod, orderDate);
 
-            _mockContractModel.Setup(m => m.GetOrderDetailsAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetOrderDetailsAsync(contractId))
                 .ReturnsAsync(expected);
 
             // Act
-            var result = await viewModel.GetOrderDetailsAsync(contractId);
+            var result = await contractViewModel.GetOrderDetailsAsync(contractId);
 
             // Assert
             Assert.AreEqual(expected.paymentMethod, result.PaymentMethod);
             Assert.AreEqual(expected.orderDate, result.OrderDate);
-            _mockContractModel.Verify(m => m.GetOrderDetailsAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetOrderDetailsAsync(contractId), Times.Once);
         }
-        // ADD CONTRACT WHEN CONTRACT IS NULL AND EXPECT ArgumentNullException
 
         [TestMethod]
-        public async Task GetDeliveryDateByContractIdAsync_WhenNull_ReturnsNull()
+        public async Task GetDeliveryDateByContractIdAsync_WhenNull_ShouldReturnNull()
         {
             // Arrange
             long contractId = 999;
 
-            _mockContractModel.Setup(m => m.GetDeliveryDateByContractIdAsync(contractId))
+            mockContractModel.Setup(contractModel => contractModel.GetDeliveryDateByContractIdAsync(contractId))
                 .ReturnsAsync((DateTime?)null);
 
             // Act
-            var result = await viewModel.GetDeliveryDateByContractIdAsync(contractId);
+            var result = await contractViewModel.GetDeliveryDateByContractIdAsync(contractId);
 
             // Assert
             Assert.IsNull(result);
-            _mockContractModel.Verify(m => m.GetDeliveryDateByContractIdAsync(contractId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetDeliveryDateByContractIdAsync(contractId), Times.Once);
         }
 
         [TestMethod]
-        public void GenerateContractPdf_WithNullPredefinedContract_ThrowsException()
+        public void GenerateContractPdf_WhenNullPredefinedContract_ShouldThrowException()
         {
             // Arrange
             Dictionary<string, string> fieldReplacements = new Dictionary<string, string>();
@@ -484,47 +477,46 @@ namespace ArtAttack.Tests.ViewModel
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act & Assert
-            var ex = Assert.ThrowsException<TargetInvocationException>(() =>
-                methodInfo.Invoke(viewModel, new object[] { mockContract, null, fieldReplacements }));
-            Assert.IsInstanceOfType(ex.InnerException, typeof(ArgumentNullException));
-            Assert.AreEqual("predefinedContract", ((ArgumentNullException)ex.InnerException).ParamName);
+            var exception = Assert.ThrowsException<TargetInvocationException>(() =>
+                methodInfo.Invoke(contractViewModel, new object[] { mockContract, null, fieldReplacements }));
+            Assert.IsInstanceOfType(exception.InnerException, typeof(ArgumentNullException));
+            Assert.AreEqual("predefinedContract", ((ArgumentNullException)exception.InnerException).ParamName);
         }
 
-
         [TestMethod]
-        public async Task AddContractAsync_WithNullPdfData_ThrowsArgumentNullException()
+        public async Task AddContractAsync_WhenNullPdfData_ShouldThrowArgumentNullException()
         {
             // Arrange & Act & Assert
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
-                await viewModel.AddContractAsync(mockContract, null));
+                await contractViewModel.AddContractAsync(mockContract, null));
         }
 
         [TestMethod]
-        public async Task GenerateAndSaveContractAsync_WithNullContract_ThrowsArgumentNullException()
+        public async Task GenerateAndSaveContractAsync_WhenNullContract_ShouldThrowArgumentNullException()
         {
             // Arrange
             var contractType = PredefinedContractType.BuyingContract;
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
-                await viewModel.GenerateAndSaveContractAsync(null, contractType));
+                await contractViewModel.GenerateAndSaveContractAsync(null, contractType));
         }
 
         [TestMethod]
-        public async Task GetContractsByBuyerAsync_WithInvalidId_ReturnsEmptyList()
+        public async Task GetContractsByBuyerAsync_WhenInvalidId_ShouldReturnEmptyList()
         {
             // Arrange
             int buyerId = -1;
-            _mockContractModel.Setup(m => m.GetContractsByBuyerAsync(buyerId))
+            mockContractModel.Setup(contractModel => contractModel.GetContractsByBuyerAsync(buyerId))
                 .ReturnsAsync(new List<IContract>());
 
             // Act
-            var result = await viewModel.GetContractsByBuyerAsync(buyerId);
+            var result = await contractViewModel.GetContractsByBuyerAsync(buyerId);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
-            _mockContractModel.Verify(m => m.GetContractsByBuyerAsync(buyerId), Times.Once);
+            mockContractModel.Verify(contractModel => contractModel.GetContractsByBuyerAsync(buyerId), Times.Once);
         }
     }
 }
