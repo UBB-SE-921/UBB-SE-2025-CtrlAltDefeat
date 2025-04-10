@@ -61,6 +61,7 @@ namespace ArtAttack.Tests.ViewModel
         public async Task GetOrderSummaryAsync_ReturnsCorrectOrderSummaryForGivenId()
         {
             // Arrange
+
             OrderSummary expectedOrderSummary = CreateSampleOrderSummary();
             ConfigureMockReaderForOrderSummary(expectedOrderSummary);
 
@@ -105,6 +106,7 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             int nonExistentOrderSummaryId = 999;
+
             _mockReader.Setup(reader => reader.Read()).Returns(false);
             _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
@@ -120,6 +122,7 @@ namespace ArtAttack.Tests.ViewModel
             // Arrange
             int userId = 42;
             string searchText = "test";
+
             List<OrderDisplayInfo> expectedProductInfoList = SetupMockReaderForOrdersWithProductInfo();
 
             // Act
@@ -138,6 +141,7 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             int userId = 42;
+
             Dictionary<int, string> expectedCategoryTypes = SetupMockReaderForProductCategoryTypes();
 
             // Act
@@ -678,6 +682,7 @@ namespace ArtAttack.Tests.ViewModel
         private void ConfigureMockReaderForOrderSummary(OrderSummary orderSummary)
         {
             // Setup column ordinals
+
             _mockReader.Setup(reader => reader.GetOrdinal("ID")).Returns(0);
             _mockReader.Setup(reader => reader.GetOrdinal("Subtotal")).Returns(1);
             _mockReader.Setup(reader => reader.GetOrdinal("WarrantyTax")).Returns(2);
@@ -693,6 +698,7 @@ namespace ArtAttack.Tests.ViewModel
 
             // Setup Read calls - first return true then false
             int readCount = 0;
+
             _mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ == 0);
 
             // Setup IsDBNull for nullable fields
@@ -832,11 +838,13 @@ namespace ArtAttack.Tests.ViewModel
             };
 
             // Setup column ordinals
+
             _mockReader.Setup(reader => reader.GetOrdinal("OrderSummaryID")).Returns(0);
             _mockReader.Setup(reader => reader.GetOrdinal("productType")).Returns(1);
 
             // Setup sequential reads with counter
             int readCount = 0;
+
             _mockReader.Setup(reader => reader.Read())
                 .Returns(() => {
                     return readCount++ < 3; // Return true for first 3 calls, then false
@@ -945,6 +953,7 @@ namespace ArtAttack.Tests.ViewModel
             _mockReader.Setup(reader => reader.GetString(1)).Returns("Test Product");
             _mockReader.Setup(reader => reader.GetInt32(2)).Returns(1);
             _mockReader.Setup(reader => reader.GetString(3)).Returns("new");
+
             _mockReader.Setup(reader => reader.GetDateTime(4)).Returns(orderDate);
             _mockReader.Setup(reader => reader.GetString(5)).Returns("Credit Card");
             _mockReader.Setup(reader => reader.GetInt32(6)).Returns(201);

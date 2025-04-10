@@ -69,5 +69,74 @@ namespace ArtAttack.Model
                     throw new ArgumentException($"Unknown notification category: {category}");
             }
         }
+
+        /// <summary>
+        /// Compares two notifications for equality based on their type and specific properties
+        /// </summary>
+        /// <param name="actualNotification">The actual notification (usually from a test)</param>
+        /// <param name="expectedNotification">The expected notification to compare against</param>
+        /// <returns>True if notifications are equal, false otherwise</returns>
+        public static bool AreEqual(Notification actualNotification, Notification expectedNotification)
+        {
+            if (actualNotification == null || expectedNotification == null)
+            {
+                return actualNotification == expectedNotification;
+            }
+
+            // Check common properties
+            if (actualNotification.RecipientID != expectedNotification.RecipientID ||
+                actualNotification.GetType() != expectedNotification.GetType())
+            {
+                return false;
+            }
+
+            // Type-specific comparisons
+            switch (actualNotification)
+            {
+                case ProductAvailableNotification actualProductAvailableNotification:
+                    var expectedProductAvailableNotification = expectedNotification as ProductAvailableNotification;
+                    return actualProductAvailableNotification.GetProductID() == expectedProductAvailableNotification.GetProductID();
+
+                case ContractRenewalAnswerNotification actualContractRenewalAnswerNotification:
+                    var expectedContractRenewalAnswerNotification = expectedNotification as ContractRenewalAnswerNotification;
+                    return actualContractRenewalAnswerNotification.GetContractID() == expectedContractRenewalAnswerNotification.GetContractID() &&
+                           actualContractRenewalAnswerNotification.GetIsAccepted() == expectedContractRenewalAnswerNotification.GetIsAccepted();
+
+                case ContractRenewalWaitlistNotification actualContractRenewalWaitlistNotification:
+                    var expectedContractRenewalWaitlistNotification = expectedNotification as ContractRenewalWaitlistNotification;
+                    return actualContractRenewalWaitlistNotification.GetProductID() == expectedContractRenewalWaitlistNotification.GetProductID();
+
+                case OutbiddedNotification actualOutbiddedNotification:
+                    var expectedOutbiddedNotification = expectedNotification as OutbiddedNotification;
+                    return actualOutbiddedNotification.GetProductID() == expectedOutbiddedNotification.GetProductID();
+
+                case OrderShippingProgressNotification actualOrderShippingProgressNotification:
+                    var expectedOrderShippingProgressNotification = expectedNotification as OrderShippingProgressNotification;
+                    return actualOrderShippingProgressNotification.GetOrderID() == expectedOrderShippingProgressNotification.GetOrderID() &&
+                           actualOrderShippingProgressNotification.GetShippingState() == expectedOrderShippingProgressNotification.GetShippingState() &&
+                           actualOrderShippingProgressNotification.GetDeliveryDate() == expectedOrderShippingProgressNotification.GetDeliveryDate();
+
+                case PaymentConfirmationNotification actualPaymentConfirmationNotification:
+                    var expectedPaymentConfirmationNotification = expectedNotification as PaymentConfirmationNotification;
+                    return actualPaymentConfirmationNotification.GetProductID() == expectedPaymentConfirmationNotification.GetProductID() &&
+                           actualPaymentConfirmationNotification.GetOrderID() == expectedPaymentConfirmationNotification.GetOrderID();
+
+                case ProductRemovedNotification actualProductRemovedNotification:
+                    var expectedProductRemovedNotification = expectedNotification as ProductRemovedNotification;
+                    return actualProductRemovedNotification.GetProductID() == expectedProductRemovedNotification.GetProductID();
+
+                case ContractRenewalRequestNotification actualContractRenewalRequestNotification:
+                    var expectedContractRenewalRequestNotification = expectedNotification as ContractRenewalRequestNotification;
+                    return actualContractRenewalRequestNotification.GetContractID() == expectedContractRenewalRequestNotification.GetContractID();
+
+                case ContractExpirationNotification actualContractExpirationNotification:
+                    var expectedContractExpirationNotification = expectedNotification as ContractExpirationNotification;
+                    return actualContractExpirationNotification.GetContractID() == expectedContractExpirationNotification.GetContractID() &&
+                           actualContractExpirationNotification.GetExpirationDate() == expectedContractExpirationNotification.GetExpirationDate();
+
+                default:
+                    return false;
+            }
+        }
     }
 }

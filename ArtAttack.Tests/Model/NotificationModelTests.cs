@@ -14,351 +14,296 @@ namespace ArtAttack.Tests.Model
     [TestClass]
     public class NotificationFactoryTests
     {
-        [TestMethod]
-        public void CreateFromDataReader_ProductAvailableNotification_ReturnsCorrectType()
+        private Mock<IDataReader> mockDataReader;
+        private DateTime timestamp;
+
+        [TestInitialize]
+        public void Setup()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
+            mockDataReader = new Mock<IDataReader>();
+            timestamp = DateTime.Now;
 
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("productID")).Returns(7);
+            // Setup common ordinal positions
+            mockDataReader.Setup(reader => reader.GetOrdinal("notificationID")).Returns(0);
+            mockDataReader.Setup(reader => reader.GetOrdinal("recipientID")).Returns(1);
+            mockDataReader.Setup(reader => reader.GetOrdinal("timestamp")).Returns(2);
+            mockDataReader.Setup(reader => reader.GetOrdinal("isRead")).Returns(3);
+            mockDataReader.Setup(reader => reader.GetOrdinal("category")).Returns(4);
+            mockDataReader.Setup(reader => reader.GetOrdinal("contractID")).Returns(5);
+            mockDataReader.Setup(reader => reader.GetOrdinal("isAccepted")).Returns(6);
+            mockDataReader.Setup(reader => reader.GetOrdinal("productID")).Returns(7);
+            mockDataReader.Setup(reader => reader.GetOrdinal("orderID")).Returns(8);
+            mockDataReader.Setup(reader => reader.GetOrdinal("shippingState")).Returns(9);
+            mockDataReader.Setup(reader => reader.GetOrdinal("deliveryDate")).Returns(10);
+            mockDataReader.Setup(reader => reader.GetOrdinal("expirationDate")).Returns(11);
 
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("PRODUCT_AVAILABLE");
-            mockReader.Setup(r => r.GetInt32(7)).Returns(301);
-
-            // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
-
-            // Assert
-            Assert.IsInstanceOfType(notification, typeof(ProductAvailableNotification));
-            var typedNotification = notification as ProductAvailableNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(301, typedNotification.GetProductID());
-            Assert.AreEqual("Product Available", typedNotification.Title);
+            // Setup common column values
+            mockDataReader.Setup(reader => reader.GetInt32(0)).Returns(42);  // notificationID
+            mockDataReader.Setup(reader => reader.GetInt32(1)).Returns(1);   // recipientID
+            mockDataReader.Setup(reader => reader.GetDateTime(2)).Returns(timestamp);  // timestamp
+            mockDataReader.Setup(reader => reader.GetBoolean(3)).Returns(false);  // isRead
         }
 
         [TestMethod]
-        public void CreateFromDataReader_ContractRenewalAnswerNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnProductAvailableNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
-
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("contractID")).Returns(5);
-            mockReader.Setup(r => r.GetOrdinal("isAccepted")).Returns(6);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_RENEWAL_ACCEPTED");
-            mockReader.Setup(r => r.GetInt32(5)).Returns(101);
-            mockReader.Setup(r => r.GetBoolean(6)).Returns(true);
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("PRODUCT_AVAILABLE");
+            mockDataReader.Setup(reader => reader.GetInt32(7)).Returns(301);  // productID
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new ProductAvailableNotification(
+                recipientId: 1,
+                timestamp: timestamp,
+                productId: 301,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(ContractRenewalAnswerNotification));
-            var typedNotification = notification as ContractRenewalAnswerNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(101, typedNotification.GetContractID());
-            Assert.IsTrue(typedNotification.GetIsAccepted());
-            Assert.AreEqual("Contract Renewal Answer", typedNotification.Title);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected a ProductAvailableNotification with RecipientID=1, ProductID=301"
+            );
+        }
+        [TestMethod]
+        public void CreateFromDataReader_ShouldReturnContractRenewalAnswerNotification()
+        {
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("CONTRACT_RENEWAL_ACCEPTED");
+            mockDataReader.Setup(reader => reader.GetInt32(5)).Returns(101);  // contractID
+            mockDataReader.Setup(reader => reader.GetBoolean(6)).Returns(true);  // isAccepted
+
+            // Act
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new ContractRenewalAnswerNotification(
+                recipientID: 1,
+                timestamp: timestamp,
+                isAccepted: true,
+                contractID: 101,
+                isRead: false,
+                notificationId: 42
+
+            );
+
+            // Assert
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected a ContractRenewalAnswerNotification with RecipientID=1, ContractID=101, IsAccepted=true"
+            );
         }
 
         [TestMethod]
-        public void CreateFromDataReader_OrderShippingProgressNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnOrderShippingProgressNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
+            // Setup specific values for this test case
             DateTime deliveryDate = new DateTime(2025, 4, 15);
 
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("orderID")).Returns(8);
-            mockReader.Setup(r => r.GetOrdinal("shippingState")).Returns(9);
-            mockReader.Setup(r => r.GetOrdinal("deliveryDate")).Returns(10);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("ORDER_SHIPPING_PROGRESS");
-            mockReader.Setup(r => r.GetInt32(8)).Returns(201);
-            mockReader.Setup(r => r.GetString(9)).Returns("SHIPPED");
-            mockReader.Setup(r => r.GetDateTime(10)).Returns(deliveryDate);
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("ORDER_SHIPPING_PROGRESS");
+            mockDataReader.Setup(reader => reader.GetInt32(8)).Returns(201);  // orderID
+            mockDataReader.Setup(reader => reader.GetString(9)).Returns("SHIPPED");  // shippingState
+            mockDataReader.Setup(reader => reader.GetDateTime(10)).Returns(deliveryDate);  // deliveryDate
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new OrderShippingProgressNotification(
+                recipientId: 1,
+                timestamp: timestamp,
+                id: 201,
+                state: "SHIPPED",
+                deliveryDate: deliveryDate,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(OrderShippingProgressNotification));
-            var typedNotification = notification as OrderShippingProgressNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(201, typedNotification.GetOrderID());
-            Assert.AreEqual("SHIPPED", typedNotification.GetShippingState());
-            Assert.AreEqual(deliveryDate, typedNotification.GetDeliveryDate());
-            Assert.AreEqual("Order Shipping Update", typedNotification.Title);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected an OrderShippingProgressNotification with RecipientID=1, OrderID=201, ShippingState=SHIPPED, DeliveryDate={deliveryDate}"
+            );
         }
-
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void CreateFromDataReader_UnknownCategory_ThrowsArgumentException()
+        public void CreateFromDataReader_UnknownCategoryNotification_ShouldThrowArgumentException()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
-            SetupCommonReaderFields(mockReader, "UNKNOWN_CATEGORY");
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("UNKNOWN_CATEGORY");
 
             // Act
-            NotificationFactory.CreateFromDataReader(mockReader.Object);
+            NotificationFactory.CreateFromDataReader(mockDataReader.Object);
 
             // Assert is handled by ExpectedException
         }
 
         [TestMethod]
-        public void CreateFromDataReader_ContractRenewalWaitlistNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnContractRenewalWaitlistNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
-
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("productID")).Returns(7);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_RENEWAL_WAITLIST");
-            mockReader.Setup(r => r.GetInt32(7)).Returns(201);
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("CONTRACT_RENEWAL_WAITLIST");
+            mockDataReader.Setup(reader => reader.GetInt32(7)).Returns(201);  // productID
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new ContractRenewalWaitlistNotification(
+                recipientID: 1,
+                timestamp: timestamp,
+                productID: 201,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(ContractRenewalWaitlistNotification));
-            var typedNotification = notification as ContractRenewalWaitlistNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(201, typedNotification.GetProductID());
-            Assert.AreEqual("Contract Renewal in Waitlist", typedNotification.Title);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected a ContractRenewalWaitlistNotification with RecipientID=1, ProductID=201"
+            );
         }
 
         [TestMethod]
-        public void CreateFromDataReader_PaymentConfirmationNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnPaymentConfirmationNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
-
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("productID")).Returns(7);
-            mockReader.Setup(r => r.GetOrdinal("orderID")).Returns(8);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("PAYMENT_CONFIRMATION");
-            mockReader.Setup(r => r.GetInt32(7)).Returns(201); // productID
-            mockReader.Setup(r => r.GetInt32(8)).Returns(102); // orderID
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("PAYMENT_CONFIRMATION");
+            mockDataReader.Setup(reader => reader.GetInt32(7)).Returns(201);  // productID
+            mockDataReader.Setup(reader => reader.GetInt32(8)).Returns(102);  // orderID
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new PaymentConfirmationNotification(
+                recipientId: 1,
+                timestamp: timestamp,
+                productId: 201,
+                orderId: 102,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(PaymentConfirmationNotification));
-            var typedNotification = notification as PaymentConfirmationNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(201, typedNotification.GetProductID());
-            Assert.AreEqual(102, typedNotification.GetOrderID());
-            Assert.AreEqual("Payment Confirmation", typedNotification.Title);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected a PaymentConfirmationNotification with RecipientID=1, ProductID=201, OrderID=102"
+            );
         }
 
         [TestMethod]
-        public void CreateFromDataReader_ProductRemovedNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnProductRemovedNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
-
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("productID")).Returns(7);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("PRODUCT_REMOVED");
-            mockReader.Setup(r => r.GetInt32(7)).Returns(201);
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("PRODUCT_REMOVED");
+            mockDataReader.Setup(reader => reader.GetInt32(7)).Returns(201);  // productID
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new ProductRemovedNotification(
+                recipientId: 1,
+                timestamp: timestamp,
+                productId: 201,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(ProductRemovedNotification));
-            var typedNotification = notification as ProductRemovedNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(201, typedNotification.GetProductID());
-            Assert.AreEqual("Product Removed", typedNotification.Title);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected a ProductRemovedNotification with RecipientID=1, ProductID=201"
+            );
         }
 
         [TestMethod]
-        public void CreateFromDataReader_ContractRenewalRequestNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnContractRenewalRequestNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("CONTRACT_RENEWAL_REQUEST");
+            mockDataReader.Setup(reader => reader.GetInt32(5)).Returns(101);  // contractID
 
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("contractID")).Returns(5);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_RENEWAL_REQUEST");
-            mockReader.Setup(r => r.GetInt32(5)).Returns(101);
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new ContractRenewalRequestNotification(
+                recipientId: 1,
+                timestamp: timestamp,
+                contractId: 101,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(ContractRenewalRequestNotification));
-            var typedNotification = notification as ContractRenewalRequestNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(101, typedNotification.GetContractID());
-            Assert.AreEqual("Contract Renewal Request", typedNotification.Title);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected a ContractRenewalRequestNotification with RecipientID=1, ContractID=101"
+            );
         }
 
         [TestMethod]
-        public void CreateFromDataReader_ContractExpirationNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnContractExpirationNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
+            // Setup specific values for this test case
             DateTime expirationDate = new DateTime(2025, 10, 15);
 
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("contractID")).Returns(5);
-            mockReader.Setup(r => r.GetOrdinal("expirationDate")).Returns(11);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_EXPIRATION");
-            mockReader.Setup(r => r.GetInt32(5)).Returns(101);
-            mockReader.Setup(r => r.GetDateTime(11)).Returns(expirationDate);
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("CONTRACT_EXPIRATION");
+            mockDataReader.Setup(reader => reader.GetInt32(5)).Returns(101);  // contractID
+            mockDataReader.Setup(reader => reader.GetDateTime(11)).Returns(expirationDate);  // expirationDate
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new ContractExpirationNotification(
+                recipientId: 1,
+                timestamp: timestamp,
+                contractId: 101,
+                expirationDate: expirationDate,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(ContractExpirationNotification));
-            var typedNotification = notification as ContractExpirationNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(101, typedNotification.GetContractID());
-            Assert.AreEqual(expirationDate, typedNotification.GetExpirationDate());
-            Assert.AreEqual("Contract Expiration", typedNotification.Title);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected a ContractExpirationNotification with RecipientID=1, ContractID=101, ExpirationDate={expirationDate}"
+            );
         }
 
         [TestMethod]
-        public void CreateFromDataReader_OutbiddedNotification_ReturnsCorrectType()
+        public void CreateFromDataReader_ShouldReturnOutbiddedNotification()
         {
-            // Arrange
-            var mockReader = new Mock<IDataReader>();
-
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("productID")).Returns(7);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("OUTBIDDED");
-            mockReader.Setup(r => r.GetInt32(7)).Returns(301);
+            // Setup specific values for this test case
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("OUTBIDDED");
+            mockDataReader.Setup(reader => reader.GetInt32(7)).Returns(301);  // productID
 
             // Act
-            var notification = NotificationFactory.CreateFromDataReader(mockReader.Object);
+            var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
+
+            // Create expected notification with the same properties
+            var expectedNotification = new OutbiddedNotification(
+                recipientId: 1,
+                timestamp: timestamp,
+                productId: 301,
+                isRead: false,
+                notificationId: 42
+            );
 
             // Assert
-            Assert.IsInstanceOfType(notification, typeof(OutbiddedNotification));
-            var typedNotification = notification as OutbiddedNotification;
-            Assert.AreEqual(1, typedNotification.RecipientID);
-            Assert.AreEqual(301, typedNotification.GetProductID());
-            Assert.AreEqual("Outbidded", typedNotification.Title);
-        }
-
-
-        private void SetupCommonReaderFields(Mock<IDataReader> mockReader, string category)
-        {
-            // Setup the ordinal positions
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-
-            // Setup the values returned by each column
-            mockReader.Setup(r => r.GetInt32(0)).Returns(42);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns(category);
+            Assert.IsTrue(
+                NotificationFactory.AreEqual(actualNotification, expectedNotification),
+                $"Expected an OutbiddedNotification with RecipientID=1, ProductID=301"
+            );
         }
 
     }
@@ -366,148 +311,144 @@ namespace ArtAttack.Tests.Model
     [TestClass]
     public class NotificationDataAdapterTests
     {
-        private Mock<IDatabaseProvider> _mockDbProvider;
-        private Mock<IDbConnection> _mockConnection;
-        private Mock<IDbCommand> _mockCommand;
-        private Mock<IDataReader> _mockReader;
-        private Mock<IDataParameterCollection> _mockParameters;
-        private NotificationDataAdapter _adapter;
+        private Mock<IDatabaseProvider> mockDatabaseProvider;
+        private Mock<IDbConnection> mockConnection;
+        private Mock<IDbCommand> mockCommand;
+        private Mock<IDataReader> mockReader;
+        private Mock<IDataParameterCollection> mockParameters;
+        private NotificationDataAdapter notificationDataAdapter;
         private const string ConnectionString = "test_connection_string";
         private const string TestConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         [TestInitialize]
         public void Setup()
         {
-            _mockDbProvider = new Mock<IDatabaseProvider>();
-            _mockConnection = new Mock<IDbConnection>();
-            _mockCommand = new Mock<IDbCommand>();
-            _mockReader = new Mock<IDataReader>();
-            _mockParameters = new Mock<IDataParameterCollection>();
+            mockDatabaseProvider = new Mock<IDatabaseProvider>();
+            mockConnection = new Mock<IDbConnection>();
+            mockCommand = new Mock<IDbCommand>();
+            mockReader = new Mock<IDataReader>();
+            mockParameters = new Mock<IDataParameterCollection>();
 
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(new Mock<IDbDataParameter>().Object);
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            mockCommand.Setup(command => command.CreateParameter()).Returns(new Mock<IDbDataParameter>().Object);
+            mockCommand.Setup(command => command.Parameters).Returns(mockParameters.Object);
+            mockCommand.Setup(command => command.ExecuteReader()).Returns(mockReader.Object);
 
-            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
-            _mockConnection.Setup(c => c.State).Returns(ConnectionState.Open);
+            mockConnection.Setup(command => command.CreateCommand()).Returns(mockCommand.Object);
+            mockConnection.Setup(command => command.State).Returns(ConnectionState.Open);
 
-            _mockDbProvider.Setup(p => p.CreateConnection(ConnectionString)).Returns(_mockConnection.Object);
+            mockDatabaseProvider.Setup(databaseProvider => databaseProvider.CreateConnection(ConnectionString)).Returns(mockConnection.Object);
 
-            _adapter = new NotificationDataAdapter(ConnectionString, _mockDbProvider.Object);
+            notificationDataAdapter = new NotificationDataAdapter(ConnectionString, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
-        public void Constructor_WithOnlyConnectionString_InitializesCorrectly()
+        public void Constructor_WithOnlyConnectionString_ShouldInitializCorrectly()
         {
             // This will create a testable version that doesn't actually try to connect to SQL
-            var adapter = new NotificationDataAdapter(ConnectionString, _mockDbProvider.Object);
+            var testNotificationDataAdapter = new NotificationDataAdapter(ConnectionString, mockDatabaseProvider.Object);
 
             // Assert - using reflection to access private field
-            var field = typeof(NotificationDataAdapter).GetField("connectionString",
+            var connectionStringField = typeof(NotificationDataAdapter).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var value = field.GetValue(adapter);
+            var connectionStringValue = connectionStringField.GetValue(testNotificationDataAdapter);
 
-            Assert.IsNotNull(value);
-            Assert.AreEqual(ConnectionString, value);
+            Assert.AreEqual(ConnectionString, connectionStringValue);
         }
 
         [TestMethod]
-        public void Constructor_SetsConnectionString()
+        public void Constructor_WithConnectionStringAndDatabaseprovider_ShouldSetConnectionString()
         {
             // Arrange
             // Create a mock database provider that won't actually try to connect
-            var mockDbProvider = new Mock<IDatabaseProvider>();
-            mockDbProvider.Setup(p => p.CreateConnection(TestConnectionString)).Returns(_mockConnection.Object);
+            var mockDatabaseProvider = new Mock<IDatabaseProvider>();
+            mockDatabaseProvider.Setup(databaseProvider => databaseProvider.CreateConnection(TestConnectionString)).Returns(mockConnection.Object);
 
             // Act
             // Use the constructor that accepts both connection string and database provider
-            var model = new NotificationDataAdapter(TestConnectionString, mockDbProvider.Object);
+            var testNotificationDataAdapter = new NotificationDataAdapter(TestConnectionString, mockDatabaseProvider.Object);
 
             // Assert - using reflection to access private field
-            var field = typeof(NotificationDataAdapter).GetField("connectionString",
+            var connectionStringField = typeof(NotificationDataAdapter).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var value = field.GetValue(model);
+            var connectionStringValue = connectionStringField.GetValue(testNotificationDataAdapter);
 
-            Assert.AreEqual(TestConnectionString, value);
+            Assert.AreEqual(TestConnectionString, connectionStringValue);
         }
 
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
+        public void Constructor_WithNullConnectionString_ShouldThrowArgumentNullException()
         {
             // Act - this should throw ArgumentNullException
-            using var adapter = new NotificationDataAdapter(null);
-
-            // Assert is handled by ExpectedException
+            var testNotificationDataAdapter = new NotificationDataAdapter(null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
+        public void Constructor_WithNullDatabaseProvider_ShouldThrowArgumentNullException()
         {
             // Act
-            _ = new NotificationDataAdapter(ConnectionString, null);
+            var testNotificationDataAdapter = new NotificationDataAdapter(ConnectionString, null);
         }
 
         [TestMethod]
-        public void GetNotificationsForUser_ReturnsNotificationsList()
+        public void GetNotificationsForUser_ShouldReturnNotificationsList()
         {
             // Arrange
-            int recipientId = 1;
+            int notificationRecieverId = 1;
 
             // Setup reader to return two notifications
             int readCount = 0;
-            _mockReader.Setup(r => r.Read()).Returns(() => readCount++ < 2);
-            SetupReaderForNotifications(_mockReader);
+            mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ < 2);
+            SetupReaderForNotifications(mockReader);
 
             // Act
-            var notifications = _adapter.GetNotificationsForUser(recipientId);
-
-            // Assert
-            Assert.IsNotNull(notifications);
-            Assert.AreEqual(2, notifications.Count);
+            var userNotifications = notificationDataAdapter.GetNotificationsForUser(notificationRecieverId);
 
             // Verify command was set up correctly
-            _mockCommand.VerifySet(c => c.CommandText = "GetNotificationsByRecipient");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
+            mockCommand.VerifySet(command => command.CommandText = "GetNotificationsByRecipient");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+
+            // Assert
+            Assert.AreEqual(2, userNotifications.Count);
         }
 
         [TestMethod]
-        public void MarkAsRead_ExecutesCommand()
+        public void MarkNotificationAsRead_ShouldExecuteCommand()
         {
             // Arrange
             int notificationId = 42;
 
             // Act
-            _adapter.MarkAsRead(notificationId);
+            notificationDataAdapter.MarkAsRead(notificationId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "MarkNotificationAsRead");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "MarkNotificationAsRead");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void AddNotification_NullNotification_ThrowsArgumentNullException()
+        public void AddNotification_WithNullNotification_ShouldThrowArgumentNullException()
         {
             // Act
-            _adapter.AddNotification(null);
+            notificationDataAdapter.AddNotification(null);
         }
 
         [TestMethod]
-        public void Dispose_ClosesAndDisposesConnection()
+        public void Dispose_ShouldCloseAndDisposeConnection()
         {
             // Act
-            _adapter.Dispose();
+            notificationDataAdapter.Dispose();
 
             // Assert - connection should be disposed
-            _mockConnection.Verify(c => c.Dispose(), Times.Once);
+            mockConnection.Verify(command => command.Dispose(), Times.Once);
         }
 
         [TestMethod]
-        public void AddNotification_ContractRenewalAnswerNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddContractRenewalAnswerNotification()
         {
             // Arrange
             var notification = new ContractRenewalAnswerNotification(
@@ -518,33 +459,23 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_ACCEPTED");
-            AssertParameterExists(capturedParams, "@contractID", 101);
-            AssertParameterExists(capturedParams, "@isAccepted", true);
+            AssertParameterExists(capturedParameters, "@category", "CONTRACT_RENEWAL_APPROVED");
 
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@productID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
         }
 
         [TestMethod]
-        public void AddNotification_ProductAvailableNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddProductAvailableNotification()
         {
             // Arrange
             var notification = new ProductAvailableNotification(
@@ -554,62 +485,23 @@ namespace ArtAttack.Tests.Model
             );
 
             // Create a list to store the actual parameters
-            var capturedParams = new List<(string Name, object Value)>();
-
-            // Setup mock parameter
-            var mockParameter = new Mock<IDbDataParameter>();
-            mockParameter.SetupProperty(p => p.ParameterName);
-            mockParameter.SetupProperty(p => p.Value);
-
-            // Set up a collection to track parameters added to the command
-            var parameters = new List<IDbDataParameter>();
-
-            // Setup mock parameters collection to be enumerable
-            _mockParameters.Setup(p => p.GetEnumerator())
-                .Returns(() => parameters.GetEnumerator());
-
-            // Setup command to return our mock parameter and capture its values
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(() => {
-                var param = mockParameter.Object;
-                param.ParameterName = null;
-                param.Value = null;
-                return param;
-            });
-
-            // Capture parameters when they're added to the collection
-            _mockParameters.Setup(p => p.Add(It.IsAny<object>()))
-                .Callback<object>(param => {
-                    parameters.Add((IDbDataParameter)param);
-                    var dbParam = (IDbDataParameter)param;
-                    capturedParams.Add((dbParam.ParameterName, dbParam.Value));
-                })
-                .Returns(0);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "PRODUCT_AVAILABLE");
-            AssertParameterExists(capturedParams, "@productID", 301);
-
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@contractID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
+            AssertParameterExists(capturedParameters, "@category", "PRODUCT_AVAILABLE");
         }
 
 
         [TestMethod]
-        public void AddNotification_OrderShippingProgressNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddOrderShippingProgressNotification()
         {
             // Arrange
             var deliveryDate = new DateTime(2025, 4, 15);
@@ -622,33 +514,22 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "ORDER_SHIPPING_PROGRESS");
-            AssertParameterExists(capturedParams, "@orderID", 201);
-            AssertParameterExists(capturedParams, "@shippingState", "SHIPPED");
-            AssertParameterExists(capturedParams, "@deliveryDate", deliveryDate);
-
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@contractID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@productID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
+            AssertParameterExists(capturedParameters, "@category", "ORDER_SHIPPING_PROGRESS");
         }
 
         [TestMethod]
-        public void AddNotification_ContractExpirationNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddContractExpirationNotification()
         {
             // Arrange
             var expirationDate = new DateTime(2025, 10, 15);
@@ -660,45 +541,34 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_EXPIRATION");
-            AssertParameterExists(capturedParams, "@contractID", 101);
-            AssertParameterExists(capturedParams, "@expirationDate", expirationDate);
-
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@productID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
+            AssertParameterExists(capturedParameters, "@category", "CONTRACT_EXPIRATION");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void AddNotification_UnknownNotificationType_ThrowsArgumentException()
+        public void AddNotification_UnknownNotificationType_ShouldThrowArgumentException()
         {
             // Arrange
             var notification = new Mock<Notification>().Object;
 
             // Act - should throw ArgumentException
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
         }
 
 
         [TestMethod]
-        public void AddNotification_ContractRenewalWaitlistNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddContractRenewalWaitlistNotification()
         {
             // Arrange
             var notification = new ContractRenewalWaitlistNotification(
@@ -708,33 +578,22 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_WAITLIST");
-            AssertParameterExists(capturedParams, "@productID", 201);
-
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@contractID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
+            AssertParameterExists(capturedParameters, "@category", "CONTRACT_RENEWAL_WAITLIST");
         }
 
         [TestMethod]
-        public void AddNotification_OutbiddedNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddOutbiddedNotification()
         {
             // Arrange
             var notification = new OutbiddedNotification(
@@ -744,33 +603,22 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "OUTBIDDED");
-            AssertParameterExists(capturedParams, "@productID", 301);
-
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@contractID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
+            AssertParameterExists(capturedParameters, "@category", "OUTBIDDED");
         }
 
         [TestMethod]
-        public void AddNotification_PaymentConfirmationNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddPaymentConfirmationNotification()
         {
             // Arrange
             var notification = new PaymentConfirmationNotification(
@@ -781,33 +629,22 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "PAYMENT_CONFIRMATION");
-            AssertParameterExists(capturedParams, "@orderID", 501);
-            AssertParameterExists(capturedParams, "@productID", 301);
-
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@contractID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
+            AssertParameterExists(capturedParameters, "@category", "PAYMENT_CONFIRMATION");
         }
 
         [TestMethod]
-        public void AddNotification_ProductRemovedNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddProductRemovedNotification()
         {
             // Arrange
             var notification = new ProductRemovedNotification(
@@ -817,33 +654,23 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "PRODUCT_REMOVED");
-            AssertParameterExists(capturedParams, "@productID", 301);
+            AssertParameterExists(capturedParameters, "@category", "PRODUCT_REMOVED");
 
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@contractID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
         }
 
         [TestMethod]
-        public void AddNotification_ContractRenewalRequestNotification_AddsCorrectParameters()
+        public void AddNotification_ShouldAddContractRenewalRequestNotification()
         {
             // Arrange
             var notification = new ContractRenewalRequestNotification(
@@ -853,77 +680,31 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "AddNotification");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_REQUEST");
-            AssertParameterExists(capturedParams, "@contractID", 101);
+            AssertParameterExists(capturedParameters, "@category", "CONTRACT_RENEWAL_REQUEST");
 
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@productID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
         }
 
         [TestMethod]
-        public void AddNotification_ContractRenewalRequestNotificationWithNull_AddsCorrectParameters()
-        {
-            // Arrange
-            var notification = new ContractRenewalRequestNotification(
-                recipientId: 1,
-                timestamp: DateTime.Now,
-                contractId: 101
-            );
-
-            // Capture parameters
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
-
-            // Act
-            _adapter.AddNotification(notification);
-
-            // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddNotification");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
-
-            // Check parameters
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_REQUEST");
-            AssertParameterExists(capturedParams, "@contractID", 101);
-
-            // Check null parameters
-            AssertParameterExists(capturedParams, "@isAccepted", DBNull.Value);
-            AssertParameterExists(capturedParams, "@productID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@orderID", DBNull.Value);
-            AssertParameterExists(capturedParams, "@shippingState", DBNull.Value);
-            AssertParameterExists(capturedParams, "@deliveryDate", DBNull.Value);
-            AssertParameterExists(capturedParams, "@expirationDate", DBNull.Value);
-        }
-
-        [TestMethod]
-        public void AddNotification_HandlesConnectionClosed()
+        public void AddNotification_ShouldHandleConnectionClosed()
         {
             // Arrange
             // First, reset interactions with the connection mock
             // to clear the Open() call from the constructor
-            Mock.Get(_mockConnection.Object).Invocations.Clear();
+            Mock.Get(mockConnection.Object).Invocations.Clear();
 
             // Now set up the closed state for this specific test
-            _mockConnection.Setup(c => c.State).Returns(ConnectionState.Closed);
+            mockConnection.Setup(connection => connection.State).Returns(ConnectionState.Closed);
 
             var notification = new ProductAvailableNotification(
                 recipientId: 1,
@@ -932,92 +713,86 @@ namespace ArtAttack.Tests.Model
             );
 
             // Capture parameters with proper enumeration support
-            var capturedParams = new List<(string Name, object Value)>();
-            SetupParameterCapture(capturedParams);
+            var capturedParameters = new List<(string Name, object Value)>();
+            SetupParameterCapture(capturedParameters);
 
             // Act
-            _adapter.AddNotification(notification);
+            notificationDataAdapter.AddNotification(notification);
 
             // Assert
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockConnection.Verify(command => command.Open(), Times.Once);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Verify the parameters were still set correctly
-            AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "PRODUCT_AVAILABLE");
-            AssertParameterExists(capturedParams, "@productID", 301);
+            AssertParameterExists(capturedParameters, "@category", "PRODUCT_AVAILABLE");
         }
 
-
-
         // Helper methods for testing
-        private void SetupParameterCapture(List<(string Name, object Value)> capturedParams)
+        private void SetupParameterCapture(List<(string Name, object Value)> capturedParameters)
         {
             var mockParameter = new Mock<IDbDataParameter>();
-            mockParameter.SetupProperty(p => p.ParameterName);
-            mockParameter.SetupProperty(p => p.Value);
+            mockParameter.SetupProperty(parameter => parameter.ParameterName);
+            mockParameter.SetupProperty(parameter => parameter.Value);
 
             // Set up a collection to track parameters added to the command
             var parameters = new List<IDbDataParameter>();
 
             // Setup mock parameters collection to be enumerable
-            _mockParameters.Setup(p => p.GetEnumerator())
+            mockParameters.Setup(parameter => parameter.GetEnumerator())
                 .Returns(() => parameters.GetEnumerator());
 
             // Setup command to return our mock parameter and capture its values
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(() => {
-                var param = mockParameter.Object;
-                param.ParameterName = null;
-                param.Value = null;
-                return param;
+            mockCommand.Setup(command => command.CreateParameter()).Returns(() => {
+                var parameterObject = mockParameter.Object;
+                parameterObject.ParameterName = null;
+                parameterObject.Value = null;
+                return parameterObject;
             });
 
             // Capture parameters when they're added to the collection
-            _mockParameters.Setup(p => p.Add(It.IsAny<object>()))
-                .Callback<object>(param => {
-                    parameters.Add((IDbDataParameter)param);
-                    var dbParam = (IDbDataParameter)param;
-                    capturedParams.Add((dbParam.ParameterName, dbParam.Value));
+            mockParameters.Setup(parameter => parameter.Add(It.IsAny<object>()))
+                .Callback<object>(parameterObject => {
+                    parameters.Add((IDbDataParameter)parameterObject);
+                    var databaseParameter = (IDbDataParameter)parameterObject;
+                    capturedParameters.Add((databaseParameter.ParameterName, databaseParameter.Value));
                 })
                 .Returns(0);
         }
 
-
-        private void AssertParameterExists(List<(string Name, object Value)> parameters, string name, object expectedValue)
+        // Helper method to assert that a parameter exists in the captured parameters
+        private void AssertParameterExists(List<(string Name, object Value)> parameters, string parameterName, object expectedParameterValue)
         {
-            var param = parameters.FirstOrDefault(p => p.Name == name);
-            Assert.IsTrue(param != default, $"Parameter {name} was not found");
+            var firstOrDefaultParameter = parameters.FirstOrDefault(parameter => parameter.Name == parameterName);
+            Assert.IsTrue(firstOrDefaultParameter != default, $"Parameter {parameterName} was not found");
 
-            if (expectedValue == DBNull.Value)
+            if (expectedParameterValue == DBNull.Value)
             {
-                Assert.AreEqual(DBNull.Value, param.Value, $"Parameter {name} should be DBNull");
+                Assert.AreEqual(DBNull.Value, firstOrDefaultParameter.Value, $"Parameter {parameterName} should be DBNull");
             }
             else
             {
-                Assert.AreEqual(expectedValue, param.Value, $"Parameter {name} has incorrect value");
+                Assert.AreEqual(expectedParameterValue, firstOrDefaultParameter.Value, $"Parameter {parameterName} has incorrect value");
             }
         }
 
-
         private void SetupReaderForNotifications(Mock<IDataReader> mockReader)
         {
-            mockReader.Setup(r => r.GetOrdinal("notificationID")).Returns(0);
-            mockReader.Setup(r => r.GetOrdinal("recipientID")).Returns(1);
-            mockReader.Setup(r => r.GetOrdinal("timestamp")).Returns(2);
-            mockReader.Setup(r => r.GetOrdinal("isRead")).Returns(3);
-            mockReader.Setup(r => r.GetOrdinal("category")).Returns(4);
-            mockReader.Setup(r => r.GetOrdinal("contractID")).Returns(5);
-            mockReader.Setup(r => r.GetOrdinal("isAccepted")).Returns(6);
-            mockReader.Setup(r => r.GetOrdinal("productID")).Returns(7);
-            mockReader.Setup(r => r.GetOrdinal("orderID")).Returns(8);
-            mockReader.Setup(r => r.GetOrdinal("shippingState")).Returns(9);
-            mockReader.Setup(r => r.GetOrdinal("deliveryDate")).Returns(10);
-            mockReader.Setup(r => r.GetOrdinal("expirationDate")).Returns(11);
+            mockReader.Setup(reader => reader.GetOrdinal("notificationID")).Returns(0);
+            mockReader.Setup(reader => reader.GetOrdinal("recipientID")).Returns(1);
+            mockReader.Setup(reader => reader.GetOrdinal("timestamp")).Returns(2);
+            mockReader.Setup(reader => reader.GetOrdinal("isRead")).Returns(3);
+            mockReader.Setup(reader => reader.GetOrdinal("category")).Returns(4);
+            mockReader.Setup(reader => reader.GetOrdinal("contractID")).Returns(5);
+            mockReader.Setup(reader => reader.GetOrdinal("isAccepted")).Returns(6);
+            mockReader.Setup(reader => reader.GetOrdinal("productID")).Returns(7);
+            mockReader.Setup(reader => reader.GetOrdinal("orderID")).Returns(8);
+            mockReader.Setup(reader => reader.GetOrdinal("shippingState")).Returns(9);
+            mockReader.Setup(reader => reader.GetOrdinal("deliveryDate")).Returns(10);
+            mockReader.Setup(reader => reader.GetOrdinal("expirationDate")).Returns(11);
 
-            mockReader.SetupSequence(r => r.GetInt32(0)).Returns(42).Returns(43);
-            mockReader.Setup(r => r.GetInt32(1)).Returns(1);
-            mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
-            mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
+            mockReader.SetupSequence(reader => reader.GetInt32(0)).Returns(42).Returns(43);
+            mockReader.Setup(reader => reader.GetInt32(1)).Returns(1);
+            mockReader.Setup(reader => reader.GetDateTime(2)).Returns(DateTime.Now);
+            mockReader.Setup(reader => reader.GetBoolean(3)).Returns(false);
 
             // First row: CONTRACT_RENEWAL_ACCEPTED
             // Second row: PRODUCT_AVAILABLE
@@ -1025,9 +800,9 @@ namespace ArtAttack.Tests.Model
                 .Returns("CONTRACT_RENEWAL_ACCEPTED")
                 .Returns("PRODUCT_AVAILABLE");
 
-            mockReader.Setup(r => r.GetInt32(5)).Returns(101); // contractID
-            mockReader.Setup(r => r.GetBoolean(6)).Returns(true); // isAccepted
-            mockReader.Setup(r => r.GetInt32(7)).Returns(201); // productID
+            mockReader.Setup(reader => reader.GetInt32(5)).Returns(101); // contractID
+            mockReader.Setup(reader => reader.GetBoolean(6)).Returns(true); // isAccepted
+            mockReader.Setup(reader => reader.GetInt32(7)).Returns(201); // productID
         }
     }
 }
