@@ -1,106 +1,106 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using ArtAttack.Shared;
-using ArtAttack.ViewModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using ArtAttack.Domain;
+using ArtAttack.Model;
+using ArtAttack.Shared;
+using ArtAttack.ViewModel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace ArtAttack.Tests.ViewModel
 {
     [TestClass]
     public class CardInfoViewModelTests
     {
-        private Mock<IOrderHistoryModel> _mockOrderHistoryModel;
-        private Mock<IOrderSummaryModel> _mockOrderSummaryModel;
-        private Mock<IOrderModel> _mockOrderModel;
-        private Mock<IDummyCardModel> _mockDummyCardModel;
-        private int _testOrderHistoryId;
-        private List<DummyProduct> _testProducts;
-        private OrderSummary _testOrderSummary;
-        private CardInfoViewModel _viewModel;
+        private Mock<IOrderHistoryModel> mockOrderHistoryModel;
+        private Mock<IOrderSummaryModel> mockOrderSummaryModel;
+        private Mock<IOrderModel> mockOrderModel;
+        private Mock<IDummyCardModel> mockDummyCardModel;
+        private int testOrderHistoryId;
+        private List<DummyProduct> testProducts;
+        private OrderSummary testOrderSummary;
+        private CardInfoViewModel cardInfoViewModel;
 
         [TestInitialize]
         public void Setup()
         {
             // Initialize mock objects
-            _mockOrderHistoryModel = new Mock<IOrderHistoryModel>();
-            _mockOrderSummaryModel = new Mock<IOrderSummaryModel>();
-            _mockOrderModel = new Mock<IOrderModel>();
-            _mockDummyCardModel = new Mock<IDummyCardModel>();
+            mockOrderHistoryModel = new Mock<IOrderHistoryModel>();
+            mockOrderSummaryModel = new Mock<IOrderSummaryModel>();
+            mockOrderModel = new Mock<IOrderModel>();
+            mockDummyCardModel = new Mock<IDummyCardModel>();
 
             // Test data
-            _testOrderHistoryId = 123;
-            _testProducts = new List<DummyProduct>
+            testOrderHistoryId = 123;
+            testProducts = new List<DummyProduct>
             {
                 new DummyProduct { ID = 1, Name = "Test Product 1", Price = 99.99f, ProductType = "new" },
                 new DummyProduct { ID = 2, Name = "Test Product 2", Price = 49.99f, ProductType = "new" }
             };
-            _testOrderSummary = new OrderSummary
+            testOrderSummary = new OrderSummary
             {
-                ID = _testOrderHistoryId,
+                ID = testOrderHistoryId,
                 Subtotal = 149.98f,
                 DeliveryFee = 13.99f,
                 FinalTotal = 163.97f
             };
 
             // Setup mock behavior
-            _mockOrderHistoryModel
-                .Setup(m => m.GetDummyProductsFromOrderHistoryAsync(_testOrderHistoryId))
-                .ReturnsAsync(_testProducts);
+            mockOrderHistoryModel
+                .Setup(orderHistoryModel => orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(testOrderHistoryId))
+                .ReturnsAsync(testProducts);
 
-            _mockOrderSummaryModel
-                .Setup(m => m.GetOrderSummaryByIDAsync(_testOrderHistoryId))
-                .ReturnsAsync(_testOrderSummary);
+            mockOrderSummaryModel
+                .Setup(orderSummaryModel => orderSummaryModel.GetOrderSummaryByIDAsync(testOrderHistoryId))
+                .ReturnsAsync(testOrderSummary);
 
             // Create view model with mocked dependencies
-            _viewModel = new CardInfoViewModel(
-                _mockOrderHistoryModel.Object,
-                _mockOrderSummaryModel.Object,
-                _mockOrderModel.Object,
-                _mockDummyCardModel.Object,
-                _testOrderHistoryId);
+            cardInfoViewModel = new CardInfoViewModel(
+                mockOrderHistoryModel.Object,
+                mockOrderSummaryModel.Object,
+                mockOrderModel.Object,
+                mockDummyCardModel.Object,
+                testOrderHistoryId);
         }
 
         [TestMethod]
         public async Task InitializeViewModelAsync_ShouldLoadProductsAndOrderSummary()
         {
             // Arrange - Create a new view model to explicitly call Initialize
-            var viewModel = new CardInfoViewModel(
-                _mockOrderHistoryModel.Object,
-                _mockOrderSummaryModel.Object,
-                _mockOrderModel.Object,
-                _mockDummyCardModel.Object,
-                _testOrderHistoryId);
+            var cardInfoViewModel = new CardInfoViewModel(
+                mockOrderHistoryModel.Object,
+                mockOrderSummaryModel.Object,
+                mockOrderModel.Object,
+                mockDummyCardModel.Object,
+                testOrderHistoryId);
 
             // Act
-            await viewModel.InitializeViewModelAsync();
+            await cardInfoViewModel.InitializeViewModelAsync();
 
             // Assert
-            Assert.IsNotNull(viewModel.ProductList);
-            Assert.AreEqual(_testProducts.Count, viewModel.ProductList.Count);
-            Assert.AreEqual(_testOrderSummary.Subtotal, viewModel.Subtotal);
-            Assert.AreEqual(_testOrderSummary.DeliveryFee, viewModel.DeliveryFee);
-            Assert.AreEqual(_testOrderSummary.FinalTotal, viewModel.Total);
+            Assert.IsNotNull(cardInfoViewModel.ProductList);
+            Assert.AreEqual(testProducts.Count, cardInfoViewModel.ProductList.Count);
+            Assert.AreEqual(testOrderSummary.Subtotal, cardInfoViewModel.Subtotal);
+            Assert.AreEqual(testOrderSummary.DeliveryFee, cardInfoViewModel.DeliveryFee);
+            Assert.AreEqual(testOrderSummary.FinalTotal, cardInfoViewModel.Total);
         }
 
         [TestMethod]
         public async Task GetDummyProductsFromOrderHistoryAsync_ShouldReturnProductsFromModel()
         {
             // Act
-            var result = await _viewModel.GetDummyProductsFromOrderHistoryAsync(_testOrderHistoryId);
+            var result = await cardInfoViewModel.GetDummyProductsFromOrderHistoryAsync(testOrderHistoryId);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(_testProducts.Count, result.Count);
-            Assert.AreEqual(_testProducts[0].ID, result[0].ID);
-            Assert.AreEqual(_testProducts[1].ID, result[1].ID);
-            _mockOrderHistoryModel.Verify(m => m.GetDummyProductsFromOrderHistoryAsync(_testOrderHistoryId), Times.AtLeastOnce);
+            Assert.AreEqual(testProducts.Count, result.Count);
+            Assert.AreEqual(testProducts[0].ID, result[0].ID);
+            Assert.AreEqual(testProducts[1].ID, result[1].ID);
+            mockOrderHistoryModel.Verify(orderHistoryModel => orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(testOrderHistoryId), Times.AtLeastOnce);
         }
 
         [TestMethod]
@@ -109,25 +109,25 @@ namespace ArtAttack.Tests.ViewModel
             // Arrange
             string testCardNumber = "1234-5678-9012-3456";
             float initialBalance = 500.00f;
-            float expectedNewBalance = initialBalance - _testOrderSummary.FinalTotal;
+            float expectedNewBalance = initialBalance - testOrderSummary.FinalTotal;
 
-            _mockDummyCardModel
-                .Setup(m => m.GetCardBalanceAsync(testCardNumber))
+            mockDummyCardModel
+                .Setup(dummyCardModel => dummyCardModel.GetCardBalanceAsync(testCardNumber))
                 .ReturnsAsync(initialBalance);
 
-            _mockOrderSummaryModel
-                .Setup(m => m.GetOrderSummaryByIDAsync(_testOrderHistoryId))
-                .ReturnsAsync(_testOrderSummary);
+            mockOrderSummaryModel
+                .Setup(orderSummaryModel => orderSummaryModel.GetOrderSummaryByIDAsync(testOrderHistoryId))
+                .ReturnsAsync(testOrderSummary);
 
-            _viewModel.CardNumber = testCardNumber;
+            cardInfoViewModel.CardNumber = testCardNumber;
 
             // Act
-            await _viewModel.ProcessCardPaymentAsync();
+            await cardInfoViewModel.ProcessCardPaymentAsync();
 
             // Assert
-            _mockDummyCardModel.Verify(m => m.GetCardBalanceAsync(testCardNumber), Times.Once);
-            _mockOrderSummaryModel.Verify(m => m.GetOrderSummaryByIDAsync(_testOrderHistoryId), Times.AtLeastOnce);
-            _mockDummyCardModel.Verify(m => m.UpdateCardBalanceAsync(testCardNumber, expectedNewBalance), Times.Once);
+            mockDummyCardModel.Verify(dummyCardModel => dummyCardModel.GetCardBalanceAsync(testCardNumber), Times.Once);
+            mockOrderSummaryModel.Verify(orderSummaryModel => orderSummaryModel.GetOrderSummaryByIDAsync(testOrderHistoryId), Times.AtLeastOnce);
+            mockDummyCardModel.Verify(dummyCardModel => dummyCardModel.UpdateCardBalanceAsync(testCardNumber, expectedNewBalance), Times.Once);
         }
 
         [TestMethod]
@@ -135,18 +135,18 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             string propertyName = null;
-            _viewModel.PropertyChanged += (sender, e) => { propertyName = e.PropertyName; };
+            cardInfoViewModel.PropertyChanged += (sender, propertyChangedEventArguments) => { propertyName = propertyChangedEventArguments.PropertyName; };
 
             // Act & Assert for each property
-            TestPropertyChanged(nameof(_viewModel.Subtotal), () => _viewModel.Subtotal = 200.0f);
-            TestPropertyChanged(nameof(_viewModel.DeliveryFee), () => _viewModel.DeliveryFee = 20.0f);
-            TestPropertyChanged(nameof(_viewModel.Total), () => _viewModel.Total = 220.0f);
-            TestPropertyChanged(nameof(_viewModel.Email), () => _viewModel.Email = "test@example.com");
-            TestPropertyChanged(nameof(_viewModel.CardHolderName), () => _viewModel.CardHolderName = "John Doe");
-            TestPropertyChanged(nameof(_viewModel.CardNumber), () => _viewModel.CardNumber = "1234-5678-9012-3456");
-            TestPropertyChanged(nameof(_viewModel.CardMonth), () => _viewModel.CardMonth = "12");
-            TestPropertyChanged(nameof(_viewModel.CardYear), () => _viewModel.CardYear = "25");
-            TestPropertyChanged(nameof(_viewModel.CardCVC), () => _viewModel.CardCVC = "123");
+            TestPropertyChanged(nameof(cardInfoViewModel.Subtotal), () => cardInfoViewModel.Subtotal = 200.0f);
+            TestPropertyChanged(nameof(cardInfoViewModel.DeliveryFee), () => cardInfoViewModel.DeliveryFee = 20.0f);
+            TestPropertyChanged(nameof(cardInfoViewModel.Total), () => cardInfoViewModel.Total = 220.0f);
+            TestPropertyChanged(nameof(cardInfoViewModel.Email), () => cardInfoViewModel.Email = "test@example.com");
+            TestPropertyChanged(nameof(cardInfoViewModel.CardHolderName), () => cardInfoViewModel.CardHolderName = "John Doe");
+            TestPropertyChanged(nameof(cardInfoViewModel.CardNumber), () => cardInfoViewModel.CardNumber = "1234-5678-9012-3456");
+            TestPropertyChanged(nameof(cardInfoViewModel.CardMonth), () => cardInfoViewModel.CardMonth = "12");
+            TestPropertyChanged(nameof(cardInfoViewModel.CardYear), () => cardInfoViewModel.CardYear = "25");
+            TestPropertyChanged(nameof(cardInfoViewModel.CardCVC), () => cardInfoViewModel.CardCVC = "123");
 
             // Local function to test property changed
             void TestPropertyChanged(string expected, System.Action setProperty)
@@ -163,31 +163,31 @@ namespace ArtAttack.Tests.ViewModel
             // Act & Assert
             Assert.ThrowsException<ArgumentNullException>(() => new CardInfoViewModel(
                 null,
-                _mockOrderSummaryModel.Object,
-                _mockOrderModel.Object,
-                _mockDummyCardModel.Object,
-                _testOrderHistoryId));
+                mockOrderSummaryModel.Object,
+                mockOrderModel.Object,
+                mockDummyCardModel.Object,
+                testOrderHistoryId));
 
             Assert.ThrowsException<ArgumentNullException>(() => new CardInfoViewModel(
-                _mockOrderHistoryModel.Object,
+                mockOrderHistoryModel.Object,
                 null,
-                _mockOrderModel.Object,
-                _mockDummyCardModel.Object,
-                _testOrderHistoryId));
+                mockOrderModel.Object,
+                mockDummyCardModel.Object,
+                testOrderHistoryId));
 
             Assert.ThrowsException<ArgumentNullException>(() => new CardInfoViewModel(
-                _mockOrderHistoryModel.Object,
-                _mockOrderSummaryModel.Object,
+                mockOrderHistoryModel.Object,
+                mockOrderSummaryModel.Object,
                 null,
-                _mockDummyCardModel.Object,
-                _testOrderHistoryId));
+                mockDummyCardModel.Object,
+                testOrderHistoryId));
 
             Assert.ThrowsException<ArgumentNullException>(() => new CardInfoViewModel(
-                _mockOrderHistoryModel.Object,
-                _mockOrderSummaryModel.Object,
-                _mockOrderModel.Object,
+                mockOrderHistoryModel.Object,
+                mockOrderSummaryModel.Object,
+                mockOrderModel.Object,
                 null,
-                _testOrderHistoryId));
+                testOrderHistoryId));
         }
 
         [TestMethod]
@@ -196,8 +196,8 @@ namespace ArtAttack.Tests.ViewModel
             // Act - the constructor was already called in Setup
 
             // Assert - other properties will be tested in InitializeViewModel
-            Assert.IsNotNull(_viewModel);
-            Assert.IsNotNull(_viewModel.ProductList);
+            Assert.IsNotNull(cardInfoViewModel);
+            Assert.IsNotNull(cardInfoViewModel.ProductList);
         }
 
         [TestMethod]
@@ -206,23 +206,23 @@ namespace ArtAttack.Tests.ViewModel
             // Arrange
             string testCardNumber = "1234-5678-9012-3456";
             float initialBalance = 100.00f; // Lower than order total
-            float expectedNewBalance = initialBalance - _testOrderSummary.FinalTotal; // Will be negative
+            float expectedNewBalance = initialBalance - testOrderSummary.FinalTotal; // Will be negative
 
-            _mockDummyCardModel
-                .Setup(m => m.GetCardBalanceAsync(testCardNumber))
+            mockDummyCardModel
+                .Setup(dummyCardModel => dummyCardModel.GetCardBalanceAsync(testCardNumber))
                 .ReturnsAsync(initialBalance);
 
-            _mockOrderSummaryModel
-                .Setup(m => m.GetOrderSummaryByIDAsync(_testOrderHistoryId))
-                .ReturnsAsync(_testOrderSummary);
+            mockOrderSummaryModel
+                .Setup(orderSummaryModel => orderSummaryModel.GetOrderSummaryByIDAsync(testOrderHistoryId))
+                .ReturnsAsync(testOrderSummary);
 
-            _viewModel.CardNumber = testCardNumber;
+            cardInfoViewModel.CardNumber = testCardNumber;
 
             // Act
-            await _viewModel.ProcessCardPaymentAsync();
+            await cardInfoViewModel.ProcessCardPaymentAsync();
 
             // Assert
-            _mockDummyCardModel.Verify(m => m.UpdateCardBalanceAsync(testCardNumber, expectedNewBalance), Times.Once);
+            mockDummyCardModel.Verify(dummyCardModel => dummyCardModel.UpdateCardBalanceAsync(testCardNumber, expectedNewBalance), Times.Once);
         }
 
         [TestMethod]
@@ -230,12 +230,12 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             int emptyOrderHistoryId = 999;
-            _mockOrderHistoryModel
-                .Setup(m => m.GetDummyProductsFromOrderHistoryAsync(emptyOrderHistoryId))
+            mockOrderHistoryModel
+                .Setup(orderSummaryModel => orderSummaryModel.GetDummyProductsFromOrderHistoryAsync(emptyOrderHistoryId))
                 .ReturnsAsync(new List<DummyProduct>());
 
             // Act
-            var result = await _viewModel.GetDummyProductsFromOrderHistoryAsync(emptyOrderHistoryId);
+            var result = await cardInfoViewModel.GetDummyProductsFromOrderHistoryAsync(emptyOrderHistoryId);
 
             // Assert
             Assert.IsNotNull(result);
@@ -244,7 +244,7 @@ namespace ArtAttack.Tests.ViewModel
 
         // Email property tests
         [TestMethod]
-        public void Email_Get_ReturnsCorrectValue()
+        public void GetEmail_ShouldReturnCorrectValue()
         {
             // Arrange
             string expectedEmail = "test@example.com";
@@ -252,41 +252,41 @@ namespace ArtAttack.Tests.ViewModel
             // Use reflection to set the private field directly
             var emailField = typeof(CardInfoViewModel).GetField("email",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            emailField.SetValue(_viewModel, expectedEmail);
+            emailField.SetValue(cardInfoViewModel, expectedEmail);
 
             // Act
-            string actualEmail = _viewModel.Email;
+            string actualEmail = cardInfoViewModel.Email;
 
             // Assert
             Assert.AreEqual(expectedEmail, actualEmail);
         }
 
         [TestMethod]
-        public void Email_Set_UpdatesValueAndRaisesPropertyChanged()
+        public void SetEmail_ShouldUpdateValueAndRaisesPropertyChanged()
         {
             // Arrange
             string expectedEmail = "new@example.com";
             bool propertyChangedRaised = false;
             string changedPropertyName = null;
 
-            _viewModel.PropertyChanged += (sender, args) =>
+            cardInfoViewModel.PropertyChanged += (sender, propertyChangedEventArguments) =>
             {
                 propertyChangedRaised = true;
-                changedPropertyName = args.PropertyName;
+                changedPropertyName = propertyChangedEventArguments.PropertyName;
             };
 
             // Act
-            _viewModel.Email = expectedEmail;
+            cardInfoViewModel.Email = expectedEmail;
 
             // Assert
-            Assert.AreEqual(expectedEmail, _viewModel.Email);
+            Assert.AreEqual(expectedEmail, cardInfoViewModel.Email);
             Assert.IsTrue(propertyChangedRaised);
-            Assert.AreEqual(nameof(_viewModel.Email), changedPropertyName);
+            Assert.AreEqual(nameof(cardInfoViewModel.Email), changedPropertyName);
         }
 
         // CardHolderName property tests
         [TestMethod]
-        public void CardHolderName_Get_ReturnsCorrectValue()
+        public void GetCardHolderName_ShouldReturnCorrectValue()
         {
             // Arrange
             string expectedName = "John Doe";
@@ -294,41 +294,41 @@ namespace ArtAttack.Tests.ViewModel
             // Use reflection to set the private field directly
             var cardholderField = typeof(CardInfoViewModel).GetField("cardholder",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            cardholderField.SetValue(_viewModel, expectedName);
+            cardholderField.SetValue(cardInfoViewModel, expectedName);
 
             // Act
-            string actualName = _viewModel.CardHolderName;
+            string actualName = cardInfoViewModel.CardHolderName;
 
             // Assert
             Assert.AreEqual(expectedName, actualName);
         }
 
         [TestMethod]
-        public void CardHolderName_Set_UpdatesValueAndRaisesPropertyChanged()
+        public void SetCardHolderName_ShouldUpdateValueAndRaisesPropertyChanged()
         {
             // Arrange
             string expectedName = "Jane Smith";
             bool propertyChangedRaised = false;
             string changedPropertyName = null;
 
-            _viewModel.PropertyChanged += (sender, args) =>
+            cardInfoViewModel.PropertyChanged += (sender, propertyChangedEventArguments) =>
             {
                 propertyChangedRaised = true;
-                changedPropertyName = args.PropertyName;
+                changedPropertyName = propertyChangedEventArguments.PropertyName;
             };
 
             // Act
-            _viewModel.CardHolderName = expectedName;
+            cardInfoViewModel.CardHolderName = expectedName;
 
             // Assert
-            Assert.AreEqual(expectedName, _viewModel.CardHolderName);
+            Assert.AreEqual(expectedName, cardInfoViewModel.CardHolderName);
             Assert.IsTrue(propertyChangedRaised);
-            Assert.AreEqual(nameof(_viewModel.CardHolderName), changedPropertyName);
+            Assert.AreEqual(nameof(cardInfoViewModel.CardHolderName), changedPropertyName);
         }
 
         // CardNumber property tests
         [TestMethod]
-        public void CardNumber_Get_ReturnsCorrectValue()
+        public void GetCardNumber_ShouldReturnCorrectValue()
         {
             // Arrange
             string expectedCardNumber = "1234-5678-9012-3456";
@@ -336,41 +336,41 @@ namespace ArtAttack.Tests.ViewModel
             // Use reflection to set the private field directly
             var cardnumberField = typeof(CardInfoViewModel).GetField("cardnumber",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            cardnumberField.SetValue(_viewModel, expectedCardNumber);
+            cardnumberField.SetValue(cardInfoViewModel, expectedCardNumber);
 
             // Act
-            string actualCardNumber = _viewModel.CardNumber;
+            string actualCardNumber = cardInfoViewModel.CardNumber;
 
             // Assert
             Assert.AreEqual(expectedCardNumber, actualCardNumber);
         }
 
         [TestMethod]
-        public void CardNumber_Set_UpdatesValueAndRaisesPropertyChanged()
+        public void SetCardNumber_ShouldUpdateValueAndRaisesPropertyChanged()
         {
             // Arrange
             string expectedCardNumber = "9876-5432-1098-7654";
             bool propertyChangedRaised = false;
             string changedPropertyName = null;
 
-            _viewModel.PropertyChanged += (sender, args) =>
+            cardInfoViewModel.PropertyChanged += (sender, propertyChangedEventArguments) =>
             {
                 propertyChangedRaised = true;
-                changedPropertyName = args.PropertyName;
+                changedPropertyName = propertyChangedEventArguments.PropertyName;
             };
 
             // Act
-            _viewModel.CardNumber = expectedCardNumber;
+            cardInfoViewModel.CardNumber = expectedCardNumber;
 
             // Assert
-            Assert.AreEqual(expectedCardNumber, _viewModel.CardNumber);
+            Assert.AreEqual(expectedCardNumber, cardInfoViewModel.CardNumber);
             Assert.IsTrue(propertyChangedRaised);
-            Assert.AreEqual(nameof(_viewModel.CardNumber), changedPropertyName);
+            Assert.AreEqual(nameof(cardInfoViewModel.CardNumber), changedPropertyName);
         }
 
         // CardMonth property tests
         [TestMethod]
-        public void CardMonth_Get_ReturnsCorrectValue()
+        public void GetCardMonth_ShouldReturnCorrectValue()
         {
             // Arrange
             string expectedMonth = "06";
@@ -378,41 +378,41 @@ namespace ArtAttack.Tests.ViewModel
             // Use reflection to set the private field directly
             var cardMonthField = typeof(CardInfoViewModel).GetField("cardMonth",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            cardMonthField.SetValue(_viewModel, expectedMonth);
+            cardMonthField.SetValue(cardInfoViewModel, expectedMonth);
 
             // Act
-            string actualMonth = _viewModel.CardMonth;
+            string actualMonth = cardInfoViewModel.CardMonth;
 
             // Assert
             Assert.AreEqual(expectedMonth, actualMonth);
         }
 
         [TestMethod]
-        public void CardMonth_Set_UpdatesValueAndRaisesPropertyChanged()
+        public void SetCardMonth_ShouldUpdateValueAndRaisesPropertyChanged()
         {
             // Arrange
             string expectedMonth = "12";
             bool propertyChangedRaised = false;
             string changedPropertyName = null;
 
-            _viewModel.PropertyChanged += (sender, args) =>
+            cardInfoViewModel.PropertyChanged += (sender, propertyChangedEventArguments) =>
             {
                 propertyChangedRaised = true;
-                changedPropertyName = args.PropertyName;
+                changedPropertyName = propertyChangedEventArguments.PropertyName;
             };
 
             // Act
-            _viewModel.CardMonth = expectedMonth;
+            cardInfoViewModel.CardMonth = expectedMonth;
 
             // Assert
-            Assert.AreEqual(expectedMonth, _viewModel.CardMonth);
+            Assert.AreEqual(expectedMonth, cardInfoViewModel.CardMonth);
             Assert.IsTrue(propertyChangedRaised);
-            Assert.AreEqual(nameof(_viewModel.CardMonth), changedPropertyName);
+            Assert.AreEqual(nameof(cardInfoViewModel.CardMonth), changedPropertyName);
         }
 
         // CardYear property tests
         [TestMethod]
-        public void CardYear_Get_ReturnsCorrectValue()
+        public void GetCardYear_ShouldReturnCorrectValue()
         {
             // Arrange
             string expectedYear = "2025";
@@ -420,124 +420,167 @@ namespace ArtAttack.Tests.ViewModel
             // Use reflection to set the private field directly
             var cardYearField = typeof(CardInfoViewModel).GetField("cardYear",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            cardYearField.SetValue(_viewModel, expectedYear);
+            cardYearField.SetValue(cardInfoViewModel, expectedYear);
 
             // Act
-            string actualYear = _viewModel.CardYear;
+            string actualYear = cardInfoViewModel.CardYear;
 
             // Assert
             Assert.AreEqual(expectedYear, actualYear);
         }
 
         [TestMethod]
-        public void CardYear_Set_UpdatesValueAndRaisesPropertyChanged()
+        public void SetCardYear_ShouldUpdatesValueAndRaisesPropertyChanged()
         {
             // Arrange
             string expectedYear = "2028";
             bool propertyChangedRaised = false;
             string changedPropertyName = null;
 
-            _viewModel.PropertyChanged += (sender, args) =>
+            cardInfoViewModel.PropertyChanged += (sender, propertyChangedEventArguments) =>
             {
                 propertyChangedRaised = true;
-                changedPropertyName = args.PropertyName;
+                changedPropertyName = propertyChangedEventArguments.PropertyName;
             };
 
             // Act
-            _viewModel.CardYear = expectedYear;
+            cardInfoViewModel.CardYear = expectedYear;
 
             // Assert
-            Assert.AreEqual(expectedYear, _viewModel.CardYear);
+            Assert.AreEqual(expectedYear, cardInfoViewModel.CardYear);
             Assert.IsTrue(propertyChangedRaised);
-            Assert.AreEqual(nameof(_viewModel.CardYear), changedPropertyName);
+            Assert.AreEqual(nameof(cardInfoViewModel.CardYear), changedPropertyName);
         }
 
         // CardCVC property tests
         [TestMethod]
-        public void CardCVC_Get_ReturnsCorrectValue()
+        public void GetCardCVC_ShouldReturnsCorrectValue()
         {
             // Arrange
-            string expectedCvc = "123";
+            string expectedCardCvc = "123";
 
             // Use reflection to set the private field directly
             var cardCVCField = typeof(CardInfoViewModel).GetField("cardCVC",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            cardCVCField.SetValue(_viewModel, expectedCvc);
+            cardCVCField.SetValue(cardInfoViewModel, expectedCardCvc);
 
             // Act
-            string actualCvc = _viewModel.CardCVC;
+            string actualCardCvc = cardInfoViewModel.CardCVC;
 
             // Assert
-            Assert.AreEqual(expectedCvc, actualCvc);
+            Assert.AreEqual(expectedCardCvc, actualCardCvc);
         }
 
         [TestMethod]
-        public void CardCVC_Set_UpdatesValueAndRaisesPropertyChanged()
+        public void SetCardCVC_ShouldUpdateValueAndRaisesPropertyChanged()
         {
             // Arrange
-            string expectedCvc = "456";
+            string expectedCardCvc = "456";
             bool propertyChangedRaised = false;
             string changedPropertyName = null;
 
-            _viewModel.PropertyChanged += (sender, args) =>
+            cardInfoViewModel.PropertyChanged += (sender, propertyChangedEventArguments) =>
             {
                 propertyChangedRaised = true;
-                changedPropertyName = args.PropertyName;
+                changedPropertyName = propertyChangedEventArguments.PropertyName;
             };
 
             // Act
-            _viewModel.CardCVC = expectedCvc;
+            cardInfoViewModel.CardCVC = expectedCardCvc;
 
             // Assert
-            Assert.AreEqual(expectedCvc, _viewModel.CardCVC);
+            Assert.AreEqual(expectedCardCvc, cardInfoViewModel.CardCVC);
             Assert.IsTrue(propertyChangedRaised);
-            Assert.AreEqual(nameof(_viewModel.CardCVC), changedPropertyName);
+            Assert.AreEqual(nameof(cardInfoViewModel.CardCVC), changedPropertyName);
         }
 
-        // Tests for edge cases
         [TestMethod]
-        public void Properties_SetNullValues_HandlesCorrectly()
+        public void SetToNullEmail_ShouldBeNull()
         {
-            // Act
-            _viewModel.Email = null;
-            _viewModel.CardHolderName = null;
-            _viewModel.CardNumber = null;
-            _viewModel.CardMonth = null;
-            _viewModel.CardYear = null;
-            _viewModel.CardCVC = null;
-
-            // Assert
-            Assert.IsNull(_viewModel.Email);
-            Assert.IsNull(_viewModel.CardHolderName);
-            Assert.IsNull(_viewModel.CardNumber);
-            Assert.IsNull(_viewModel.CardMonth);
-            Assert.IsNull(_viewModel.CardYear);
-            Assert.IsNull(_viewModel.CardCVC);
+            cardInfoViewModel.Email = null;
+            Assert.IsNull(cardInfoViewModel.Email);
         }
 
         [TestMethod]
-        public void Properties_SetEmptyStrings_HandlesCorrectly()
+        public void SetToNullCardHolderName_ShouldBeNull()
         {
-            // Act
-            _viewModel.Email = string.Empty;
-            _viewModel.CardHolderName = string.Empty;
-            _viewModel.CardNumber = string.Empty;
-            _viewModel.CardMonth = string.Empty;
-            _viewModel.CardYear = string.Empty;
-            _viewModel.CardCVC = string.Empty;
-
-            // Assert
-            Assert.AreEqual(string.Empty, _viewModel.Email);
-            Assert.AreEqual(string.Empty, _viewModel.CardHolderName);
-            Assert.AreEqual(string.Empty, _viewModel.CardNumber);
-            Assert.AreEqual(string.Empty, _viewModel.CardMonth);
-            Assert.AreEqual(string.Empty, _viewModel.CardYear);
-            Assert.AreEqual(string.Empty, _viewModel.CardCVC);
+            cardInfoViewModel.CardHolderName = null;
+            Assert.IsNull(cardInfoViewModel.CardHolderName);
         }
 
         [TestMethod]
-        //[ExcludeFromCodeCoverage] // Marking this test as excluded from coverage because we're testing UI-dependent code
-        public async Task OnPayButtonClickedAsync_CallsProcessCardPayment()
+        public void SetToNullCardNumber_ShouldBeNull()
+        {
+            cardInfoViewModel.CardNumber = null;
+            Assert.IsNull(cardInfoViewModel.CardNumber);
+        }
+
+        [TestMethod]
+        public void SetToNullCardMonth_ShouldBeNull()
+        {
+            cardInfoViewModel.CardMonth = null;
+            Assert.IsNull(cardInfoViewModel.CardMonth);
+        }
+
+        [TestMethod]
+        public void SetToNullCardYear_ShouldBeNull()
+        {
+            cardInfoViewModel.CardYear = null;
+            Assert.IsNull(cardInfoViewModel.CardYear);
+        }
+
+        [TestMethod]
+        public void SetToNullCardCVC_ShouldBeNull()
+        {
+            cardInfoViewModel.CardCVC = null;
+            Assert.IsNull(cardInfoViewModel.CardCVC);
+        }
+
+        [TestMethod]
+        public void SetToEmptyStringEmail_ShouldBeEmpty()
+        {
+            cardInfoViewModel.Email = string.Empty;
+            Assert.AreEqual(string.Empty, cardInfoViewModel.Email);
+        }
+
+        [TestMethod]
+        public void SetToEmptyStringCardHolderName_ShouldBeEmpty()
+        {
+            cardInfoViewModel.CardHolderName = string.Empty;
+            Assert.AreEqual(string.Empty, cardInfoViewModel.CardHolderName);
+        }
+
+        [TestMethod]
+        public void SetToEmptyStringCardNumber_ShouldBeEmpty()
+        {
+            cardInfoViewModel.CardNumber = string.Empty;
+            Assert.AreEqual(string.Empty, cardInfoViewModel.CardNumber);
+        }
+
+        [TestMethod]
+        public void SetToEmptyStringCardMonth_ShouldBeEmpty()
+        {
+            cardInfoViewModel.CardMonth = string.Empty;
+            Assert.AreEqual(string.Empty, cardInfoViewModel.CardMonth);
+        }
+
+        [TestMethod]
+        public void SetToEmptyStringCardYear_ShouldBeEmpty()
+        {
+            cardInfoViewModel.CardYear = string.Empty;
+            Assert.AreEqual(string.Empty, cardInfoViewModel.CardYear);
+        }
+
+        [TestMethod]
+        public void SetToEmptyStringCardCVC_ShouldBeEmpty()
+        {
+            cardInfoViewModel.CardCVC = string.Empty;
+            Assert.AreEqual(string.Empty, cardInfoViewModel.CardCVC);
+        }
+
+        [TestMethod]
+        // [ExcludeFromCodeCoverage] // Marking this test as excluded from coverage because we're testing UI-dependent code
+        public async Task OnPayButtonClickedAsync_ShouldCallProcessCardPayment()
         {
             // Arrange
             // Create a mock view model that will track whether ProcessCardPaymentAsync was called
@@ -560,12 +603,8 @@ namespace ArtAttack.Tests.ViewModel
             var originalMethod = typeof(CardInfoViewModel).GetMethod("ProcessCardPaymentAsync",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
-            // The issue is we can't easily replace ProcessCardPaymentAsync. 
-            // In a real test, we'd introduce abstraction to make this testable.
-
-            // Instead, let's try to use a structured exception approach
             mockDummyCardModel
-                .Setup(m => m.GetCardBalanceAsync(It.IsAny<string>()))
+                .Setup(dummyCardModel => dummyCardModel.GetCardBalanceAsync(It.IsAny<string>()))
                 .ThrowsAsync(new InvalidOperationException("Test marker exception"));
 
             viewModel.CardNumber = "test-card-number";
@@ -589,10 +628,6 @@ namespace ArtAttack.Tests.ViewModel
                 // Any other exception is a test failure
                 Assert.Fail($"Unexpected exception: {ex}");
             }
-
-            // Note: We can't easily verify the UI part (BillingInfoWindow creation and activation)
-            // without introducing abstraction or using a UI automation framework
         }
-
     }
 }
