@@ -42,16 +42,16 @@ namespace ArtAttack.Model
         {
             IPredefinedContract predefinedContract = null;
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetPredefinedContractByID";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@PContractID", (int)predefinedContractType);
+                    databaseCommand.CommandText = "GetPredefinedContractByID";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@PContractID", (int)predefinedContractType);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -87,16 +87,16 @@ namespace ArtAttack.Model
         {
             IContract contract = null;
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetContractByID";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetContractByID";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -136,15 +136,15 @@ namespace ArtAttack.Model
         {
             var contracts = new List<IContract>();
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetAllContracts";
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "GetAllContracts";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
@@ -181,16 +181,16 @@ namespace ArtAttack.Model
         {
             var history = new List<IContract>();
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetContractHistory";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetContractHistory";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
@@ -228,26 +228,26 @@ namespace ArtAttack.Model
         {
             IContract newContract = new Contract();
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "AddContract";
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "AddContract";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@OrderID", contract.OrderID);
-                    cmd.Parameters.AddWithValue("@ContractStatus", contract.ContractStatus);
-                    cmd.Parameters.AddWithValue("@ContractContent", contract.ContractContent);
-                    cmd.Parameters.AddWithValue("@RenewalCount", contract.RenewalCount);
-                    cmd.Parameters.AddWithValue("@PredefinedContractID",
+                    databaseCommand.Parameters.AddWithValue("@OrderID", contract.OrderID);
+                    databaseCommand.Parameters.AddWithValue("@ContractStatus", contract.ContractStatus);
+                    databaseCommand.Parameters.AddWithValue("@ContractContent", contract.ContractContent);
+                    databaseCommand.Parameters.AddWithValue("@RenewalCount", contract.RenewalCount);
+                    databaseCommand.Parameters.AddWithValue("@PredefinedContractID",
                         contract.PredefinedContractID.HasValue ? (object)contract.PredefinedContractID.Value : DBNull.Value);
-                    cmd.Parameters.AddWithValue("@PDFID", contract.PDFID);
-                    cmd.Parameters.AddWithValue("@PDFFile", pdfFile);
-                    cmd.Parameters.AddWithValue("@RenewedFromContractID",
+                    databaseCommand.Parameters.AddWithValue("@PDFID", contract.PDFID);
+                    databaseCommand.Parameters.AddWithValue("@PDFFile", pdfFile);
+                    databaseCommand.Parameters.AddWithValue("@RenewedFromContractID",
                         contract.RenewedFromContractID.HasValue ? (object)contract.RenewedFromContractID.Value : DBNull.Value);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -283,16 +283,16 @@ namespace ArtAttack.Model
         {
             (int SellerID, string SellerName) sellerInfo = (0, string.Empty);
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetContractSeller";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetContractSeller";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -316,16 +316,16 @@ namespace ArtAttack.Model
         {
             (int BuyerID, string BuyerName) buyerInfo = (0, string.Empty);
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetContractBuyer";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetContractBuyer";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -349,16 +349,16 @@ namespace ArtAttack.Model
         {
             var orderSummary = new Dictionary<string, object>();
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetOrderSummaryInformation";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetOrderSummaryInformation";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -389,16 +389,16 @@ namespace ArtAttack.Model
         /// <returns>The product details.</returns>
         public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetProductDetailsByContractID";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetProductDetailsByContractID";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -424,16 +424,16 @@ namespace ArtAttack.Model
         {
             var contracts = new List<IContract>();
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetContractsByBuyer";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@BuyerID", buyerId);
+                    databaseCommand.CommandText = "GetContractsByBuyer";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@BuyerID", buyerId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
@@ -472,16 +472,16 @@ namespace ArtAttack.Model
             string paymentMethod = null;
             DateTime orderDate = default;
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetOrderDetails";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetOrderDetails";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -504,16 +504,16 @@ namespace ArtAttack.Model
         {
             DateTime? deliveryDate = null;
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetDeliveryDateByContractID";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetDeliveryDateByContractID";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
@@ -539,16 +539,16 @@ namespace ArtAttack.Model
         {
             byte[] pdfFile = null;
 
-            using (var conn = databaseProvider.CreateConnection(connectionString))
+            using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (var cmd = conn.CreateCommand())
+                using (var databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetPdfByContractID";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ContractID", contractId);
+                    databaseCommand.CommandText = "GetPdfByContractID";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.Parameters.AddWithValue("@ContractID", contractId);
 
-                    await conn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (var reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {

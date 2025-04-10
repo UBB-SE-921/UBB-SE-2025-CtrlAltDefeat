@@ -67,7 +67,7 @@ namespace ArtAttack.Tests.Model
             mockReader.Setup(r => r.GetInt32(1)).Returns(1);
             mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
             mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_RENEWAL_ANS");
+            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_RENEWAL_ACCEPTED");
             mockReader.Setup(r => r.GetInt32(5)).Returns(101);
             mockReader.Setup(r => r.GetBoolean(6)).Returns(true);
 
@@ -259,7 +259,7 @@ namespace ArtAttack.Tests.Model
             mockReader.Setup(r => r.GetInt32(1)).Returns(1);
             mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
             mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
-            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_RENEWAL_REQ");
+            mockReader.Setup(r => r.GetString(4)).Returns("CONTRACT_RENEWAL_REQUEST");
             mockReader.Setup(r => r.GetInt32(5)).Returns(101);
 
             // Act
@@ -531,7 +531,7 @@ namespace ArtAttack.Tests.Model
 
             // Check parameters
             AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_ANS");
+            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_ACCEPTED");
             AssertParameterExists(capturedParams, "@contractID", 101);
             AssertParameterExists(capturedParams, "@isAccepted", true);
 
@@ -866,7 +866,7 @@ namespace ArtAttack.Tests.Model
 
             // Check parameters
             AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_REQ");
+            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_REQUEST");
             AssertParameterExists(capturedParams, "@contractID", 101);
 
             // Check null parameters
@@ -902,7 +902,7 @@ namespace ArtAttack.Tests.Model
 
             // Check parameters
             AssertParameterExists(capturedParams, "@recipientID", 1);
-            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_REQ");
+            AssertParameterExists(capturedParams, "@category", "CONTRACT_RENEWAL_REQUEST");
             AssertParameterExists(capturedParams, "@contractID", 101);
 
             // Check null parameters
@@ -1019,10 +1019,10 @@ namespace ArtAttack.Tests.Model
             mockReader.Setup(r => r.GetDateTime(2)).Returns(DateTime.Now);
             mockReader.Setup(r => r.GetBoolean(3)).Returns(false);
 
-            // First row: CONTRACT_RENEWAL_ANS
+            // First row: CONTRACT_RENEWAL_ACCEPTED
             // Second row: PRODUCT_AVAILABLE
             mockReader.SetupSequence(r => r.GetString(4))
-                .Returns("CONTRACT_RENEWAL_ANS")
+                .Returns("CONTRACT_RENEWAL_ACCEPTED")
                 .Returns("PRODUCT_AVAILABLE");
 
             mockReader.Setup(r => r.GetInt32(5)).Returns(101); // contractID

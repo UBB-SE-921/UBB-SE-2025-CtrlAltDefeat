@@ -57,27 +57,27 @@ namespace ArtAttack.Model
                                     string fullName, string email, string phoneNumber, string address,
                                     string postalCode, string additionalInfo, string contractDetails)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = "AddOrderSummary";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "AddOrderSummary";
 
-                    AddParameter(cmd, "@Subtotal", subtotal);
-                    AddParameter(cmd, "@WarrantyTax", warrantyTax);
-                    AddParameter(cmd, "@DeliveryFee", deliveryFee);
-                    AddParameter(cmd, "@FinalTotal", finalTotal);
-                    AddParameter(cmd, "@FullName", fullName);
-                    AddParameter(cmd, "@Email", email);
-                    AddParameter(cmd, "@PhoneNumber", phoneNumber);
-                    AddParameter(cmd, "@Address", address);
-                    AddParameter(cmd, "@PostalCode", postalCode);
-                    AddParameter(cmd, "@AdditionalInfo", additionalInfo);
-                    AddParameter(cmd, "@ContractDetails", contractDetails);
+                    AddParameter(databaseCommand, "@Subtotal", subtotal);
+                    AddParameter(databaseCommand, "@WarrantyTax", warrantyTax);
+                    AddParameter(databaseCommand, "@DeliveryFee", deliveryFee);
+                    AddParameter(databaseCommand, "@FinalTotal", finalTotal);
+                    AddParameter(databaseCommand, "@FullName", fullName);
+                    AddParameter(databaseCommand, "@Email", email);
+                    AddParameter(databaseCommand, "@PhoneNumber", phoneNumber);
+                    AddParameter(databaseCommand, "@Address", address);
+                    AddParameter(databaseCommand, "@PostalCode", postalCode);
+                    AddParameter(databaseCommand, "@AdditionalInfo", additionalInfo);
+                    AddParameter(databaseCommand, "@ContractDetails", contractDetails);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -102,28 +102,28 @@ namespace ArtAttack.Model
                                        string fullName, string email, string phoneNumber, string address,
                                        string postalCode, string additionalInfo, string contractDetails)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = "UpdateOrderSummary";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "UpdateOrderSummary";
 
-                    AddParameter(cmd, "@ID", id);
-                    AddParameter(cmd, "@Subtotal", subtotal);
-                    AddParameter(cmd, "@WarrantyTax", warrantyTax);
-                    AddParameter(cmd, "@DeliveryFee", deliveryFee);
-                    AddParameter(cmd, "@FinalTotal", finalTotal);
-                    AddParameter(cmd, "@FullName", fullName);
-                    AddParameter(cmd, "@Email", email);
-                    AddParameter(cmd, "@PhoneNumber", phoneNumber);
-                    AddParameter(cmd, "@Address", address);
-                    AddParameter(cmd, "@PostalCode", postalCode);
-                    AddParameter(cmd, "@AdditionalInfo", additionalInfo);
-                    AddParameter(cmd, "@ContractDetails", contractDetails);
+                    AddParameter(databaseCommand, "@ID", id);
+                    AddParameter(databaseCommand, "@Subtotal", subtotal);
+                    AddParameter(databaseCommand, "@WarrantyTax", warrantyTax);
+                    AddParameter(databaseCommand, "@DeliveryFee", deliveryFee);
+                    AddParameter(databaseCommand, "@FinalTotal", finalTotal);
+                    AddParameter(databaseCommand, "@FullName", fullName);
+                    AddParameter(databaseCommand, "@Email", email);
+                    AddParameter(databaseCommand, "@PhoneNumber", phoneNumber);
+                    AddParameter(databaseCommand, "@Address", address);
+                    AddParameter(databaseCommand, "@PostalCode", postalCode);
+                    AddParameter(databaseCommand, "@AdditionalInfo", additionalInfo);
+                    AddParameter(databaseCommand, "@ContractDetails", contractDetails);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -135,17 +135,17 @@ namespace ArtAttack.Model
         /// <returns></returns>
         public async Task DeleteOrderSummaryAsync(int id)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = "DeleteOrderSummary";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "DeleteOrderSummary";
 
-                    AddParameter(cmd, "@ID", id);
+                    AddParameter(databaseCommand, "@ID", id);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -157,16 +157,16 @@ namespace ArtAttack.Model
         /// <returns></returns>
         public async Task<OrderSummary> GetOrderSummaryByIDAsync(int orderSummaryID)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM [OrderSummary] WHERE [ID] = @ID";
+                    databaseCommand.CommandText = "SELECT * FROM [OrderSummary] WHERE [ID] = @ID";
 
-                    AddParameter(cmd, "@ID", orderSummaryID);
+                    AddParameter(databaseCommand, "@ID", orderSummaryID);
 
-                    await conn.OpenAsync();
-                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (IDataReader reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {

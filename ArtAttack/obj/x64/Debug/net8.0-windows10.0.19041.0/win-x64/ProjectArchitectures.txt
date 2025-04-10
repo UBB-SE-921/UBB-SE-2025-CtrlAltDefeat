@@ -1,1 +1,1 @@
-C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\ArtAttack.csproj;x64
+C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\ArtAttack.csproj;x64

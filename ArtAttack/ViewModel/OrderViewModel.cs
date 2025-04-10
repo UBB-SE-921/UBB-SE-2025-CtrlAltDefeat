@@ -175,16 +175,16 @@ namespace ArtAttack.ViewModel
         /// <returns>A task that returns the <see cref="OrderSummary"/> object.</returns>
         public async Task<OrderSummary> GetOrderSummaryAsync(int orderSummaryId)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
                     string query = @"SELECT * FROM [OrderSummary] WHERE ID = @OrderSummaryId";
-                    cmd.CommandText = query;
-                    cmd.Parameters.AddWithValue("@OrderSummaryId", orderSummaryId);
+                    databaseCommand.CommandText = query;
+                    databaseCommand.Parameters.AddWithValue("@OrderSummaryId", orderSummaryId);
 
-                    await conn.OpenAsync();
-                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
+                    await databaseConnection.OpenAsync();
+                    using (IDataReader reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {

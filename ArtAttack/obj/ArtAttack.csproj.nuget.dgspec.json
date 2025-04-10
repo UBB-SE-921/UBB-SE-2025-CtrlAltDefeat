@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj": {}
+    "C:\\Users\\alexe\\Source\\Repos\\UBB-SE-2025-CtrlAltDefeat\\ArtAttack\\ArtAttack.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj": {
+    "C:\\Users\\alexe\\Source\\Repos\\UBB-SE-2025-CtrlAltDefeat\\ArtAttack\\ArtAttack.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj",
+        "projectUniqueName": "C:\\Users\\alexe\\Source\\Repos\\UBB-SE-2025-CtrlAltDefeat\\ArtAttack\\ArtAttack.csproj",
         "projectName": "ArtAttack",
-        "projectPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\ArtAttack.csproj",
+        "projectPath": "C:\\Users\\alexe\\Source\\Repos\\UBB-SE-2025-CtrlAltDefeat\\ArtAttack\\ArtAttack.csproj",
         "packagesPath": "C:\\Users\\alexe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alexe\\Source\\Repos\\CtrlAltDefeat-Main-ArtAttack\\ArtAttack\\obj\\",
+        "outputPath": "C:\\Users\\alexe\\Source\\Repos\\UBB-SE-2025-CtrlAltDefeat\\ArtAttack\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

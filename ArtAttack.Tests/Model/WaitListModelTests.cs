@@ -136,7 +136,6 @@ namespace ArtAttack.Tests.Model
         }
 
 
-        #region RemoveUserFromWaitlist Tests
 
         [TestMethod]
         public void RemoveUserFromWaitlist_ExecutesCorrectStoredProcedure()

@@ -144,11 +144,11 @@ namespace ArtAttack.ViewModel
         {
             if (selectedPaymentMethod == "card")
             {
-                var b_window = new BillingInfoWindow();
+                var billingInfoWindow = new BillingInfoWindow();
                 var cardInfoPage = new CardInfo(orderHistoryID);
-                b_window.Content = cardInfoPage;
+                billingInfoWindow.Content = cardInfoPage;
 
-                b_window.Activate();
+                billingInfoWindow.Activate();
 
                 // This is just a workaround until I figure out how to switch between pages
             }
@@ -158,11 +158,11 @@ namespace ArtAttack.ViewModel
                 {
                     await ProcessWalletRefillAsync();
                 }
-                var b_window = new BillingInfoWindow();
+                var billingInfoWindow = new BillingInfoWindow();
                 var finalisePurchasePage = new FinalisePurchase(orderHistoryID);
-                b_window.Content = finalisePurchasePage;
+                billingInfoWindow.Content = finalisePurchasePage;
 
-                b_window.Activate();
+                billingInfoWindow.Activate();
             }
         }
 
