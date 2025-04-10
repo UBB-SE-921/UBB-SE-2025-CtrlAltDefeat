@@ -1,98 +1,94 @@
 ﻿using ArtAttack.Model;
 using ArtAttack.Shared;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace ArtAttack.Tests.Model
 {
     [TestClass]
     public class DummyWalletModelTests
     {
-        private Mock<IDatabaseProvider> _mockDbProvider;
-        private Mock<IDbConnection> _mockConnection;
-        private Mock<IDbCommand> _mockCommand;
-        private Mock<IDataReader> _mockReader;
-        private Mock<IDataParameterCollection> _mockParameters;
-        private Mock<IDbDataParameter> _mockParameter;
-        private DummyWalletModel _walletModel;
-        private readonly string _testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
+        private Mock<IDatabaseProvider> mockDatabaseProvider;
+        private Mock<IDbConnection> mockConnection;
+        private Mock<IDbCommand> mockCommand;
+        private Mock<IDataReader> mockReader;
+        private Mock<IDataParameterCollection> mockParameters;
+        private Mock<IDbDataParameter> mockParameter;
+        private DummyWalletModel dummyWalletModel;
+        private readonly string testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         [TestInitialize]
         public void Setup()
         {
             // Initialize mocks
-            _mockDbProvider = new Mock<IDatabaseProvider>();
-            _mockConnection = new Mock<IDbConnection>();
-            _mockCommand = new Mock<IDbCommand>();
-            _mockReader = new Mock<IDataReader>();
-            _mockParameters = new Mock<IDataParameterCollection>();
-            _mockParameter = new Mock<IDbDataParameter>();
+            mockDatabaseProvider = new Mock<IDatabaseProvider>();
+            mockConnection = new Mock<IDbConnection>();
+            mockCommand = new Mock<IDbCommand>();
+            mockReader = new Mock<IDataReader>();
+            mockParameters = new Mock<IDataParameterCollection>();
+            mockParameter = new Mock<IDbDataParameter>();
 
             // Setup parameter collection
-            _mockParameters.Setup(p => p.Add(It.IsAny<object>())).Returns(0);
+            mockParameters.Setup(mockParametersCollection => mockParametersCollection.Add(It.IsAny<object>())).Returns(0);
 
             // Setup command
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(_mockParameter.Object);
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            mockCommand.Setup(command => command.CreateParameter()).Returns(mockParameter.Object);
+            mockCommand.Setup(command => command.Parameters).Returns(mockParameters.Object);
+            mockCommand.Setup(command => command.ExecuteReader()).Returns(mockReader.Object);
 
             // Setup connection
-            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
-            _mockDbProvider.Setup(p => p.CreateConnection(_testConnectionString)).Returns(_mockConnection.Object);
+            mockConnection.Setup(connection => connection.CreateCommand()).Returns(mockCommand.Object);
+            mockDatabaseProvider.Setup(databaseProviderMock => databaseProviderMock.CreateConnection(testConnectionString)).Returns(mockConnection.Object);
 
             // Create the model with mocked provider
-            _walletModel = new DummyWalletModel(_testConnectionString, _mockDbProvider.Object);
+            dummyWalletModel = new DummyWalletModel(testConnectionString, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
-        public void Constructor_WithConnectionString_InitializesCorrectly()
+        public void ConstructorWithConnectionString_ShouldInitializCorrectly()
         {
             // Arrange & Act
-            var model = new DummyWalletModel(_testConnectionString, _mockDbProvider.Object);
+            var dummyWalletModel = new DummyWalletModel(testConnectionString, mockDatabaseProvider.Object);
 
             // Assert - using reflection to access private field
-            var field = typeof(DummyWalletModel).GetField("connectionString",
+            var connectionStringField = typeof(DummyWalletModel).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var value = field.GetValue(model);
+            var connectionStringValue = connectionStringField.GetValue(dummyWalletModel);
 
-            Assert.IsNotNull(value);
-            Assert.AreEqual(_testConnectionString, value);
+            Assert.AreEqual(testConnectionString, connectionStringValue);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
+        public void ConstructorWithNullConnectionString_ShouldThrowArgumentNullException()
         {
-            // Act - should throw ArgumentNullException
-            var model = new DummyWalletModel(null, _mockDbProvider.Object);
+            // Act
+            var dummyWalletModel = new DummyWalletModel(null, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
+        public void ConstructorWithNullDatabaseProvider_ShouldThrowArgumentNullException()
         {
-            // Act - should throw ArgumentNullException
-            var model = new DummyWalletModel(_testConnectionString, null);
+            // Act
+            var dummyWalletModel = new DummyWalletModel(testConnectionString, null);
         }
 
         [TestMethod]
-        public async Task UpdateWalletBalance_ExecutesCorrectProcedure()
+        public async Task UpdateWalletBalance_ShouldExecuteCorrectProcedure()
         {
             // Arrange
             int walletId = 42;
             float balance = 500.75f;
 
             // Act
-            await _walletModel.UpdateWalletBalance(walletId, balance);
+            await dummyWalletModel.UpdateWalletBalance(walletId, balance);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "UpdateWalletBalance");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "UpdateWalletBalance");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockConnection.Verify(command => command.Open(), Times.Once);
+            mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
             // Verify parameters
             VerifyParameterAdded("@id", walletId);
@@ -101,25 +97,25 @@ namespace ArtAttack.Tests.Model
 
 
         [TestMethod]
-        public async Task GetWalletBalanceAsync_ReturnsCorrectBalance()
+        public async Task GetWalletBalanceAsync_ShouldReturnCorrectBalance()
         {
             // Arrange
             int walletId = 42;
             double expectedBalance = 1234.56;
 
             // Setup reader
-            _mockReader.Setup(r => r.Read()).Returns(true);
-            _mockReader.Setup(r => r.GetOrdinal("balance")).Returns(0);
-            _mockReader.Setup(r => r.GetDouble(0)).Returns(expectedBalance);
+            mockReader.Setup(reader => reader.Read()).Returns(true);
+            mockReader.Setup(reader => reader.GetOrdinal("balance")).Returns(0);
+            mockReader.Setup(reader => reader.GetDouble(0)).Returns(expectedBalance);
 
             // Act
-            float result = await _walletModel.GetWalletBalanceAsync(walletId);
+            float result = await dummyWalletModel.GetWalletBalanceAsync(walletId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "GetWalletBalance");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "GetWalletBalance");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockConnection.Verify(command => command.Open(), Times.Once);
+            mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
 
             // Verify parameters
             VerifyParameterAdded("@id", walletId);
@@ -129,32 +125,33 @@ namespace ArtAttack.Tests.Model
         }
 
         [TestMethod]
-        public async Task GetWalletBalanceAsync_ReturnsNegativeOne_WhenWalletNotFound()
+        public async Task GetWalletBalanceAsync_WhenWalletNotFound_ShouldReturnNegativeOne()
         {
             // Arrange
             int walletId = 42;
 
             // Setup reader to return no results
-            _mockReader.Setup(r => r.Read()).Returns(false);
+            mockReader.Setup(reader => reader.Read()).Returns(false);
 
             // Act
-            float result = await _walletModel.GetWalletBalanceAsync(walletId);
+            float result = await dummyWalletModel.GetWalletBalanceAsync(walletId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "GetWalletBalance");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockParameter.VerifySet(p => p.ParameterName = "@id");
-            _mockParameter.VerifySet(p => p.Value = walletId);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
+            mockCommand.VerifySet(command => command.CommandText = "GetWalletBalance");
+            mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            mockParameter.VerifySet(parameter=> parameter.ParameterName = "@id");
+            mockParameter.VerifySet(parameter => parameter.Value = walletId);
+            mockConnection.Verify(reader => reader.Open(), Times.Once);
+            mockCommand.Verify(reader => reader.ExecuteReader(), Times.Once);
+
             Assert.AreEqual(-1f, result);
         }
 
 
-        private void VerifyParameterAdded(string name, object value)
+        private void VerifyParameterAdded(string parameterName, object parameterValue)
         {
-            _mockParameter.VerifySet(p => p.ParameterName = name, Times.AtLeastOnce());
-            _mockParameter.VerifySet(p => p.Value = value, Times.AtLeastOnce());
+            mockParameter.VerifySet(parameter => parameter.ParameterName = parameterName, Times.AtLeastOnce());
+            mockParameter.VerifySet(parameter => parameter.Value = parameterValue, Times.AtLeastOnce());
         }
     }
 }

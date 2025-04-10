@@ -39,7 +39,7 @@ namespace ArtAttack.Domain
             this.Timestamp = timestamp;
             this.IsRead = isRead;
             this.ContractID = contractID;
-            Category = NotificationCategory.CONTRACT_RENEWAL_ANS;
+            Category = NotificationCategory.CONTRACT_RENEWAL_APPROVED;
             this.IsAccepted = isAccepted;
         }
         [ExcludeFromCodeCoverage]
@@ -53,7 +53,7 @@ namespace ArtAttack.Domain
             return IsAccepted;
         }
         [ExcludeFromCodeCoverage]
-        public override string Content => IsAccepted ? $"Contract: {ContractID} has been renewed!\r\n You can download it from below!" : $"Unfortunately, contract: {ContractID} has not been renewed!\r\n The owner refused the renewal request :(";
+        public override string Content => IsAccepted ? $"Contract: {ContractID} has been renewed!\reader\n You can download it from below!" : $"Unfortunately, contract: {ContractID} has not been renewed!\reader\n The owner refused the renewal request :(";
         [ExcludeFromCodeCoverage]
         public override string Title => "Contract Renewal Answer";
         [ExcludeFromCodeCoverage]
@@ -259,7 +259,7 @@ namespace ArtAttack.Domain
             this.Timestamp = timestamp;
             ContractID = contractId;
             this.IsRead = isRead;
-            Category = NotificationCategory.CONTRACT_RENEWAL_REQ;
+            Category = NotificationCategory.CONTRACT_RENEWAL_REQUEST;
         }
 
         [ExcludeFromCodeCoverage]

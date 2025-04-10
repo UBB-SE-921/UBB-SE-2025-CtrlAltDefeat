@@ -73,40 +73,40 @@ namespace ArtAttack.Tests.ViewModel
             string contractDetails = "Contract details here";
 
             // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("ID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("Subtotal")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("WarrantyTax")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("DeliveryFee")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("FinalTotal")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("FullName")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("Email")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("PhoneNumber")).Returns(7);
-            _mockReader.Setup(r => r.GetOrdinal("Address")).Returns(8);
-            _mockReader.Setup(r => r.GetOrdinal("PostalCode")).Returns(9);
-            _mockReader.Setup(r => r.GetOrdinal("AdditionalInfo")).Returns(10);
-            _mockReader.Setup(r => r.GetOrdinal("ContractDetails")).Returns(11);
+            _mockReader.Setup(reader => reader.GetOrdinal("ID")).Returns(0);
+            _mockReader.Setup(reader => reader.GetOrdinal("Subtotal")).Returns(1);
+            _mockReader.Setup(reader => reader.GetOrdinal("WarrantyTax")).Returns(2);
+            _mockReader.Setup(reader => reader.GetOrdinal("DeliveryFee")).Returns(3);
+            _mockReader.Setup(reader => reader.GetOrdinal("FinalTotal")).Returns(4);
+            _mockReader.Setup(reader => reader.GetOrdinal("FullName")).Returns(5);
+            _mockReader.Setup(reader => reader.GetOrdinal("Email")).Returns(6);
+            _mockReader.Setup(reader => reader.GetOrdinal("PhoneNumber")).Returns(7);
+            _mockReader.Setup(reader => reader.GetOrdinal("Address")).Returns(8);
+            _mockReader.Setup(reader => reader.GetOrdinal("PostalCode")).Returns(9);
+            _mockReader.Setup(reader => reader.GetOrdinal("AdditionalInfo")).Returns(10);
+            _mockReader.Setup(reader => reader.GetOrdinal("ContractDetails")).Returns(11);
 
             // Setup Read calls - first return true then false
             int readCount = 0;
-            _mockReader.Setup(r => r.Read()).Returns(() => readCount++ == 0);
+            _mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ == 0);
 
             // Setup IsDBNull for nullable fields
-            _mockReader.Setup(r => r.IsDBNull(10)).Returns(false);
-            _mockReader.Setup(r => r.IsDBNull(11)).Returns(false);
+            _mockReader.Setup(reader => reader.IsDBNull(10)).Returns(false);
+            _mockReader.Setup(reader => reader.IsDBNull(11)).Returns(false);
 
             // Setup field values
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(orderSummaryId);
-            _mockReader.Setup(r => r.GetDouble(1)).Returns(Convert.ToDouble(subtotal));
-            _mockReader.Setup(r => r.GetDouble(2)).Returns(Convert.ToDouble(warrantyTax));
-            _mockReader.Setup(r => r.GetDouble(3)).Returns(Convert.ToDouble(deliveryFee));
-            _mockReader.Setup(r => r.GetDouble(4)).Returns(Convert.ToDouble(finalTotal));
-            _mockReader.Setup(r => r.GetString(5)).Returns(fullName);
-            _mockReader.Setup(r => r.GetString(6)).Returns(email);
-            _mockReader.Setup(r => r.GetString(7)).Returns(phoneNumber);
-            _mockReader.Setup(r => r.GetString(8)).Returns(address);
-            _mockReader.Setup(r => r.GetString(9)).Returns(postalCode);
-            _mockReader.Setup(r => r.GetString(10)).Returns(additionalInfo);
-            _mockReader.Setup(r => r.GetString(11)).Returns(contractDetails);
+            _mockReader.Setup(reader => reader.GetInt32(0)).Returns(orderSummaryId);
+            _mockReader.Setup(reader => reader.GetDouble(1)).Returns(Convert.ToDouble(subtotal));
+            _mockReader.Setup(reader => reader.GetDouble(2)).Returns(Convert.ToDouble(warrantyTax));
+            _mockReader.Setup(reader => reader.GetDouble(3)).Returns(Convert.ToDouble(deliveryFee));
+            _mockReader.Setup(reader => reader.GetDouble(4)).Returns(Convert.ToDouble(finalTotal));
+            _mockReader.Setup(reader => reader.GetString(5)).Returns(fullName);
+            _mockReader.Setup(reader => reader.GetString(6)).Returns(email);
+            _mockReader.Setup(reader => reader.GetString(7)).Returns(phoneNumber);
+            _mockReader.Setup(reader => reader.GetString(8)).Returns(address);
+            _mockReader.Setup(reader => reader.GetString(9)).Returns(postalCode);
+            _mockReader.Setup(reader => reader.GetString(10)).Returns(additionalInfo);
+            _mockReader.Setup(reader => reader.GetString(11)).Returns(contractDetails);
 
             // Setup command to return reader
             _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
@@ -164,7 +164,7 @@ namespace ArtAttack.Tests.ViewModel
             int nonExistentOrderSummaryId = 999;
 
             // Setup Read returns no results
-            _mockReader.Setup(r => r.Read()).Returns(false);
+            _mockReader.Setup(reader => reader.Read()).Returns(false);
             _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
@@ -181,43 +181,43 @@ namespace ArtAttack.Tests.ViewModel
             string searchText = "test";
 
             // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductName")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("ProductTypeName")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(6);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderID")).Returns(0);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductName")).Returns(1);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductType")).Returns(2);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductTypeName")).Returns(3);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderDate")).Returns(4);
+            _mockReader.Setup(reader => reader.GetOrdinal("PaymentMethod")).Returns(5);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderSummaryID")).Returns(6);
 
             DateTime orderDate = new DateTime(2023, 10, 10);
 
             // Setup mock reader with sequential reads
             int readCount = 0;
-            _mockReader.Setup(r => r.Read())
+            _mockReader.Setup(reader => reader.Read())
                 .Returns(() => {
                     return readCount++ < 2; // Return true for first 2 calls, then false
                 });
 
             // First product
-            _mockReader.Setup(r => r.GetInt32(0))
+            _mockReader.Setup(reader => reader.GetInt32(0))
                 .Returns(() => readCount == 1 ? 101 : 102);
 
-            _mockReader.Setup(r => r.GetString(1))
+            _mockReader.Setup(reader => reader.GetString(1))
                 .Returns(() => readCount == 1 ? "Test Product 1" : "Test Product 2");
 
-            _mockReader.Setup(r => r.GetInt32(2))
+            _mockReader.Setup(reader => reader.GetInt32(2))
                 .Returns(() => readCount == 1 ? 1 : 2);
 
-            _mockReader.Setup(r => r.GetString(3))
+            _mockReader.Setup(reader => reader.GetString(3))
                 .Returns(() => readCount == 1 ? "new" : "borrowed");
 
-            _mockReader.Setup(r => r.GetDateTime(4))
+            _mockReader.Setup(reader => reader.GetDateTime(4))
                 .Returns(() => readCount == 1 ? orderDate : orderDate.AddDays(-1));
 
-            _mockReader.Setup(r => r.GetString(5))
+            _mockReader.Setup(reader => reader.GetString(5))
                 .Returns(() => readCount == 1 ? "Credit Card" : "PayPal");
 
-            _mockReader.Setup(r => r.GetInt32(6))
+            _mockReader.Setup(reader => reader.GetInt32(6))
                 .Returns(() => readCount == 1 ? 201 : 202);
 
             _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
@@ -264,18 +264,18 @@ namespace ArtAttack.Tests.ViewModel
             int userId = 42;
 
             // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("productType")).Returns(1);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderSummaryID")).Returns(0);
+            _mockReader.Setup(reader => reader.GetOrdinal("productType")).Returns(1);
 
             // Setup sequential reads with counter
             int readCount = 0;
-            _mockReader.Setup(r => r.Read())
+            _mockReader.Setup(reader => reader.Read())
                 .Returns(() => {
                     return readCount++ < 3; // Return true for first 3 calls, then false
                 });
 
             // Setup field values based on read count
-            _mockReader.Setup(r => r.GetInt32(0))
+            _mockReader.Setup(reader => reader.GetInt32(0))
                 .Returns(() => {
                     switch (readCount)
                     {
@@ -286,7 +286,7 @@ namespace ArtAttack.Tests.ViewModel
                     }
                 });
 
-            _mockReader.Setup(r => r.GetString(1))
+            _mockReader.Setup(reader => reader.GetString(1))
                 .Returns(() => {
                     switch (readCount)
                     {
@@ -897,26 +897,26 @@ namespace ArtAttack.Tests.ViewModel
             string timePeriod = "Last 3 Months";
 
             // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductName")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("ProductTypeName")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(6);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderID")).Returns(0);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductName")).Returns(1);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductType")).Returns(2);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductTypeName")).Returns(3);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderDate")).Returns(4);
+            _mockReader.Setup(reader => reader.GetOrdinal("PaymentMethod")).Returns(5);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderSummaryID")).Returns(6);
 
             // Setup read results
             int readCount = 0;
-            _mockReader.Setup(r => r.Read()).Returns(() => readCount++ < 1);
+            _mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ < 1);
 
             // Setup field values
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetString(1)).Returns("Test Product");
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(1);
-            _mockReader.Setup(r => r.GetString(3)).Returns("new");
-            _mockReader.Setup(r => r.GetDateTime(4)).Returns(DateTime.Now.AddMonths(-2));
-            _mockReader.Setup(r => r.GetString(5)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetInt32(6)).Returns(201);
+            _mockReader.Setup(reader => reader.GetInt32(0)).Returns(101);
+            _mockReader.Setup(reader => reader.GetString(1)).Returns("Test Product");
+            _mockReader.Setup(reader => reader.GetInt32(2)).Returns(1);
+            _mockReader.Setup(reader => reader.GetString(3)).Returns("new");
+            _mockReader.Setup(reader => reader.GetDateTime(4)).Returns(DateTime.Now.AddMonths(-2));
+            _mockReader.Setup(reader => reader.GetString(5)).Returns("Credit Card");
+            _mockReader.Setup(reader => reader.GetInt32(6)).Returns(201);
 
             // Setup command to return reader
             _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
@@ -947,26 +947,26 @@ namespace ArtAttack.Tests.ViewModel
             string timePeriod = "Last 6 Months";
 
             // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductName")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("ProductTypeName")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(6);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderID")).Returns(0);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductName")).Returns(1);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductType")).Returns(2);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductTypeName")).Returns(3);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderDate")).Returns(4);
+            _mockReader.Setup(reader => reader.GetOrdinal("PaymentMethod")).Returns(5);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderSummaryID")).Returns(6);
 
             // Setup read results
             int readCount = 0;
-            _mockReader.Setup(r => r.Read()).Returns(() => readCount++ < 1);
+            _mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ < 1);
 
             // Setup field values
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetString(1)).Returns("Test Product");
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(1);
-            _mockReader.Setup(r => r.GetString(3)).Returns("new");
-            _mockReader.Setup(r => r.GetDateTime(4)).Returns(DateTime.Now.AddMonths(-4));
-            _mockReader.Setup(r => r.GetString(5)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetInt32(6)).Returns(201);
+            _mockReader.Setup(reader => reader.GetInt32(0)).Returns(101);
+            _mockReader.Setup(reader => reader.GetString(1)).Returns("Test Product");
+            _mockReader.Setup(reader => reader.GetInt32(2)).Returns(1);
+            _mockReader.Setup(reader => reader.GetString(3)).Returns("new");
+            _mockReader.Setup(reader => reader.GetDateTime(4)).Returns(DateTime.Now.AddMonths(-4));
+            _mockReader.Setup(reader => reader.GetString(5)).Returns("Credit Card");
+            _mockReader.Setup(reader => reader.GetInt32(6)).Returns(201);
 
             // Setup command to return reader
             _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
@@ -997,26 +997,26 @@ namespace ArtAttack.Tests.ViewModel
             string timePeriod = "This Year";
 
             // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductName")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("ProductTypeName")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(6);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderID")).Returns(0);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductName")).Returns(1);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductType")).Returns(2);
+            _mockReader.Setup(reader => reader.GetOrdinal("ProductTypeName")).Returns(3);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderDate")).Returns(4);
+            _mockReader.Setup(reader => reader.GetOrdinal("PaymentMethod")).Returns(5);
+            _mockReader.Setup(reader => reader.GetOrdinal("OrderSummaryID")).Returns(6);
 
             // Setup read results
             int readCount = 0;
-            _mockReader.Setup(r => r.Read()).Returns(() => readCount++ < 1);
+            _mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ < 1);
 
             // Setup field values
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetString(1)).Returns("Test Product");
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(1);
-            _mockReader.Setup(r => r.GetString(3)).Returns("new");
-            _mockReader.Setup(r => r.GetDateTime(4)).Returns(new DateTime(DateTime.Now.Year, 1, 15)); // Current year
-            _mockReader.Setup(r => r.GetString(5)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetInt32(6)).Returns(201);
+            _mockReader.Setup(reader => reader.GetInt32(0)).Returns(101);
+            _mockReader.Setup(reader => reader.GetString(1)).Returns("Test Product");
+            _mockReader.Setup(reader => reader.GetInt32(2)).Returns(1);
+            _mockReader.Setup(reader => reader.GetString(3)).Returns("new");
+            _mockReader.Setup(reader => reader.GetDateTime(4)).Returns(new DateTime(DateTime.Now.Year, 1, 15)); // Current year
+            _mockReader.Setup(reader => reader.GetString(5)).Returns("Credit Card");
+            _mockReader.Setup(reader => reader.GetInt32(6)).Returns(201);
 
             // Setup command to return reader
             _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
