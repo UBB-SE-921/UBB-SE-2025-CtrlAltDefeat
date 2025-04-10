@@ -12,54 +12,73 @@ namespace ArtAttack.Tests.Model
     [TestClass]
     public class DummyCardModelTests
     {
-        private Mock<IDatabaseProvider> _mockDbProvider;
-        private Mock<IDbConnection> _mockConnection;
-        private Mock<IDbCommand> _mockCommand;
-        private Mock<IDataReader> _mockReader;
-        private Mock<IDataParameterCollection> _mockParameters;
-        private Mock<IDbDataParameter> _mockParameter;
-        private DummyCardModel _cardModel;
+        private Mock<IDatabaseProvider> _mockDatabaseProvider;
+        private Mock<IDbConnection> _mockDatabaseConnection;
+        private Mock<IDbCommand> _mockDatabaseCommand;
+        private Mock<IDataReader> _mockDataReader;
+        private Mock<IDataParameterCollection> _mockParameterCollection;
+        private Mock<IDbDataParameter> _mockDatabaseParameter;
+        private DummyCardModel _dummyCardModel;
         private string _testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
+
+        // Constants for database column indices
+        private const int ColumnIndex_Balance = 0;
+
+        // Constants for stored procedure names
+        private const string StoredProcedure_DeleteCard = "DeleteCard";
+        private const string StoredProcedure_UpdateCardBalance = "UpdateCardBalance";
+        private const string StoredProcedure_GetBalance = "GetBalance";
+
+        // Constants for parameter names
+        private const string ParameterName_CardNumber = "@cardnumber";
+        private const string ParameterName_CompactCardNumber = "@cnumber";
+        private const string ParameterName_Balance = "@balance";
+
+        // Constants for test values
+        private const string TestCardNumber = "1234-5678-9012-3456";
+        private const float TestCardBalance = 500.50f;
+        private const double TestCardBalanceDouble = 500.50;
+        private const float NoCardFoundValue = -1f;
 
         [TestInitialize]
         public void Setup()
         {
             // Initialize mocks
-            _mockDbProvider = new Mock<IDatabaseProvider>();
-            _mockConnection = new Mock<IDbConnection>();
-            _mockCommand = new Mock<IDbCommand>();
-            _mockReader = new Mock<IDataReader>();
-            _mockParameters = new Mock<IDataParameterCollection>();
-            _mockParameter = new Mock<IDbDataParameter>();
+            _mockDatabaseProvider = new Mock<IDatabaseProvider>();
+            _mockDatabaseConnection = new Mock<IDbConnection>();
+            _mockDatabaseCommand = new Mock<IDbCommand>();
+            _mockDataReader = new Mock<IDataReader>();
+            _mockParameterCollection = new Mock<IDataParameterCollection>();
+            _mockDatabaseParameter = new Mock<IDbDataParameter>();
 
             // Setup parameter collection
-            _mockParameters.Setup(p => p.Add(It.IsAny<object>())).Returns(0);
+            _mockParameterCollection.Setup(Database_parameters => Database_parameters.Add(It.IsAny<object>())).Returns(0);
 
             // Setup command
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(_mockParameter.Object);
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
+            _mockDatabaseCommand.Setup(Database_command => Database_command.CreateParameter()).Returns(_mockDatabaseParameter.Object);
+            _mockDatabaseCommand.Setup(Database_command => Database_command.Parameters).Returns(_mockParameterCollection.Object);
 
             // Setup connection
-            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
-            _mockDbProvider.Setup(p => p.CreateConnection(_testConnectionString)).Returns(_mockConnection.Object);
+            _mockDatabaseConnection.Setup(Database_connection => Database_connection.CreateCommand()).Returns(_mockDatabaseCommand.Object);
+            _mockDatabaseProvider.Setup(Database_provider => Database_provider.CreateConnection(_testConnectionString)).Returns(_mockDatabaseConnection.Object);
 
             // Create the model with mocked provider
-            _cardModel = new DummyCardModel(_testConnectionString, _mockDbProvider.Object);
+            _dummyCardModel = new DummyCardModel(_testConnectionString, _mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionString_InitializesCorrectly()
         {
             // Arrange & Act
-            var model = new DummyCardModel(_testConnectionString, _mockDbProvider.Object);
+            var cardModel = new DummyCardModel(_testConnectionString, _mockDatabaseProvider.Object);
 
             // Assert - using reflection to access private field
-            var field = typeof(DummyCardModel).GetField("connectionString",
+            var connectionStringField = typeof(DummyCardModel).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var value = field.GetValue(model);
+            var connectionStringValue = connectionStringField.GetValue(cardModel);
 
-            Assert.IsNotNull(value);
-            Assert.AreEqual(_testConnectionString, value);
+            Assert.IsNotNull(connectionStringValue);
+            Assert.AreEqual(_testConnectionString, connectionStringValue);
         }
 
         [TestMethod]
@@ -67,7 +86,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var model = new DummyCardModel(null, _mockDbProvider.Object);
+            var cardModel = new DummyCardModel(null, _mockDatabaseProvider.Object);
         }
 
         [TestMethod]
@@ -75,108 +94,107 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var model = new DummyCardModel(_testConnectionString, null);
+            var cardModel = new DummyCardModel(_testConnectionString, null);
         }
 
         [TestMethod]
         public async Task DeleteCardAsync_ExecutesCorrectProcedure()
         {
             // Arrange
-            string cardNumber = "1234-5678-9012-3456";
+            string cardNumber = TestCardNumber;
 
             // Act
-            await _cardModel.DeleteCardAsync(cardNumber);
+            await _dummyCardModel.DeleteCardAsync(cardNumber);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "DeleteCard");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockParameter.VerifySet(p => p.ParameterName = "@cardnumber");
-            _mockParameter.VerifySet(p => p.Value = cardNumber);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_DeleteCard);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CardNumber);
+            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
+            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteNonQuery(), Times.Once);
         }
 
         [TestMethod]
         public async Task UpdateCardBalanceAsync_ExecutesCorrectProcedure()
         {
             // Arrange
-            string cardNumber = "1234-5678-9012-3456";
-            float balance = 500.50f;
-            var capturedParams = new List<(string Name, object Value)>();
+            string cardNumber = TestCardNumber;
+            float cardBalance = TestCardBalance;
+            var capturedParameters = new List<(string Name, object Value)>();
 
             // Setup parameter capture
-            _mockParameter.SetupSet(p => p.ParameterName = It.IsAny<string>())
-                .Callback<string>(name => capturedParams.Add((name, null)));
-            _mockParameter.SetupSet(p => p.Value = It.IsAny<object>())
-                .Callback<object>(val => capturedParams[capturedParams.Count - 1] =
-                    (capturedParams[capturedParams.Count - 1].Name, val));
+            _mockDatabaseParameter.SetupSet(Database_parameter => Database_parameter.ParameterName = It.IsAny<string>())
+                .Callback<string>(name => capturedParameters.Add((name, null)));
+            _mockDatabaseParameter.SetupSet(Database_parameter => Database_parameter.Value = It.IsAny<object>())
+                .Callback<object>(value => capturedParameters[capturedParameters.Count - 1] =
+                    (capturedParameters[capturedParameters.Count - 1].Name, value));
 
             // Act
-            await _cardModel.UpdateCardBalanceAsync(cardNumber, balance);
+            await _dummyCardModel.UpdateCardBalanceAsync(cardNumber, cardBalance);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "UpdateCardBalance");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_UpdateCardBalance);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteNonQuery(), Times.Once);
 
             // Check parameters
-            Assert.AreEqual(2, capturedParams.Count);
-            Assert.AreEqual("@cnumber", capturedParams[0].Name);
-            Assert.AreEqual(cardNumber, capturedParams[0].Value);
-            Assert.AreEqual("@balance", capturedParams[1].Name);
-            Assert.AreEqual(balance, capturedParams[1].Value);
+            int expectedParameterCount = 2;
+            Assert.AreEqual(expectedParameterCount, capturedParameters.Count);
+            Assert.AreEqual(ParameterName_CompactCardNumber, capturedParameters[0].Name);
+            Assert.AreEqual(cardNumber, capturedParameters[0].Value);
+            Assert.AreEqual(ParameterName_Balance, capturedParameters[1].Name);
+            Assert.AreEqual(cardBalance, capturedParameters[1].Value);
         }
 
         [TestMethod]
         public async Task GetCardBalanceAsync_ReturnsCorrectBalance()
         {
             // Arrange
-            string cardNumber = "1234-5678-9012-3456";
-            double expectedBalance = 500.50;
+            string cardNumber = TestCardNumber;
+            double expectedBalance = TestCardBalanceDouble;
 
             // Setup reader
-            _mockReader.Setup(r => r.Read()).Returns(true);
-            _mockReader.Setup(r => r.GetOrdinal("balance")).Returns(0);
-            _mockReader.Setup(r => r.GetDouble(0)).Returns(expectedBalance);
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockDataReader.Setup(Database_reader => Database_reader.Read()).Returns(true);
+            _mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("balance")).Returns(ColumnIndex_Balance);
+            _mockDataReader.Setup(Database_reader => Database_reader.GetDouble(ColumnIndex_Balance)).Returns(expectedBalance);
+            _mockDatabaseCommand.Setup(Database_command => Database_command.ExecuteReader()).Returns(_mockDataReader.Object);
 
             // Act
-            float result = await _cardModel.GetCardBalanceAsync(cardNumber);
+            float actualBalance = await _dummyCardModel.GetCardBalanceAsync(cardNumber);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "GetBalance");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockParameter.VerifySet(p => p.ParameterName = "@cnumber");
-            _mockParameter.VerifySet(p => p.Value = cardNumber);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            Assert.AreEqual((float)expectedBalance, result);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_GetBalance);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CompactCardNumber);
+            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
+            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteReader(), Times.Once);
+            Assert.AreEqual((float)expectedBalance, actualBalance);
         }
 
         [TestMethod]
         public async Task GetCardBalanceAsync_ReturnsNegativeOne_WhenCardNotFound()
         {
             // Arrange
-            string cardNumber = "1234-5678-9012-3456";
+            string cardNumber = TestCardNumber;
 
             // Setup reader to return no results
-            _mockReader.Setup(r => r.Read()).Returns(false);
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockDataReader.Setup(Database_reader => Database_reader.Read()).Returns(false);
+            _mockDatabaseCommand.Setup(Database_command => Database_command.ExecuteReader()).Returns(_mockDataReader.Object);
 
             // Act
-            float result = await _cardModel.GetCardBalanceAsync(cardNumber);
+            float actualBalance = await _dummyCardModel.GetCardBalanceAsync(cardNumber);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "GetBalance");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockParameter.VerifySet(p => p.ParameterName = "@cnumber");
-            _mockParameter.VerifySet(p => p.Value = cardNumber);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            Assert.AreEqual(-1f, result);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_GetBalance);
+            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CompactCardNumber);
+            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
+            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteReader(), Times.Once);
+            Assert.AreEqual(NoCardFoundValue, actualBalance);
         }
-
-
     }
 }

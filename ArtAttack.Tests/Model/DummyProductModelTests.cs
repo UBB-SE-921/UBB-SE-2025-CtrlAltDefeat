@@ -14,65 +14,101 @@ namespace ArtAttack.Tests.Model
     [TestClass]
     public class DummyProductModelTests
     {
-        private Mock<IDatabaseProvider> _mockDbProvider;
-        private Mock<IDbConnection> _mockConnection;
-        private Mock<IDbCommand> _mockCommand;
-        private Mock<IDataReader> _mockReader;
-        private Mock<IDataParameterCollection> _mockParameters;
-        private Mock<IDbDataParameter> _mockParameter;
-        private DummyProductModel _productModel;
-        private readonly string _testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
+        // Column names for data reader
+        private const string COLUMN_ID = "ID";
+        private const string COLUMN_NAME = "Name";
+        private const string COLUMN_PRICE = "Price";
+        private const string COLUMN_SELLER_ID = "SellerID";
+        private const string COLUMN_PRODUCT_TYPE = "ProductType";
+        private const string COLUMN_START_DATE = "StartDate";
+        private const string COLUMN_END_DATE = "EndDate";
+
+        // Stored procedure names
+        private const string PROC_ADD_DUMMY_PRODUCT = "AddDummyProduct";
+        private const string PROC_UPDATE_DUMMY_PRODUCT = "UpdateDummyProduct";
+        private const string PROC_DELETE_DUMMY_PRODUCT = "DeleteDummyProduct";
+        private const string PROC_GET_SELLER_BY_ID = "GetSellerById";
+        private const string PROC_GET_DUMMY_PRODUCT_BY_ID = "GetDummyProductByID";
+
+        // Parameter names
+        private const string PARAM_ID = "@ID";
+        private const string PARAM_NAME = "@Name";
+        private const string PARAM_PRICE = "@Price";
+        private const string PARAM_SELLER_ID = "@SellerID";
+        private const string PARAM_PRODUCT_TYPE = "@ProductType";
+        private const string PARAM_START_DATE = "@StartDate";
+        private const string PARAM_END_DATE = "@EndDate";
+        private const string PARAM_PRODUCT_ID = "@productID";
+
+        // Test data
+        private const int TEST_PRODUCT_ID = 42;
+        private const int TEST_SELLER_ID = 1;
+        private const string TEST_PRODUCT_NAME = "Test Product";
+        private const string TEST_PRODUCT_TYPE = "Test Type";
+        private const double TEST_PRODUCT_PRICE = 99.99;
+        private const string TEST_SELLER_NAME = "Test Seller";
+        private const int TEST_UPDATED_SELLER_ID = 2;
+        private const string TEST_UPDATED_PRODUCT_NAME = "Updated Product";
+        private const string TEST_UPDATED_PRODUCT_TYPE = "Updated Type";
+        private const double TEST_UPDATED_PRODUCT_PRICE = 149.99;
+
+        private Mock<IDatabaseProvider> _mockDatabase_Provider;
+        private Mock<IDbConnection> _mockDatabase_Connection;
+        private Mock<IDbCommand> _mockDatabase_Command;
+        private Mock<IDataReader> _mockDatabase_Reader;
+        private Mock<IDataParameterCollection> _mockDatabase_ParameterCollection;
+        private Mock<IDbDataParameter> _mockDatabase_Parameter;
+        private DummyProductModel _dummyProductModel;
+        private readonly string _testDatabase_ConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         [TestInitialize]
         public void Setup()
         {
             // Initialize mocks
-            _mockDbProvider = new Mock<IDatabaseProvider>();
-            _mockConnection = new Mock<IDbConnection>();
-            _mockCommand = new Mock<IDbCommand>();
-            _mockReader = new Mock<IDataReader>();
-            _mockParameters = new Mock<IDataParameterCollection>();
-            _mockParameter = new Mock<IDbDataParameter>();
+            _mockDatabase_Provider = new Mock<IDatabaseProvider>();
+            _mockDatabase_Connection = new Mock<IDbConnection>();
+            _mockDatabase_Command = new Mock<IDbCommand>();
+            _mockDatabase_Reader = new Mock<IDataReader>();
+            _mockDatabase_ParameterCollection = new Mock<IDataParameterCollection>();
+            _mockDatabase_Parameter = new Mock<IDbDataParameter>();
 
             // Setup parameter collection
-            _mockParameters.Setup(p => p.Add(It.IsAny<object>())).Returns(0);
+            _mockDatabase_ParameterCollection.Setup(Database_Parameters => Database_Parameters.Add(It.IsAny<object>())).Returns(0);
 
             // Setup command
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(_mockParameter.Object);
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockDatabase_Command.Setup(Database_Command => Database_Command.CreateParameter()).Returns(_mockDatabase_Parameter.Object);
+            _mockDatabase_Command.Setup(Database_Command => Database_Command.Parameters).Returns(_mockDatabase_ParameterCollection.Object);
+            _mockDatabase_Command.Setup(Database_Command => Database_Command.ExecuteReader()).Returns(_mockDatabase_Reader.Object);
 
             // Setup connection
-            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
-            _mockDbProvider.Setup(p => p.CreateConnection(_testConnectionString)).Returns(_mockConnection.Object);
+            _mockDatabase_Connection.Setup(Database_Connection => Database_Connection.CreateCommand()).Returns(_mockDatabase_Command.Object);
+            _mockDatabase_Provider.Setup(Database_Provider => Database_Provider.CreateConnection(_testDatabase_ConnectionString)).Returns(_mockDatabase_Connection.Object);
 
             // Create the model with mocked provider
-            _productModel = new DummyProductModel(_testConnectionString, _mockDbProvider.Object);
+            _dummyProductModel = new DummyProductModel(_testDatabase_ConnectionString, _mockDatabase_Provider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionString_InitializesCorrectly()
         {
             // Arrange & Act
-            var model = new DummyProductModel(_testConnectionString, _mockDbProvider.Object);
+            var productModel = new DummyProductModel(_testDatabase_ConnectionString, _mockDatabase_Provider.Object);
 
             // Assert - using reflection to access private field
-            var field = typeof(DummyProductModel).GetField("connectionString",
+            var Database_ConnectionStringField = typeof(DummyProductModel).GetField("connectionString",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            var value = field.GetValue(model);
+            var actualDatabase_ConnectionString = Database_ConnectionStringField.GetValue(productModel);
 
-            Assert.IsNotNull(value);
-            Assert.AreEqual(_testConnectionString, value);
+            Assert.IsNotNull(actualDatabase_ConnectionString);
+            Assert.AreEqual(_testDatabase_ConnectionString, actualDatabase_ConnectionString);
         }
-
-        
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var model = new DummyProductModel(null, _mockDbProvider.Object);
+            var productModel = new DummyProductModel(null, _mockDatabase_Provider.Object);
         }
 
         [TestMethod]
@@ -80,173 +116,161 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var model = new DummyProductModel(_testConnectionString, null);
+            var productModel = new DummyProductModel(_testDatabase_ConnectionString, null);
         }
-
 
         [TestMethod]
         public void Constructor_WithOnlyConnectionString_InitializesWithSqlDatabaseProvider()
         {
-            // We can't directly test the SqlDatabaseProvider instantiation in the constructor
-            // Mark the test inconclusive with an explanation
-            //Assert.Inconclusive(
-            //    "This test can't be directly implemented without using a derived test class. " +
-            //    "The constructor that takes only a connection string creates a real SqlDatabaseProvider, " +
-            //    "which would attempt to establish a real database connection during testing.");
-
-            // Alternative: Verify just the connection string is set correctly
-            
             // Create a mock provider to avoid real database connections
-            var mockProvider = new Mock<IDatabaseProvider>();
-            mockProvider.Setup(p => p.CreateConnection(It.IsAny<string>()))
-                .Returns(_mockConnection.Object);
-                
+            var mockDatabase_Provider = new Mock<IDatabaseProvider>();
+            mockDatabase_Provider.Setup(Database_Provider => Database_Provider.CreateConnection(It.IsAny<string>()))
+                .Returns(_mockDatabase_Connection.Object);
+
             // Create with the two-parameter constructor to avoid real connection attempts
-            var model = new DummyProductModel(_testConnectionString, mockProvider.Object);
-            
+            var productModel = new DummyProductModel(_testDatabase_ConnectionString, mockDatabase_Provider.Object);
+
             // Check that connection string was set correctly
-            var field = typeof(DummyProductModel).GetField("connectionString",
+            var Database_ConnectionStringField = typeof(DummyProductModel).GetField("connectionString",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            var value = field.GetValue(model);
-            
-            Assert.IsNotNull(value);
-            Assert.AreEqual(_testConnectionString, value);
-            
+            var actualDatabase_ConnectionString = Database_ConnectionStringField.GetValue(productModel);
+
+            Assert.IsNotNull(actualDatabase_ConnectionString);
+            Assert.AreEqual(_testDatabase_ConnectionString, actualDatabase_ConnectionString);
         }
 
         [TestMethod]
         public async Task AddDummyProductAsync_ExecutesCorrectProcedure()
         {
             // Arrange
-            string name = "Test Product";
-            float price = 99.99f;
-            int sellerId = 1;
-            string productType = "Test Type";
+            string productName = TEST_PRODUCT_NAME;
+            float productPrice = (float)TEST_PRODUCT_PRICE;
+            int sellerId = TEST_SELLER_ID;
+            string productType = TEST_PRODUCT_TYPE;
             DateTime startDate = new DateTime(2023, 1, 1);
             DateTime endDate = new DateTime(2023, 12, 31);
 
             // Act
-            await _productModel.AddDummyProductAsync(name, price, sellerId, productType, startDate, endDate);
+            await _dummyProductModel.AddDummyProductAsync(productName, productPrice, sellerId, productType, startDate, endDate);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddDummyProduct");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandText = PROC_ADD_DUMMY_PRODUCT);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandType = CommandType.StoredProcedure);
+            _mockDatabase_Connection.Verify(Database_Connection => Database_Connection.Open(), Times.Once);
+            _mockDatabase_Command.Verify(Database_Command => Database_Command.ExecuteNonQuery(), Times.Once);
 
             // Verify parameters
-            VerifyParameterAdded("@Name", name);
-            VerifyParameterAdded("@Price", price);
-            VerifyParameterAdded("@SellerID", sellerId);
-            VerifyParameterAdded("@ProductType", productType);
-            VerifyParameterAdded("@StartDate", startDate);
-            VerifyParameterAdded("@EndDate", endDate);
+            VerifyParameterAdded(PARAM_NAME, productName);
+            VerifyParameterAdded(PARAM_PRICE, productPrice);
+            VerifyParameterAdded(PARAM_SELLER_ID, sellerId);
+            VerifyParameterAdded(PARAM_PRODUCT_TYPE, productType);
+            VerifyParameterAdded(PARAM_START_DATE, startDate);
+            VerifyParameterAdded(PARAM_END_DATE, endDate);
         }
 
         [TestMethod]
         public async Task AddDummyProductAsyncWithNullName_ExecutesCorrectProcedure()
         {
             // Arrange
-            string name = null;
-            float price = 99.99f;
-            int sellerId = 1;
-            string productType = "Test Type";
+            string productName = null;
+            float productPrice = (float)TEST_PRODUCT_PRICE;
+            int sellerId = TEST_SELLER_ID;
+            string productType = TEST_PRODUCT_TYPE;
             DateTime startDate = new DateTime(2023, 1, 1);
             DateTime endDate = new DateTime(2023, 12, 31);
 
             // Act
-            await _productModel.AddDummyProductAsync(name, price, sellerId, productType, startDate, endDate);
+            await _dummyProductModel.AddDummyProductAsync(productName, productPrice, sellerId, productType, startDate, endDate);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "AddDummyProduct");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandText = PROC_ADD_DUMMY_PRODUCT);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandType = CommandType.StoredProcedure);
+            _mockDatabase_Connection.Verify(Database_Connection => Database_Connection.Open(), Times.Once);
+            _mockDatabase_Command.Verify(Database_Command => Database_Command.ExecuteNonQuery(), Times.Once);
 
             // Verify parameters
-            VerifyParameterAdded("@Name", DBNull.Value);
-            VerifyParameterAdded("@Price", price);
-            VerifyParameterAdded("@SellerID", sellerId);
-            VerifyParameterAdded("@ProductType", productType);
-            VerifyParameterAdded("@StartDate", startDate);
-            VerifyParameterAdded("@EndDate", endDate);
+            VerifyParameterAdded(PARAM_NAME, DBNull.Value);
+            VerifyParameterAdded(PARAM_PRICE, productPrice);
+            VerifyParameterAdded(PARAM_SELLER_ID, sellerId);
+            VerifyParameterAdded(PARAM_PRODUCT_TYPE, productType);
+            VerifyParameterAdded(PARAM_START_DATE, startDate);
+            VerifyParameterAdded(PARAM_END_DATE, endDate);
         }
-
-      
 
         [TestMethod]
         public async Task UpdateDummyProductAsync_ExecutesCorrectProcedure()
         {
             // Arrange
-            int id = 42;
-            string name = "Updated Product";
-            float price = 149.99f;
-            int sellerId = 2;
-            string productType = "Updated Type";
-            DateTime startDate = new DateTime(2023, 2, 1);
-            DateTime endDate = new DateTime(2024, 1, 31);
+            int productId = TEST_PRODUCT_ID;
+            string updatedProductName = TEST_UPDATED_PRODUCT_NAME;
+            float updatedProductPrice = (float)TEST_UPDATED_PRODUCT_PRICE;
+            int updatedSellerId = TEST_UPDATED_SELLER_ID;
+            string updatedProductType = TEST_UPDATED_PRODUCT_TYPE;
+            DateTime updatedStartDate = new DateTime(2023, 2, 1);
+            DateTime updatedEndDate = new DateTime(2024, 1, 31);
 
             // Act
-            await _productModel.UpdateDummyProductAsync(id, name, price, sellerId, productType, startDate, endDate);
+            await _dummyProductModel.UpdateDummyProductAsync(productId, updatedProductName, updatedProductPrice,
+                updatedSellerId, updatedProductType, updatedStartDate, updatedEndDate);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "UpdateDummyProduct");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandText = PROC_UPDATE_DUMMY_PRODUCT);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandType = CommandType.StoredProcedure);
+            _mockDatabase_Connection.Verify(Database_Connection => Database_Connection.Open(), Times.Once);
+            _mockDatabase_Command.Verify(Database_Command => Database_Command.ExecuteNonQuery(), Times.Once);
 
             // Verify parameters
-            VerifyParameterAdded("@ID", id);
-            VerifyParameterAdded("@Name", name);
-            VerifyParameterAdded("@Price", price);
-            VerifyParameterAdded("@SellerID", sellerId);
-            VerifyParameterAdded("@ProductType", productType);
-            VerifyParameterAdded("@StartDate", startDate);
-            VerifyParameterAdded("@EndDate", endDate);
+            VerifyParameterAdded(PARAM_ID, productId);
+            VerifyParameterAdded(PARAM_NAME, updatedProductName);
+            VerifyParameterAdded(PARAM_PRICE, updatedProductPrice);
+            VerifyParameterAdded(PARAM_SELLER_ID, updatedSellerId);
+            VerifyParameterAdded(PARAM_PRODUCT_TYPE, updatedProductType);
+            VerifyParameterAdded(PARAM_START_DATE, updatedStartDate);
+            VerifyParameterAdded(PARAM_END_DATE, updatedEndDate);
         }
 
         [TestMethod]
         public async Task DeleteDummyProduct_ExecutesCorrectProcedure()
         {
             // Arrange
-            int id = 42;
+            int productId = TEST_PRODUCT_ID;
 
             // Act
-            await _productModel.DeleteDummyProduct(id);
+            await _dummyProductModel.DeleteDummyProduct(productId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "DeleteDummyProduct");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandText = PROC_DELETE_DUMMY_PRODUCT);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandType = CommandType.StoredProcedure);
+            _mockDatabase_Connection.Verify(Database_Connection => Database_Connection.Open(), Times.Once);
+            _mockDatabase_Command.Verify(Database_Command => Database_Command.ExecuteNonQuery(), Times.Once);
 
             // Verify parameters
-            VerifyParameterAdded("@ID", id);
+            VerifyParameterAdded(PARAM_ID, productId);
         }
 
         [TestMethod]
         public async Task GetSellerNameAsync_WithValidSellerId_ReturnsName()
         {
             // Arrange
-            int? sellerId = 42;
-            string expectedName = "Test Seller";
+            int? sellerId = TEST_SELLER_ID;
+            string expectedSellerName = TEST_SELLER_NAME;
 
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(expectedName);
+            _mockDatabase_Command.Setup(Database_Command => Database_Command.ExecuteScalar()).Returns(expectedSellerName);
 
             // Act
-            var result = await _productModel.GetSellerNameAsync(sellerId);
+            var actualSellerName = await _dummyProductModel.GetSellerNameAsync(sellerId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "GetSellerById");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteScalar(), Times.Once);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandText = PROC_GET_SELLER_BY_ID);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandType = CommandType.StoredProcedure);
+            _mockDatabase_Connection.Verify(Database_Connection => Database_Connection.Open(), Times.Once);
+            _mockDatabase_Command.Verify(Database_Command => Database_Command.ExecuteScalar(), Times.Once);
 
             // Verify parameters
-            VerifyParameterAdded("@SellerID", sellerId.Value);
+            VerifyParameterAdded(PARAM_SELLER_ID, sellerId.Value);
 
             // Verify result
-            Assert.AreEqual(expectedName, result);
+            Assert.AreEqual(expectedSellerName, actualSellerName);
         }
 
         [TestMethod]
@@ -256,131 +280,151 @@ namespace ArtAttack.Tests.Model
             int? sellerId = null;
 
             // Act
-            await _productModel.GetSellerNameAsync(sellerId);
+            await _dummyProductModel.GetSellerNameAsync(sellerId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "GetSellerById");
-            _mockParameter.VerifySet(p => p.Value = DBNull.Value);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandText = PROC_GET_SELLER_BY_ID);
+            _mockDatabase_Parameter.VerifySet(Database_Parameter => Database_Parameter.Value = DBNull.Value);
         }
 
         [TestMethod]
         public async Task GetSellerNameAsync_WithNullResult_ReturnsNull()
         {
             // Arrange
-            int? sellerId = 42;
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(null);
+            int? sellerId = TEST_SELLER_ID;
+            _mockDatabase_Command.Setup(Database_Command => Database_Command.ExecuteScalar()).Returns(null);
 
             // Act
-            var result = await _productModel.GetSellerNameAsync(sellerId);
+            var sellerName = await _dummyProductModel.GetSellerNameAsync(sellerId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.IsNull(sellerName);
         }
 
         [TestMethod]
         public async Task GetDummyProductByIdAsync_WithValidProduct_ReturnsProduct()
         {
             // Arrange
-            int productId = 42;
+            int productId = TEST_PRODUCT_ID;
             DateTime startDate = new DateTime(2023, 1, 1);
             DateTime endDate = new DateTime(2023, 12, 31);
 
-            // Setup reader
-            _mockReader.Setup(r => r.Read()).Returns(true);
-            _mockReader.Setup(r => r.GetOrdinal("ID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("Name")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("Price")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("SellerID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("StartDate")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("EndDate")).Returns(6);
+            // Column indices
+            const int INDEX_ID = 0;
+            const int INDEX_NAME = 1;
+            const int INDEX_PRICE = 2;
+            const int INDEX_SELLER_ID = 3;
+            const int INDEX_PRODUCT_TYPE = 4;
+            const int INDEX_START_DATE = 5;
+            const int INDEX_END_DATE = 6;
 
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(productId);
-            _mockReader.Setup(r => r.GetString(1)).Returns("Test Product");
-            _mockReader.Setup(r => r.GetDouble(2)).Returns(99.99);
-            _mockReader.Setup(r => r.IsDBNull(3)).Returns(false);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(1);
-            _mockReader.Setup(r => r.GetString(4)).Returns("Test Type");
-            _mockReader.Setup(r => r.IsDBNull(5)).Returns(false);
-            _mockReader.Setup(r => r.GetDateTime(5)).Returns(startDate);
-            _mockReader.Setup(r => r.IsDBNull(6)).Returns(false);
-            _mockReader.Setup(r => r.GetDateTime(6)).Returns(endDate);
+            // Setup reader column ordinals
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_ID)).Returns(INDEX_ID);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_NAME)).Returns(INDEX_NAME);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_PRICE)).Returns(INDEX_PRICE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_SELLER_ID)).Returns(INDEX_SELLER_ID);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_PRODUCT_TYPE)).Returns(INDEX_PRODUCT_TYPE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_START_DATE)).Returns(INDEX_START_DATE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_END_DATE)).Returns(INDEX_END_DATE);
+
+            // Setup reader data
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.Read()).Returns(true);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetInt32(INDEX_ID)).Returns(productId);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetString(INDEX_NAME)).Returns(TEST_PRODUCT_NAME);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetDouble(INDEX_PRICE)).Returns(TEST_PRODUCT_PRICE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.IsDBNull(INDEX_SELLER_ID)).Returns(false);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetInt32(INDEX_SELLER_ID)).Returns(TEST_SELLER_ID);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetString(INDEX_PRODUCT_TYPE)).Returns(TEST_PRODUCT_TYPE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.IsDBNull(INDEX_START_DATE)).Returns(false);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetDateTime(INDEX_START_DATE)).Returns(startDate);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.IsDBNull(INDEX_END_DATE)).Returns(false);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetDateTime(INDEX_END_DATE)).Returns(endDate);
 
             // Act
-            var result = await _productModel.GetDummyProductByIdAsync(productId);
+            var dummyProduct = await _dummyProductModel.GetDummyProductByIdAsync(productId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandText = "GetDummyProductByID");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandText = PROC_GET_DUMMY_PRODUCT_BY_ID);
+            _mockDatabase_Command.VerifySet(Database_Command => Database_Command.CommandType = CommandType.StoredProcedure);
+            _mockDatabase_Connection.Verify(Database_Connection => Database_Connection.Open(), Times.Once);
+            _mockDatabase_Command.Verify(Database_Command => Database_Command.ExecuteReader(), Times.Once);
 
             // Verify parameters
-            VerifyParameterAdded("@productID", productId);
+            VerifyParameterAdded(PARAM_PRODUCT_ID, productId);
 
             // Verify result
-            Assert.IsNotNull(result);
-            Assert.AreEqual(productId, result.ID);
-            Assert.AreEqual("Test Product", result.Name);
-            Assert.AreEqual(99.99f, result.Price);
-            Assert.AreEqual(1, result.SellerID);
-            Assert.AreEqual("Test Type", result.ProductType);
-            Assert.AreEqual(startDate, result.StartDate);
-            Assert.AreEqual(endDate, result.EndDate);
+            Assert.IsNotNull(dummyProduct);
+            Assert.AreEqual(productId, dummyProduct.ID);
+            Assert.AreEqual(TEST_PRODUCT_NAME, dummyProduct.Name);
+            Assert.AreEqual((float)TEST_PRODUCT_PRICE, dummyProduct.Price);
+            Assert.AreEqual(TEST_SELLER_ID, dummyProduct.SellerID);
+            Assert.AreEqual(TEST_PRODUCT_TYPE, dummyProduct.ProductType);
+            Assert.AreEqual(startDate, dummyProduct.StartDate);
+            Assert.AreEqual(endDate, dummyProduct.EndDate);
         }
 
         [TestMethod]
         public async Task GetDummyProductByIdAsync_WithNullFields_HandlesNullsCorrectly()
         {
             // Arrange
-            int productId = 42;
+            int productId = TEST_PRODUCT_ID;
 
-            // Setup reader
-            _mockReader.Setup(r => r.Read()).Returns(true);
-            _mockReader.Setup(r => r.GetOrdinal("ID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("Name")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("Price")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("SellerID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("StartDate")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("EndDate")).Returns(6);
+            // Column indices
+            const int INDEX_ID = 0;
+            const int INDEX_NAME = 1;
+            const int INDEX_PRICE = 2;
+            const int INDEX_SELLER_ID = 3;
+            const int INDEX_PRODUCT_TYPE = 4;
+            const int INDEX_START_DATE = 5;
+            const int INDEX_END_DATE = 6;
 
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(productId);
-            _mockReader.Setup(r => r.GetString(1)).Returns("Test Product");
-            _mockReader.Setup(r => r.GetDouble(2)).Returns(99.99);
-            _mockReader.Setup(r => r.IsDBNull(3)).Returns(true);
-            _mockReader.Setup(r => r.GetString(4)).Returns("Test Type");
-            _mockReader.Setup(r => r.IsDBNull(5)).Returns(true);
-            _mockReader.Setup(r => r.IsDBNull(6)).Returns(true);
+            // Setup reader column ordinals
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_ID)).Returns(INDEX_ID);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_NAME)).Returns(INDEX_NAME);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_PRICE)).Returns(INDEX_PRICE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_SELLER_ID)).Returns(INDEX_SELLER_ID);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_PRODUCT_TYPE)).Returns(INDEX_PRODUCT_TYPE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_START_DATE)).Returns(INDEX_START_DATE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetOrdinal(COLUMN_END_DATE)).Returns(INDEX_END_DATE);
+
+            // Setup reader data with nulls
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.Read()).Returns(true);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetInt32(INDEX_ID)).Returns(productId);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetString(INDEX_NAME)).Returns(TEST_PRODUCT_NAME);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetDouble(INDEX_PRICE)).Returns(TEST_PRODUCT_PRICE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.IsDBNull(INDEX_SELLER_ID)).Returns(true);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.GetString(INDEX_PRODUCT_TYPE)).Returns(TEST_PRODUCT_TYPE);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.IsDBNull(INDEX_START_DATE)).Returns(true);
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.IsDBNull(INDEX_END_DATE)).Returns(true);
 
             // Act
-            var result = await _productModel.GetDummyProductByIdAsync(productId);
+            var dummyProduct = await _dummyProductModel.GetDummyProductByIdAsync(productId);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsNull(result.SellerID);
-            Assert.IsNull(result.StartDate);
-            Assert.IsNull(result.EndDate);
+            Assert.IsNotNull(dummyProduct);
+            Assert.IsNull(dummyProduct.SellerID);
+            Assert.IsNull(dummyProduct.StartDate);
+            Assert.IsNull(dummyProduct.EndDate);
         }
 
         [TestMethod]
         public async Task GetDummyProductByIdAsync_WithNoProduct_ReturnsNull()
         {
             // Arrange
-            int productId = 42;
-            _mockReader.Setup(r => r.Read()).Returns(false);
+            int productId = TEST_PRODUCT_ID;
+            _mockDatabase_Reader.Setup(Database_Reader => Database_Reader.Read()).Returns(false);
 
             // Act
-            var result = await _productModel.GetDummyProductByIdAsync(productId);
+            var dummyProduct = await _dummyProductModel.GetDummyProductByIdAsync(productId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.IsNull(dummyProduct);
         }
 
-        private void VerifyParameterAdded(string name, object value)
+        private void VerifyParameterAdded(string parameterName, object parameterValue)
         {
-            _mockParameter.VerifySet(p => p.ParameterName = name, Times.AtLeastOnce());
-            _mockParameter.VerifySet(p => p.Value = value, Times.AtLeastOnce());
+            _mockDatabase_Parameter.VerifySet(Database_Parameter => Database_Parameter.ParameterName = parameterName, Times.AtLeastOnce());
+            _mockDatabase_Parameter.VerifySet(Database_Parameter => Database_Parameter.Value = parameterValue, Times.AtLeastOnce());
         }
     }
 }
