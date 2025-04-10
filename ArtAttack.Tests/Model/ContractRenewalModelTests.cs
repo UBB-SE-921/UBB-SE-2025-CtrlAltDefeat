@@ -13,52 +13,62 @@ namespace ArtAttack.Tests.Model
     [TestClass]
     public class ContractRenewalModelTests
     {
-        private Mock<IDatabaseProvider> _mockDbProvider;
-        private Mock<IDbConnection> _mockConnection;
-        private Mock<IDbCommand> _mockCommand;
-        private Mock<IDataReader> _mockReader;
-        private Mock<IDataParameterCollection> _mockParameters;
-        private string _testConnectionString = "TestConnection";
-        private ContractRenewalModel _renewalModel;
+        private Mock<IDatabaseProvider> mockDatabaseProvider;
+        private Mock<IDbConnection> mockDatabaseConnection;
+        private Mock<IDbCommand> mockDatabaseCommand;
+        private Mock<IDataReader> mockDataReader;
+        private Mock<IDataParameterCollection> mockParameterCollection;
+        private string testConnectionString = "TestConnection";
+        private ContractRenewalModel contractRenewalModel;
+
+        // Column indexes for database reader
+        private const int ColumnIndex_ID = 0;
+        private const int ColumnIndex_OrderID = 1;
+        private const int ColumnIndex_ContractStatus = 2;
+        private const int ColumnIndex_ContractContent = 3;
+        private const int ColumnIndex_RenewalCount = 4;
+        private const int ColumnIndex_PredefinedContractID = 5;
+        private const int ColumnIndex_PDFID = 6;
+        private const int ColumnIndex_RenewedFromContractID = 7;
 
         [TestInitialize]
         public void Setup()
         {
             // Initialize mocks
-            _mockDbProvider = new Mock<IDatabaseProvider>();
-            _mockConnection = new Mock<IDbConnection>();
-            _mockCommand = new Mock<IDbCommand>();
-            _mockReader = new Mock<IDataReader>();
-            _mockParameters = new Mock<IDataParameterCollection>();
+            mockDatabaseProvider = new Mock<IDatabaseProvider>();
+            mockDatabaseConnection = new Mock<IDbConnection>();
+            mockDatabaseCommand = new Mock<IDbCommand>();
+            mockDataReader = new Mock<IDataReader>();
+            mockParameterCollection = new Mock<IDataParameterCollection>();
 
             // Setup the parameter collection mock
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<object>()))
+            mockParameterCollection
+                .Setup(parameters => parameters.Add(It.IsAny<object>()))
                 .Returns(0);
 
             // Setup the command mock
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(new Mock<IDbDataParameter>().Object);
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            mockDatabaseCommand.Setup(command => command.CreateParameter()).Returns(new Mock<IDbDataParameter>().Object);
+            mockDatabaseCommand.Setup(command => command.Parameters).Returns(mockParameterCollection.Object);
+            mockDatabaseCommand.Setup(command => command.ExecuteReader()).Returns(mockDataReader.Object);
 
             // Setup the connection mock
-            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
+            mockDatabaseConnection.Setup(Database_connection => Database_connection.CreateCommand()).Returns(mockDatabaseCommand.Object);
 
             // Setup the database provider mock
-            _mockDbProvider.Setup(p => p.CreateConnection(It.IsAny<string>())).Returns(_mockConnection.Object);
+            mockDatabaseProvider.Setup(Database_provider => Database_provider.CreateConnection(It.IsAny<string>())).Returns(mockDatabaseConnection.Object);
 
             // Create the ContractRenewalModel with the mock database provider
-            _renewalModel = new ContractRenewalModel(_testConnectionString, _mockDbProvider.Object);
+            contractRenewalModel = new ContractRenewalModel(testConnectionString, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionStringOnly_InitializesCorrectly()
         {
             // Arrange & Act
-            var model = new ContractRenewalModel(_testConnectionString);
+            var contractRenewalModel = new ContractRenewalModel(testConnectionString);
 
             // Assert
-            Assert.IsNotNull(model);
+            Assert.IsNotNull(contractRenewalModel);
         }
 
         [TestMethod]
@@ -66,7 +76,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
-            _ = new ContractRenewalModel(null, _mockDbProvider.Object);
+            _ = new ContractRenewalModel(null, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
@@ -74,14 +84,14 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
-            _ = new ContractRenewalModel(_testConnectionString, null);
+            _ = new ContractRenewalModel(testConnectionString, null);
         }
 
         [TestMethod]
         public async Task AddRenewedContractAsync_WithValidContract_ExecutesStoredProcedure()
         {
             // Arrange
-            var contract = new Contract
+            var testContract = new Contract
             {
                 OrderID = 123,
                 ContractStatus = "RENEWED",
@@ -91,66 +101,66 @@ namespace ArtAttack.Tests.Model
                 PDFID = 456,
                 RenewedFromContractID = 789
             };
-            byte[] pdfData = new byte[] { 1, 2, 3, 4, 5 };
+            byte[] samplePdfData = new byte[] { 1, 2, 3, 4, 5 };
 
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
+            mockDatabaseCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
             // Act
-            await _renewalModel.AddRenewedContractAsync(contract, pdfData);
+            await contractRenewalModel.AddRenewedContractAsync(testContract, samplePdfData);
 
             // Assert
-            _mockDbProvider.Verify(p => p.CreateConnection(_testConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            mockDatabaseProvider.Verify(provider => provider.CreateConnection(testConnectionString), Times.Once);
+            mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            mockDatabaseCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
         }
 
         [TestMethod]
         public async Task HasContractBeenRenewedAsync_WhenContractHasBeenRenewed_ReturnsTrue()
         {
             // Arrange
-            long contractId = 123;
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(1);
+            long testContractId = 123;
+            mockDatabaseCommand.Setup(command => command.ExecuteScalar()).Returns(1);
 
             // Act
-            bool result = await _renewalModel.HasContractBeenRenewedAsync(contractId);
+            bool hasBeenRenewed = await contractRenewalModel.HasContractBeenRenewedAsync(testContractId);
 
             // Assert
-            Assert.IsTrue(result);
-            _mockDbProvider.Verify(p => p.CreateConnection(_testConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteScalar(), Times.Once);
-            //_mockParameters.Verify(p => p.Add(It.Is<object>(o =>
+            Assert.IsTrue(hasBeenRenewed);
+            mockDatabaseProvider.Verify(provider => provider.CreateConnection(testConnectionString), Times.Once);
+            mockDatabaseConnection.Verify(connection => connection.Open(), Times.Once);
+            mockDatabaseCommand.Verify(command => command.ExecuteScalar(), Times.Once);
+            //_mockParameterCollection.Verify(parameters => parameters.Add(It.Is<object>(o =>
             //    o is IDataParameter param &&
             //    param.ParameterName == "@ContractID" &&
-            //    (long)param.Value == contractId)), Times.Once);
+            //    (long)param.Value == testContractId)), Times.Once);
         }
 
         [TestMethod]
         public async Task HasContractBeenRenewedAsync_WhenContractHasNotBeenRenewed_ReturnsFalse()
         {
             // Arrange
-            long contractId = 456;
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(0);
+            long testContractId = 456;
+            mockDatabaseCommand.Setup(command => command.ExecuteScalar()).Returns(0);
 
             // Act
-            bool result = await _renewalModel.HasContractBeenRenewedAsync(contractId);
+            bool hasBeenRenewed = await contractRenewalModel.HasContractBeenRenewedAsync(testContractId);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.IsFalse(hasBeenRenewed);
         }
 
         [TestMethod]
         public async Task HasContractBeenRenewedAsync_WhenScalarReturnsNull_ReturnsFalse()
         {
             // Arrange
-            long contractId = 456;
-            _mockCommand.Setup(c => c.ExecuteScalar()).Returns(null);
+            long testContractId = 456;
+            mockDatabaseCommand.Setup(command => command.ExecuteScalar()).Returns(null);
 
             // Act
-            bool result = await _renewalModel.HasContractBeenRenewedAsync(contractId);
+            bool hasBeenRenewed = await contractRenewalModel.HasContractBeenRenewedAsync(testContractId);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.IsFalse(hasBeenRenewed);
         }
 
         [TestMethod]
@@ -160,48 +170,48 @@ namespace ArtAttack.Tests.Model
             SetupReaderWithContractColumns();
 
             // Setup to track which read call we're on
-            int readCount = 0;
-            _mockReader.Setup(r => r.Read()).Returns(() => readCount++ < 2); // Return 2 contracts
+            int contractReadCount = 0;
+            mockDataReader.Setup(reader => reader.Read()).Returns(() => contractReadCount++ < 2); // Return 2 contracts
 
             // Store expected values in arrays for consistent access
-            long[] contractIds = new long[] { 101, 102 };
-            int[] orderIds = new int[] { 201, 202 };
-            string[] contents = new string[] { "Content 1", "Content 2" };
-            int[] renewalCounts = new int[] { 1, 2 };
-            int[] predefinedContractIds = new int[] { 301, 302 };
-            int[] pdfIds = new int[] { 401, 402 };
-            long[] renewedFromIds = new long[] { 501, 502 };
+            long[] expectedContractIds = new long[] { 101, 102 };
+            int[] expectedOrderIds = new int[] { 201, 202 };
+            string[] expectedContractContents = new string[] { "Content 1", "Content 2" };
+            int[] expectedRenewalCounts = new int[] { 1, 2 };
+            int[] expectedPredefinedContractIds = new int[] { 301, 302 };
+            int[] expectedPdfIds = new int[] { 401, 402 };
+            long[] expectedRenewedFromIds = new long[] { 501, 502 };
 
             // Setup data for contracts - use proper function syntax
-            _mockReader.Setup(r => r.GetInt64(0)).Returns(() => contractIds[Math.Min(readCount - 1, 1)]);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(() => orderIds[Math.Min(readCount - 1, 1)]);
-            _mockReader.Setup(r => r.GetString(2)).Returns("RENEWED");
-            _mockReader.Setup(r => r["contractContent"]).Returns(() => contents[Math.Min(readCount - 1, 1)]);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(() => renewalCounts[Math.Min(readCount - 1, 1)]);
-            _mockReader.Setup(r => r.IsDBNull(5)).Returns(false);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(() => predefinedContractIds[Math.Min(readCount - 1, 1)]);
-            _mockReader.Setup(r => r.GetInt32(6)).Returns(() => pdfIds[Math.Min(readCount - 1, 1)]);
-            _mockReader.Setup(r => r.IsDBNull(7)).Returns(false);
-            _mockReader.Setup(r => r.GetInt64(7)).Returns(() => renewedFromIds[Math.Min(readCount - 1, 1)]);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt64(ColumnIndex_ID)).Returns(() => expectedContractIds[Math.Min(contractReadCount - 1, 1)]);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt32(ColumnIndex_OrderID)).Returns(() => expectedOrderIds[Math.Min(contractReadCount - 1, 1)]);
+            mockDataReader.Setup(Database_reader => Database_reader.GetString(ColumnIndex_ContractStatus)).Returns("RENEWED");
+            mockDataReader.Setup(Database_reader => Database_reader["contractContent"]).Returns(() => expectedContractContents[Math.Min(contractReadCount - 1, 1)]);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt32(ColumnIndex_RenewalCount)).Returns(() => expectedRenewalCounts[Math.Min(contractReadCount - 1, 1)]);
+            mockDataReader.Setup(Database_reader => Database_reader.IsDBNull(ColumnIndex_PredefinedContractID)).Returns(false);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt32(ColumnIndex_PredefinedContractID)).Returns(() => expectedPredefinedContractIds[Math.Min(contractReadCount - 1, 1)]);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt32(ColumnIndex_PDFID)).Returns(() => expectedPdfIds[Math.Min(contractReadCount - 1, 1)]);
+            mockDataReader.Setup(Database_reader => Database_reader.IsDBNull(ColumnIndex_RenewedFromContractID)).Returns(false);
+            mockDataReader.Setup(reader => reader.GetInt64(ColumnIndex_RenewedFromContractID)).Returns(() => expectedRenewedFromIds[Math.Min(contractReadCount - 1, 1)]);
 
             // Act
-            var result = await _renewalModel.GetRenewedContractsAsync();
+            var contracts = await contractRenewalModel.GetRenewedContractsAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(contractIds[0], result[0].ContractID);
-            Assert.AreEqual(contractIds[1], result[1].ContractID);
-            Assert.AreEqual(orderIds[0], result[0].OrderID);
-            Assert.AreEqual(orderIds[1], result[1].OrderID);
-            Assert.AreEqual("RENEWED", result[0].ContractStatus);
-            Assert.AreEqual("RENEWED", result[1].ContractStatus);
-            Assert.AreEqual(contents[0], result[0].ContractContent);
-            Assert.AreEqual(contents[1], result[1].ContractContent);
+            Assert.IsNotNull(contracts);
+            Assert.AreEqual(2, contracts.Count);
+            Assert.AreEqual(expectedContractIds[0], contracts[0].ContractID);
+            Assert.AreEqual(expectedContractIds[1], contracts[1].ContractID);
+            Assert.AreEqual(expectedOrderIds[0], contracts[0].OrderID);
+            Assert.AreEqual(expectedOrderIds[1], contracts[1].OrderID);
+            Assert.AreEqual("RENEWED", contracts[0].ContractStatus);
+            Assert.AreEqual("RENEWED", contracts[1].ContractStatus);
+            Assert.AreEqual(expectedContractContents[0], contracts[0].ContractContent);
+            Assert.AreEqual(expectedContractContents[1], contracts[1].ContractContent);
 
-            _mockDbProvider.Verify(p => p.CreateConnection(_testConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
+            mockDatabaseProvider.Verify(provider => provider.CreateConnection(testConnectionString), Times.Once);
+            mockDatabaseConnection.Verify(connection => connection.Open(), Times.Once);
+            mockDatabaseCommand.Verify(command => command.ExecuteReader(), Times.Once);
         }
 
         [TestMethod]
@@ -209,14 +219,14 @@ namespace ArtAttack.Tests.Model
         {
             // Arrange
             SetupReaderWithContractColumns();
-            _mockReader.Setup(r => r.Read()).Returns(false); // Return no contracts
+            mockDataReader.Setup(reader => reader.Read()).Returns(false); // Return no contracts
 
             // Act
-            var result = await _renewalModel.GetRenewedContractsAsync();
+            var contracts = await contractRenewalModel.GetRenewedContractsAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count);
+            Assert.IsNotNull(contracts);
+            Assert.AreEqual(0, contracts.Count);
         }
 
         [TestMethod]
@@ -225,43 +235,43 @@ namespace ArtAttack.Tests.Model
             // Arrange
             SetupReaderWithContractColumns();
 
-            int readCount = 0;
-            _mockReader.Setup(r => r.Read()).Returns(() => readCount++ < 1);
+            int contractReadCount = 0;
+            mockDataReader.Setup(reader => reader.Read()).Returns(() => contractReadCount++ < 1);
 
             // Setup data with nulls
-            _mockReader.Setup(r => r.GetInt64(0)).Returns(101L);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetString(2)).Returns("RENEWED");
-            _mockReader.Setup(r => r["contractContent"]).Returns(null);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(1);
-            _mockReader.Setup(r => r.IsDBNull(5)).Returns(true);
-            _mockReader.Setup(r => r.GetInt32(6)).Returns(401);
-            _mockReader.Setup(r => r.IsDBNull(7)).Returns(true);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt64(ColumnIndex_ID)).Returns(101L);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt32(ColumnIndex_OrderID)).Returns(201);
+            mockDataReader.Setup(Database_reader => Database_reader.GetString(ColumnIndex_ContractStatus)).Returns("RENEWED");
+            mockDataReader.Setup(Database_reader => Database_reader["contractContent"]).Returns(null);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt32(ColumnIndex_RenewalCount)).Returns(1);
+            mockDataReader.Setup(Database_reader => Database_reader.IsDBNull(ColumnIndex_PredefinedContractID)).Returns(true);
+            mockDataReader.Setup(Database_reader => Database_reader.GetInt32(ColumnIndex_PDFID)).Returns(401);
+            mockDataReader.Setup(Database_reader => Database_reader.IsDBNull(ColumnIndex_RenewedFromContractID)).Returns(true);
 
             // Act
-            var result = await _renewalModel.GetRenewedContractsAsync();
+            var contracts = await contractRenewalModel.GetRenewedContractsAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(101L, result[0].ContractID);
-            Assert.IsNull(result[0].ContractContent);
-            Assert.IsNull(result[0].PredefinedContractID);
-            Assert.IsNull(result[0].RenewedFromContractID);
+            Assert.IsNotNull(contracts);
+            Assert.AreEqual(1, contracts.Count);
+            Assert.AreEqual(101L, contracts[0].ContractID);
+            Assert.IsNull(contracts[0].ContractContent);
+            Assert.IsNull(contracts[0].PredefinedContractID);
+            Assert.IsNull(contracts[0].RenewedFromContractID);
         }
 
         // Helper method to setup the reader columns for contract data
         private void SetupReaderWithContractColumns()
         {
             // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("ID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("orderID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("contractStatus")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("contractContent")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("renewalCount")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("predefinedContractID")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("pdfID")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("renewedFromContractID")).Returns(7);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("ID")).Returns(ColumnIndex_ID);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("orderID")).Returns(ColumnIndex_OrderID);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("contractStatus")).Returns(ColumnIndex_ContractStatus);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("contractContent")).Returns(ColumnIndex_ContractContent);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("renewalCount")).Returns(ColumnIndex_RenewalCount);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("predefinedContractID")).Returns(ColumnIndex_PredefinedContractID);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("pdfID")).Returns(ColumnIndex_PDFID);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("renewedFromContractID")).Returns(ColumnIndex_RenewedFromContractID);
         }
     }
 }

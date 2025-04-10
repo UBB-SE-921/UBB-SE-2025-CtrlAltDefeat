@@ -24,7 +24,7 @@ namespace ArtAttack.Model
 
             switch (category)
             {
-                case "CONTRACT_RENEWAL_APPROVED":
+                case "CONTRACT_RENEWAL_ACCEPTED":
                     int contractId = reader.GetInt32(reader.GetOrdinal("contractID"));
                     bool isAccepted = reader.GetBoolean(reader.GetOrdinal("isAccepted"));
                     return new ContractRenewalAnswerNotification(recipientId, timestamp, contractId, isAccepted, isRead, notificationId);

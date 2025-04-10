@@ -36,62 +36,62 @@ namespace ArtAttack.Model
 
         public async Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "AddDummyProduct";
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "AddDummyProduct";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
-                    AddParameter(cmd, "@Name", name);
-                    AddParameter(cmd, "@Price", price);
-                    AddParameter(cmd, "@SellerID", sellerId);
-                    AddParameter(cmd, "@ProductType", productType);
-                    AddParameter(cmd, "@StartDate", startDate);
-                    AddParameter(cmd, "@EndDate", endDate);
+                    AddParameter(databaseCommand, "@Name", name);
+                    AddParameter(databaseCommand, "@Price", price);
+                    AddParameter(databaseCommand, "@SellerID", sellerId);
+                    AddParameter(databaseCommand, "@ProductType", productType);
+                    AddParameter(databaseCommand, "@StartDate", startDate);
+                    AddParameter(databaseCommand, "@EndDate", endDate);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
         }
 
         public async Task UpdateDummyProductAsync(int id, string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "UpdateDummyProduct";
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "UpdateDummyProduct";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
-                    AddParameter(cmd, "@ID", id);
-                    AddParameter(cmd, "@Name", name);
-                    AddParameter(cmd, "@Price", price);
-                    AddParameter(cmd, "@SellerID", sellerId);
-                    AddParameter(cmd, "@ProductType", productType);
-                    AddParameter(cmd, "@StartDate", startDate);
-                    AddParameter(cmd, "@EndDate", endDate);
+                    AddParameter(databaseCommand, "@ID", id);
+                    AddParameter(databaseCommand, "@Name", name);
+                    AddParameter(databaseCommand, "@Price", price);
+                    AddParameter(databaseCommand, "@SellerID", sellerId);
+                    AddParameter(databaseCommand, "@ProductType", productType);
+                    AddParameter(databaseCommand, "@StartDate", startDate);
+                    AddParameter(databaseCommand, "@EndDate", endDate);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
         }
 
         public async Task DeleteDummyProduct(int id)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "DeleteDummyProduct";
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "DeleteDummyProduct";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
-                    AddParameter(cmd, "@ID", id);
+                    AddParameter(databaseCommand, "@ID", id);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
         }

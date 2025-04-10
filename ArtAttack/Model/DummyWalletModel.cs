@@ -42,18 +42,18 @@ namespace ArtAttack.Model
         /// <returns></returns>
         public async Task UpdateWalletBalance(int walletID, float balance)
         {
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "UpdateWalletBalance";
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "UpdateWalletBalance";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
-                    AddParameter(cmd, "@id", walletID);
-                    AddParameter(cmd, "@balance", balance);
+                    AddParameter(databaseCommand, "@id", walletID);
+                    AddParameter(databaseCommand, "@balance", balance);
 
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -66,17 +66,17 @@ namespace ArtAttack.Model
         public async Task<float> GetWalletBalanceAsync(int walletID)
         {
             float walletBalance = -1;
-            using (IDbConnection conn = databaseProvider.CreateConnection(connectionString))
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
-                using (IDbCommand cmd = conn.CreateCommand())
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    cmd.CommandText = "GetWalletBalance";
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    databaseCommand.CommandText = "GetWalletBalance";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
-                    AddParameter(cmd, "@id", walletID);
-                    await conn.OpenAsync();
+                    AddParameter(databaseCommand, "@id", walletID);
+                    await databaseConnection.OpenAsync();
 
-                    using (IDataReader reader = await cmd.ExecuteReaderAsync())
+                    using (IDataReader reader = await databaseCommand.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {

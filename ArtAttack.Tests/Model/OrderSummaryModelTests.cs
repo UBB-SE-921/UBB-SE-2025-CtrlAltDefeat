@@ -262,7 +262,7 @@ namespace ArtAttack.Tests.Model
 
             // Setup the reader to return no records
             _mockReader.Setup(reader => reader.Read()).Returns(false);
-            _mockCommand.Setup(cmd => cmd.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(databaseCommand => databaseCommand.ExecuteReader()).Returns(_mockReader.Object);
 
             // (Optional) Re-setup parameter capture for this call
             _mockParameter.SetupSet(p => p.ParameterName = It.IsAny<string>())
@@ -281,7 +281,7 @@ namespace ArtAttack.Tests.Model
             // Assert
             Assert.IsNull(result, "Method should return null when no order summary is found");
             _mockConnection.Verify(connection => connection.Open(), Times.Once);
-            _mockCommand.Verify(cmd => cmd.ExecuteReader(), Times.Once);
+            _mockCommand.Verify(databaseCommand => databaseCommand.ExecuteReader(), Times.Once);
 
             Assert.IsTrue(capturedParameterValues.ContainsKey("@ID"));
             Assert.AreEqual(nonExistentOrderSummaryId, capturedParameterValues["@ID"]);
@@ -338,7 +338,7 @@ namespace ArtAttack.Tests.Model
             _mockReader.SetupSequence(reader => reader.Read())
                 .Returns(true)
                 .Returns(false);
-            _mockCommand.Setup(cmd => cmd.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(databaseCommand => databaseCommand.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var result = await _orderSummaryModel.GetOrderSummaryByIDAsync(orderSummaryId);

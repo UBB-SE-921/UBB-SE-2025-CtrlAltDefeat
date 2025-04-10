@@ -241,11 +241,11 @@ namespace ArtAttack.ViewModel
         {
             await ProcessCardPaymentAsync();
 
-            var b_window = new BillingInfoWindow();
+            var billingInfoWindow = new BillingInfoWindow();
             var finalisePurchasePage = new FinalisePurchase(orderHistoryID);
-            b_window.Content = finalisePurchasePage;
+            billingInfoWindow.Content = finalisePurchasePage;
 
-            b_window.Activate();
+            billingInfoWindow.Activate();
         }
     }
 }

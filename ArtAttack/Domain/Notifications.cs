@@ -39,7 +39,7 @@ namespace ArtAttack.Domain
             this.Timestamp = timestamp;
             this.IsRead = isRead;
             this.ContractID = contractID;
-            Category = NotificationCategory.CONTRACT_RENEWAL_APPROVED;
+            Category = NotificationCategory.CONTRACT_RENEWAL_ACCEPTED;
             this.IsAccepted = isAccepted;
         }
         [ExcludeFromCodeCoverage]

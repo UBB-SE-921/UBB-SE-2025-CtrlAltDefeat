@@ -17,10 +17,10 @@ namespace ArtAttack.Tests.ViewModel
     [TestClass]
     public class NotificationViewModelTests
     {
-        private Mock<INotificationDataAdapter> _mockDataAdapter;
-        private NotificationViewModel _viewModel;
-        private readonly int _currentUserId = 5;
-        private List<Notification> _testNotifications;
+        private Mock<INotificationDataAdapter> mockNotificationDataAdapter;
+        private NotificationViewModel notificationViewModel;
+        private readonly int testUserId = 5;
+        private List<Notification> mockNotifications;
 
         // Note: We need to create a factory method for the NotificationDataAdapter
         // to avoid direct instantiation in the ViewModel constructor
@@ -37,10 +37,10 @@ namespace ArtAttack.Tests.ViewModel
         public void Setup()
         {
             // Create mock data adapter
-            _mockDataAdapter = new Mock<INotificationDataAdapter>();
+            mockNotificationDataAdapter = new Mock<INotificationDataAdapter>();
 
             // Sample notifications for testing
-            _testNotifications = new List<Notification>
+            mockNotifications = new List<Notification>
             {
                 new ProductAvailableNotification(5, DateTime.Now, 101) { NotificationID = 1, IsRead = false },
                 new ContractExpirationNotification(5, DateTime.Now, 201, DateTime.Now.AddMonths(1)) { NotificationID = 2, IsRead = true },
@@ -48,30 +48,30 @@ namespace ArtAttack.Tests.ViewModel
             };
 
             // Setup the mock adapter
-            _mockDataAdapter.Setup(m => m.GetNotificationsForUser(_currentUserId))
-                .Returns(_testNotifications);
+            mockNotificationDataAdapter.Setup(mockNotificationAdapter => mockNotificationAdapter.GetNotificationsForUser(testUserId))
+                .Returns(mockNotifications);
 
             // Create fresh view model for each test
-            _viewModel = new NotificationViewModel(_currentUserId);
+            notificationViewModel = new NotificationViewModel(testUserId);
 
             // Use reflection to replace the data adapter with our mock
             var field = typeof(NotificationViewModel).GetField("dataAdapter",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            field.SetValue(_viewModel, _mockDataAdapter.Object);
+            field.SetValue(notificationViewModel, mockNotificationDataAdapter.Object);
 
             // For tests, start with empty notifications and reset properties
-            _viewModel.Notifications.Clear();
-            _viewModel.IsLoading = false;
-            _viewModel.UnreadCount = 0;
+            notificationViewModel.Notifications.Clear();
+            notificationViewModel.IsLoading = false;
+            notificationViewModel.UnreadCount = 0;
         }
 
         [TestMethod]
         public void Constructor_InitializesProperties()
         {
             // Assert
-            Assert.IsNotNull(_viewModel.Notifications);
-            Assert.IsNotNull(_viewModel.MarkAsReadCommand);
-            Assert.IsFalse(_viewModel.IsLoading);
+            Assert.IsNotNull(notificationViewModel.Notifications);
+            Assert.IsNotNull(notificationViewModel.MarkAsReadCommand);
+            Assert.IsFalse(notificationViewModel.IsLoading);
         }
 
         [TestMethod]
@@ -82,10 +82,10 @@ namespace ArtAttack.Tests.ViewModel
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
-            var userId = (int)field.GetValue(_viewModel);
+            var userId = (int)field.GetValue(notificationViewModel);
 
             // Assert
-            Assert.AreEqual(_currentUserId, userId);
+            Assert.AreEqual(testUserId, userId);
         }
 
         [TestMethod]
@@ -94,12 +94,12 @@ namespace ArtAttack.Tests.ViewModel
             // No need to clear invocations if we're using autoLoad = false
 
             // Act
-            await _viewModel.LoadNotificationsAsync(_currentUserId);
+            await notificationViewModel.LoadNotificationsAsync(testUserId);
 
             // Assert
-            Assert.AreEqual(3, _viewModel.Notifications.Count);
-            Assert.AreEqual(2, _viewModel.UnreadCount); // 2 out of 3 are unread
-            Assert.IsFalse(_viewModel.IsLoading);
+            Assert.AreEqual(3, notificationViewModel.Notifications.Count);
+            Assert.AreEqual(2, notificationViewModel.UnreadCount); // 2 out of 3 are unread
+            Assert.IsFalse(notificationViewModel.IsLoading);
         }
 
 
@@ -111,11 +111,11 @@ namespace ArtAttack.Tests.ViewModel
             bool loadingPropertyChanged = false;
             bool wasLoadingTrue = false;
 
-            _viewModel.PropertyChanged += (sender, e) => {
-                if (e.PropertyName == nameof(_viewModel.IsLoading))
+            notificationViewModel.PropertyChanged += (sender, propertyChangedArguments) => {
+                if (propertyChangedArguments.PropertyName == nameof(notificationViewModel.IsLoading))
                 {
                     loadingPropertyChanged = true;
-                    if (_viewModel.IsLoading)
+                    if (notificationViewModel.IsLoading)
                     {
                         wasLoadingTrue = true;
                     }
@@ -123,12 +123,12 @@ namespace ArtAttack.Tests.ViewModel
             };
 
             // Act
-            await _viewModel.LoadNotificationsAsync(_currentUserId);
+            await notificationViewModel.LoadNotificationsAsync(testUserId);
 
             // Assert
             Assert.IsTrue(loadingPropertyChanged, "IsLoading property should have changed");
             Assert.IsTrue(wasLoadingTrue, "IsLoading should have been true during execution");
-            Assert.IsFalse(_viewModel.IsLoading, "IsLoading should be false after completion");
+            Assert.IsFalse(notificationViewModel.IsLoading, "IsLoading should be false after completion");
         }
 
 
@@ -137,16 +137,16 @@ namespace ArtAttack.Tests.ViewModel
         public async Task LoadNotificationsAsync_HandlesException()
         {
             // Arrange - Setup mock to throw
-            _mockDataAdapter.Setup(m => m.GetNotificationsForUser(_currentUserId))
+            mockNotificationDataAdapter.Setup(mockNotificationAdapter => mockNotificationAdapter.GetNotificationsForUser(testUserId))
                 .Throws(new Exception("Test exception"));
 
             // Act - Should not throw
-            await _viewModel.LoadNotificationsAsync(_currentUserId);
+            await notificationViewModel.LoadNotificationsAsync(testUserId);
 
             // Assert
-            Assert.AreEqual(0, _viewModel.Notifications.Count);
-            Assert.AreEqual(0, _viewModel.UnreadCount);
-            Assert.IsFalse(_viewModel.IsLoading);
+            Assert.AreEqual(0, notificationViewModel.Notifications.Count);
+            Assert.AreEqual(0, notificationViewModel.UnreadCount);
+            Assert.IsFalse(notificationViewModel.IsLoading);
         }
 
         [TestMethod]
@@ -156,10 +156,10 @@ namespace ArtAttack.Tests.ViewModel
             int notificationId = 42;
 
             // Act
-            await _viewModel.MarkAsReadAsync(notificationId);
+            await notificationViewModel.MarkAsReadAsync(notificationId);
 
             // Assert
-            _mockDataAdapter.Verify(m => m.MarkAsRead(notificationId), Times.Once);
+            mockNotificationDataAdapter.Verify(mockNotificationAdapter => mockNotificationAdapter.MarkAsRead(notificationId), Times.Once);
         }
 
         [TestMethod]
@@ -167,14 +167,14 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             int notificationId = 42;
-            _mockDataAdapter.Setup(m => m.MarkAsRead(notificationId))
+            mockNotificationDataAdapter.Setup(mockNotificationAdapter => mockNotificationAdapter.MarkAsRead(notificationId))
                 .Throws(new Exception("Test exception"));
 
             // Act - Should not throw an exception
-            await _viewModel.MarkAsReadAsync(notificationId);
+            await notificationViewModel.MarkAsReadAsync(notificationId);
 
             // Assert
-            _mockDataAdapter.Verify(m => m.MarkAsRead(notificationId), Times.Once);
+            mockNotificationDataAdapter.Verify(mockNotificationAdapter => mockNotificationAdapter.MarkAsRead(notificationId), Times.Once);
         }
 
         [TestMethod]
@@ -182,7 +182,7 @@ namespace ArtAttack.Tests.ViewModel
         public async Task AddNotificationAsync_ThrowsArgumentNullException_WhenNotificationIsNull()
         {
             // Act
-            await _viewModel.AddNotificationAsync(null);
+            await notificationViewModel.AddNotificationAsync(null);
         }
 
         [TestMethod]
@@ -190,7 +190,7 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Create a new view model with empty collection to ensure clean state
             var mockDataAdapter = new Mock<INotificationDataAdapter>();
-            var viewModel = new NotificationViewModel(_currentUserId, false); // don't auto-load
+            var viewModel = new NotificationViewModel(testUserId, false); // don't auto-load
 
             // Use reflection to replace adapter
             var field = typeof(NotificationViewModel).GetField("dataAdapter",
@@ -202,7 +202,7 @@ namespace ArtAttack.Tests.ViewModel
             viewModel.UnreadCount = 0;
 
             // Arrange test data
-            var notification = new ProductAvailableNotification(_currentUserId, DateTime.Now, 501) { NotificationID = 4 };
+            var notification = new ProductAvailableNotification(testUserId, DateTime.Now, 501) { NotificationID = 4 };
             bool popupInvoked = false;
             string popupMessage = null;
 
@@ -215,7 +215,7 @@ namespace ArtAttack.Tests.ViewModel
             await viewModel.AddNotificationAsync(notification);
 
             // Assert
-            mockDataAdapter.Verify(m => m.AddNotification(notification), Times.Once);
+            mockDataAdapter.Verify(mockNotificationAdapter => mockNotificationAdapter.AddNotification(notification), Times.Once);
             Assert.AreEqual(1, viewModel.Notifications.Count);
             Assert.AreSame(notification, viewModel.Notifications[0]);
             Assert.AreEqual(1, viewModel.UnreadCount);
@@ -228,7 +228,7 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Create a new view model with empty collection to ensure clean state
             var mockDataAdapter = new Mock<INotificationDataAdapter>();
-            var viewModel = new NotificationViewModel(_currentUserId, false); // don't auto-load
+            var viewModel = new NotificationViewModel(testUserId, false); // don't auto-load
 
             // Use reflection to replace adapter
             var field = typeof(NotificationViewModel).GetField("dataAdapter",
@@ -240,7 +240,7 @@ namespace ArtAttack.Tests.ViewModel
             viewModel.UnreadCount = 0;
 
             // Arrange test data
-            var notification = new ProductAvailableNotification(_currentUserId + 1, DateTime.Now, 501) { NotificationID = 4 };
+            var notification = new ProductAvailableNotification(testUserId + 1, DateTime.Now, 501) { NotificationID = 4 };
             bool popupInvoked = false;
 
             viewModel.ShowPopup += (message) => { popupInvoked = true; };
@@ -249,7 +249,7 @@ namespace ArtAttack.Tests.ViewModel
             await viewModel.AddNotificationAsync(notification);
 
             // Assert
-            mockDataAdapter.Verify(m => m.AddNotification(notification), Times.Once);
+            mockDataAdapter.Verify(mockNotificationAdapter => mockNotificationAdapter.AddNotification(notification), Times.Once);
             Assert.AreEqual(0, viewModel.Notifications.Count);
             Assert.AreEqual(0, viewModel.UnreadCount);
             Assert.IsFalse(popupInvoked);
@@ -261,7 +261,7 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Create a new view model with empty collection to ensure clean state
             var mockDataAdapter = new Mock<INotificationDataAdapter>();
-            var viewModel = new NotificationViewModel(_currentUserId, false); // don't auto-load
+            var viewModel = new NotificationViewModel(testUserId, false); // don't auto-load
 
             // Use reflection to replace adapter
             var field = typeof(NotificationViewModel).GetField("dataAdapter",
@@ -273,15 +273,15 @@ namespace ArtAttack.Tests.ViewModel
             viewModel.UnreadCount = 0;
 
             // Setup the test scenario
-            var notification = new ProductAvailableNotification(_currentUserId, DateTime.Now, 501) { NotificationID = 4 };
-            mockDataAdapter.Setup(m => m.AddNotification(It.IsAny<Notification>()))
+            var notification = new ProductAvailableNotification(testUserId, DateTime.Now, 501) { NotificationID = 4 };
+            mockDataAdapter.Setup(mockNotificationAdapter => mockNotificationAdapter.AddNotification(It.IsAny<Notification>()))
                 .Throws(new Exception("Test exception"));
 
             // Act
             await viewModel.AddNotificationAsync(notification);
 
             // Assert
-            mockDataAdapter.Verify(m => m.AddNotification(It.IsAny<Notification>()), Times.Once);
+            mockDataAdapter.Verify(mockNotificationAdapter => mockNotificationAdapter.AddNotification(It.IsAny<Notification>()), Times.Once);
             Assert.AreEqual(0, viewModel.Notifications.Count);
         }
 
@@ -293,17 +293,17 @@ namespace ArtAttack.Tests.ViewModel
             bool propertyChangedRaised = false;
             string changedPropertyName = null;
 
-            _viewModel.PropertyChanged += (sender, e) => {
+            notificationViewModel.PropertyChanged += (sender, propertyChangedArguments) => {
                 propertyChangedRaised = true;
-                changedPropertyName = e.PropertyName;
+                changedPropertyName = propertyChangedArguments.PropertyName;
             };
 
             // Act
-            _viewModel.Notifications = new ObservableCollection<Notification>();
+            notificationViewModel.Notifications = new ObservableCollection<Notification>();
 
             // Assert
             Assert.IsTrue(propertyChangedRaised);
-            Assert.AreEqual(nameof(_viewModel.Notifications), changedPropertyName);
+            Assert.AreEqual(nameof(notificationViewModel.Notifications), changedPropertyName);
         }
 
         [TestMethod]
@@ -311,23 +311,23 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             string propertyChangedName = null;
-            _viewModel.PropertyChanged += (sender, e) => { propertyChangedName = e.PropertyName; };
+            notificationViewModel.PropertyChanged += (sender, propertyChangedArguments) => { propertyChangedName = propertyChangedArguments.PropertyName; };
 
             // Act
-            _viewModel.IsLoading = true;
+            notificationViewModel.IsLoading = true;
 
             // Assert
-            Assert.AreEqual(nameof(_viewModel.IsLoading), propertyChangedName);
+            Assert.AreEqual(nameof(notificationViewModel.IsLoading), propertyChangedName);
         }
 
         [TestMethod]
         public void UnReadNotificationsCountText_ReturnsCorrectFormat()
         {
             // Arrange
-            _viewModel.UnreadCount = 5;
+            notificationViewModel.UnreadCount = 5;
 
             // Act
-            string result = _viewModel.UnReadNotificationsCountText;
+            string result = notificationViewModel.UnReadNotificationsCountText;
 
             // Assert
             Assert.AreEqual("You've got #5 unread notifications.", result);
@@ -338,22 +338,22 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             var propertyChangedNames = new List<string>();
-            _viewModel.PropertyChanged += (sender, e) => { propertyChangedNames.Add(e.PropertyName); };
+            notificationViewModel.PropertyChanged += (sender, propertyChangedArguments) => { propertyChangedNames.Add(propertyChangedArguments.PropertyName); };
 
             // Act
-            _viewModel.UnreadCount = 10;
+            notificationViewModel.UnreadCount = 10;
 
             // Assert
             Assert.AreEqual(2, propertyChangedNames.Count);
-            Assert.AreEqual(nameof(_viewModel.UnreadCount), propertyChangedNames[0]);
-            Assert.AreEqual(nameof(_viewModel.UnReadNotificationsCountText), propertyChangedNames[1]);
+            Assert.AreEqual(nameof(notificationViewModel.UnreadCount), propertyChangedNames[0]);
+            Assert.AreEqual(nameof(notificationViewModel.UnReadNotificationsCountText), propertyChangedNames[1]);
         }
 
         [TestMethod]
         public void MarkAsReadCommand_CanExecute()
         {
             // Assert
-            Assert.IsTrue(_viewModel.MarkAsReadCommand.CanExecute(42));
+            Assert.IsTrue(notificationViewModel.MarkAsReadCommand.CanExecute(42));
         }
 
         [TestMethod]
@@ -364,12 +364,12 @@ namespace ArtAttack.Tests.ViewModel
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
             // Setup the mock to signal when MarkAsRead is called
-            _mockDataAdapter
-                .Setup(m => m.MarkAsRead(notificationId))
+            mockNotificationDataAdapter
+                .Setup(mockNotificationAdapter => mockNotificationAdapter.MarkAsRead(notificationId))
                 .Callback(() => taskCompletionSource.SetResult(true));
 
             // Act
-            _viewModel.MarkAsReadCommand.Execute(notificationId);
+            notificationViewModel.MarkAsReadCommand.Execute(notificationId);
 
             // Wait for the command to complete with a timeout
             var completedTask = await Task.WhenAny(taskCompletionSource.Task, Task.Delay(3000));
@@ -377,7 +377,7 @@ namespace ArtAttack.Tests.ViewModel
             // Assert
             if (completedTask == taskCompletionSource.Task)
             {
-                _mockDataAdapter.Verify(m => m.MarkAsRead(notificationId), Times.Once);
+                mockNotificationDataAdapter.Verify(mockNotificationAdapter => mockNotificationAdapter.MarkAsRead(notificationId), Times.Once);
             }
             else
             {

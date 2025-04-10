@@ -73,7 +73,7 @@ namespace ArtAttack.Tests.Model
         public void CreateFromDataReader_ShouldReturnContractRenewalAnswerNotification()
         {
             // Setup specific values for this test case
-            mockDataReader.Setup(reader => reader.GetString(4)).Returns("CONTRACT_RENEWAL_APPROVED");
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("CONTRACT_RENEWAL_ACCEPTED");
             mockDataReader.Setup(reader => reader.GetInt32(5)).Returns(101);  // contractID
             mockDataReader.Setup(reader => reader.GetBoolean(6)).Returns(true);  // isAccepted
 
@@ -229,6 +229,7 @@ namespace ArtAttack.Tests.Model
             // Setup specific values for this test case
             mockDataReader.Setup(reader => reader.GetString(4)).Returns("CONTRACT_RENEWAL_REQUEST");
             mockDataReader.Setup(reader => reader.GetInt32(5)).Returns(101);  // contractID
+
 
             // Act
             var actualNotification = NotificationFactory.CreateFromDataReader(mockDataReader.Object);
@@ -470,6 +471,7 @@ namespace ArtAttack.Tests.Model
             mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
             AssertParameterExists(capturedParameters, "@category", "CONTRACT_RENEWAL_APPROVED");
+
         }
 
         [TestMethod]
@@ -664,6 +666,7 @@ namespace ArtAttack.Tests.Model
             mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
             AssertParameterExists(capturedParameters, "@category", "PRODUCT_REMOVED");
+
         }
 
         [TestMethod]
@@ -689,6 +692,7 @@ namespace ArtAttack.Tests.Model
             mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
             AssertParameterExists(capturedParameters, "@category", "CONTRACT_RENEWAL_REQUEST");
+
         }
 
         [TestMethod]
@@ -790,10 +794,10 @@ namespace ArtAttack.Tests.Model
             mockReader.Setup(reader => reader.GetDateTime(2)).Returns(DateTime.Now);
             mockReader.Setup(reader => reader.GetBoolean(3)).Returns(false);
 
-            // First row: CONTRACT_RENEWAL_ANS
+            // First row: CONTRACT_RENEWAL_ACCEPTED
             // Second row: PRODUCT_AVAILABLE
-            mockReader.SetupSequence(reader => reader.GetString(4))
-                .Returns("CONTRACT_RENEWAL_APPROVED")
+            mockReader.SetupSequence(r => r.GetString(4))
+                .Returns("CONTRACT_RENEWAL_ACCEPTED")
                 .Returns("PRODUCT_AVAILABLE");
 
             mockReader.Setup(reader => reader.GetInt32(5)).Returns(101); // contractID

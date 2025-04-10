@@ -10,34 +10,34 @@
     <PackageArchitecture>x64</PackageArchitecture>
     <PackageIdentityName>9d221516-0e84-4aea-b02e-19c92e0d2407</PackageIdentityName>
     <PackageIdentityPublisher>CN=User</PackageIdentityPublisher>
-    <IntermediateOutputPath>C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\</IntermediateOutputPath>
     <RemoteDeploymentType>CopyToDevice</RemoteDeploymentType>
     <PackageRegistrationPath></PackageRegistrationPath>
     <RemoveNonLayoutFiles>false</RemoveNonLayoutFiles>
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
-    <LayoutDir>C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppX</LayoutDir>
+    <LayoutDir>C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppX</LayoutDir>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.runtimeconfig.json">
       <PackagePath>ArtAttack.runtimeconfig.json</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll">
       <PackagePath>ArtAttack.dll</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.dll.config">
       <PackagePath>ArtAttack.dll.config</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
       <PackagePath>ArtAttack.exe</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\questpdf\2025.1.6\LatoFont\Lato-Black.ttf">
@@ -937,28 +937,28 @@
     <AppxPackagedFile Include="C:\Users\alexe\.nuget\packages\mstest.testframework\3.8.3\buildTransitive\net6.0\winui\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml">
       <PackagePath>Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\ArtAttack.deps.json">
       <PackagePath>ArtAttack.deps.json</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\LockScreenLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\CtrlAltDefeat-Main-ArtAttack\ArtAttack\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\alexe\Source\Repos\UBB-SE-2025-CtrlAltDefeat\ArtAttack\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
     </AppxPackagedFile>
   </ItemGroup>
