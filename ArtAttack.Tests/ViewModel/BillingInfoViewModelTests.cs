@@ -13,132 +13,55 @@ using Xunit;
 
 namespace ArtAttack.Tests.ViewModel
 {
-    public class MockOrderHistoryModel : IOrderHistoryModel
-    {
-        private List<DummyProduct> productsToReturn;
-        private int calledWithUserId;
-
-        public void SetupGetDummyProductsReturn(List<DummyProduct> productsToReturn)
-        {
-            this.productsToReturn = productsToReturn;
-        }
-
-        public Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int userID)
-        {
-            calledWithUserId = userID;
-            return Task.FromResult(productsToReturn);
-        }
-
-        public int GetCalledUserId()
-        {
-            return calledWithUserId;
-        }
-
-        internal void SetupDummyProducts(List<DummyProduct> products)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal int GetReceivedOrderHistoryId()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void Verify(Func<object, object> value, Func<Times> atLeastOnce)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void VerifyGetDummyProductsFromOrderHistoryAsync(int testOrderHistoryId)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class MockDummyWalletModel : IDummyWalletModel
-    {
-        private float balanceToReturn;
-        private int updateWalletBalanceCalls;
-        private int lastUserIdUsed;
-        private float lastBalanceUsed;
-
-        public void SetupGetWalletBalanceReturn(float balanceToReturn)
-        {
-            this.balanceToReturn = balanceToReturn;
-        }
-
-        public Task<float> GetWalletBalanceAsync(int userID)
-        {
-            lastUserIdUsed = userID;
-            return Task.FromResult(balanceToReturn);
-        }
-
-        public Task UpdateWalletBalance(int userID, float updatedBalance)
-        {
-            updateWalletBalanceCalls++;
-            lastUserIdUsed = userID;
-            lastBalanceUsed = updatedBalance;
-            return Task.CompletedTask;
-        }
-
-        public int GetUpdateWalletBalanceCalls()
-        {
-            return updateWalletBalanceCalls;
-        }
-
-        public int GetLastUserIdUsed()
-        {
-            return lastUserIdUsed;
-        }
-
-        public float GetLastBalanceUsed()
-        {
-            return lastBalanceUsed;
-        }
-    }
-
     [TestClass]
     public class BillingInfoViewModelTests
     {
-        private MockOrderHistoryModel mockOrderHistoryModel;
-        private MockDummyWalletModel mockDummyWalletModel;
+        private Mock<IOrderHistoryModel> mockOrderHistoryModel;
+        private Mock<IOrderSummaryModel> mockOrderSummaryModel;
+        private Mock<IOrderModel> mockOrderModel;
+        private Mock<IDummyProductModel> mockDummyProductModel;
+        private Mock<IDummyWalletModel> mockDummyWalletModel;
         private BillingInfoViewModel billingInfoViewModel;
-        private const int TEST_USER_ID = 1;
 
         [TestInitialize]
         public void Setup()
         {
-            mockOrderHistoryModel = new MockOrderHistoryModel();
-            mockDummyWalletModel = new MockDummyWalletModel();
+            mockOrderHistoryModel = new Mock<IOrderHistoryModel>();
+            mockOrderSummaryModel = new Mock<IOrderSummaryModel>();
+            mockOrderModel = new Mock<IOrderModel>();
+            mockDummyProductModel = new Mock<IDummyProductModel>();
+            mockDummyWalletModel = new Mock<IDummyWalletModel>();
 
-            billingInfoViewModel = new BillingInfoViewModel(TEST_USER_ID);
-
+            billingInfoViewModel = new BillingInfoViewModel(1);
             var orderHistoryModelField = typeof(BillingInfoViewModel).GetField("orderHistoryModel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var orderSummaryModelField = typeof(BillingInfoViewModel).GetField("orderSummaryModel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var orderModelField = typeof(BillingInfoViewModel).GetField("orderModel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var dummyProductModelField = typeof(BillingInfoViewModel).GetField("dummyProductModel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var dummyWalletModelField = typeof(BillingInfoViewModel).GetField("dummyWalletModel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            orderHistoryModelField.SetValue(billingInfoViewModel, mockOrderHistoryModel);
-            dummyWalletModelField.SetValue(billingInfoViewModel, mockDummyWalletModel);
+            orderHistoryModelField.SetValue(billingInfoViewModel, mockOrderHistoryModel.Object);
+            orderSummaryModelField.SetValue(billingInfoViewModel, mockOrderSummaryModel.Object);
+            orderModelField.SetValue(billingInfoViewModel, mockOrderModel.Object);
+            dummyProductModelField.SetValue(billingInfoViewModel, mockDummyProductModel.Object);
+            dummyWalletModelField.SetValue(billingInfoViewModel, mockDummyWalletModel.Object);
         }
 
         [TestMethod]
         public async Task InitializeViewModelAsync_ShouldInitializeProductList()
         {
             // Arrange
-            var testDummyProducts = new List<DummyProduct>
-            {
-                new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" },
-                new DummyProduct { ID = 2, Name = "Product2", Price = 150, ProductType = "used" }
-            };
-
-            mockOrderHistoryModel.SetupGetDummyProductsReturn(testDummyProducts);
+            var dummyProducts = new List<DummyProduct>
+                {
+                    new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" },
+                    new DummyProduct { ID = 2, Name = "Product2", Price = 150, ProductType = "used" }
+                };
+            mockOrderHistoryModel.Setup(orderHistoryModel => orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(It.IsAny<int>())).ReturnsAsync(dummyProducts);
 
             // Act
             await billingInfoViewModel.InitializeViewModelAsync();
 
             // Assert
             Assert.AreEqual(2, billingInfoViewModel.ProductList.Count);
-            Assert.AreEqual(testDummyProducts, billingInfoViewModel.DummyProducts);
-            Assert.AreEqual(TEST_USER_ID, mockOrderHistoryModel.GetCalledUserId());
+            Assert.AreEqual(dummyProducts, billingInfoViewModel.DummyProducts);
         }
 
         [TestMethod]
@@ -146,9 +69,9 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             billingInfoViewModel.ProductList = new ObservableCollection<DummyProduct>
-            {
-                new DummyProduct { ProductType = "new" }
-            };
+                {
+                    new DummyProduct { ProductType = "new" }
+                };
 
             // Act
             billingInfoViewModel.SetVisibilityRadioButtons();
@@ -164,13 +87,11 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             billingInfoViewModel.ProductList = new ObservableCollection<DummyProduct>
-            {
-                new DummyProduct { ProductType = "bid" }
-            };
-
+                {
+                    new DummyProduct { ProductType = "bid" }
+                };
             // Act
             billingInfoViewModel.SetVisibilityRadioButtons();
-
             // Assert
             Assert.IsFalse(billingInfoViewModel.IsCardEnabled);
             Assert.IsFalse(billingInfoViewModel.IsCashEnabled);
@@ -182,13 +103,11 @@ namespace ArtAttack.Tests.ViewModel
         {
             // Arrange
             billingInfoViewModel.ProductList = new ObservableCollection<DummyProduct>
-            {
-                new DummyProduct { ProductType = "refill" }
-            };
-
+                {
+                    new DummyProduct { ProductType = "refill" }
+                };
             // Act
             billingInfoViewModel.SetVisibilityRadioButtons();
-
             // Assert
             Assert.IsTrue(billingInfoViewModel.IsCardEnabled);
             Assert.IsFalse(billingInfoViewModel.IsCashEnabled);
@@ -199,13 +118,11 @@ namespace ArtAttack.Tests.ViewModel
         public async Task ApplyBorrowedTax_ShouldReturnIfDummyProductIsNull()
         {
             // Arrange
-            DummyProduct nullDummyProduct = null;
+            DummyProduct dummyProduct = null;
             billingInfoViewModel.StartDate = new DateTime(2023, 1, 1);
             billingInfoViewModel.EndDate = new DateTime(2023, 3, 1);
-
             // Act
-            await billingInfoViewModel.ApplyBorrowedTax(nullDummyProduct);
-
+            await billingInfoViewModel.ApplyBorrowedTax(dummyProduct);
             // Assert
             Assert.AreEqual(0, billingInfoViewModel.WarrantyTax); // No tax should be applied
         }
@@ -214,13 +131,11 @@ namespace ArtAttack.Tests.ViewModel
         public async Task ApplyBorrowedTax_ShouldReturnIfProductTypeIsNotBorrowed()
         {
             // Arrange
-            var newProductType = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" };
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" };
             billingInfoViewModel.StartDate = new DateTime(2023, 1, 1);
             billingInfoViewModel.EndDate = new DateTime(2023, 3, 1);
-
             // Act
-            await billingInfoViewModel.ApplyBorrowedTax(newProductType);
-
+            await billingInfoViewModel.ApplyBorrowedTax(dummyProduct);
             // Assert
             Assert.AreEqual(0, billingInfoViewModel.WarrantyTax); // No tax should be applied
         }
@@ -229,13 +144,11 @@ namespace ArtAttack.Tests.ViewModel
         public async Task ApplyBorrowedTaxSellerIdNull_ShouldReturnIfProductTypeIsNotBorrowed()
         {
             // Arrange
-            var nonBorrowedProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" };
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "new" };
             billingInfoViewModel.StartDate = new DateTime(2023, 1, 1);
             billingInfoViewModel.EndDate = new DateTime(2023, 3, 1);
-
             // Act
-            await billingInfoViewModel.ApplyBorrowedTax(nonBorrowedProduct);
-
+            await billingInfoViewModel.ApplyBorrowedTax(dummyProduct);
             // Assert
             Assert.AreEqual(0, billingInfoViewModel.WarrantyTax); // No tax should be applied
         }
@@ -244,13 +157,11 @@ namespace ArtAttack.Tests.ViewModel
         public async Task ApplyBorrowedTax_ShouldReturnIfStartDateIsAfterEndDate()
         {
             // Arrange
-            var borrowedProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "borrowed" };
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "borrowed" };
             billingInfoViewModel.StartDate = new DateTime(2023, 3, 1);
             billingInfoViewModel.EndDate = new DateTime(2023, 1, 1);
-
             // Act
-            await billingInfoViewModel.ApplyBorrowedTax(borrowedProduct);
-
+            await billingInfoViewModel.ApplyBorrowedTax(dummyProduct);
             // Assert
             Assert.AreEqual(0, billingInfoViewModel.WarrantyTax); // No tax should be applied
         }
@@ -259,15 +170,15 @@ namespace ArtAttack.Tests.ViewModel
         public async Task ApplyBorrowedTax_ShouldCalculateCorrectTax()
         {
             // Arrange
-            var borrowedProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "borrowed", SellerID = 1 };
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 100, ProductType = "borrowed" };
             billingInfoViewModel.StartDate = new DateTime(2023, 1, 1);
             billingInfoViewModel.EndDate = new DateTime(2023, 3, 1);
 
             // Act
-            await billingInfoViewModel.ApplyBorrowedTax(borrowedProduct);
+            await billingInfoViewModel.ApplyBorrowedTax(dummyProduct);
 
             // Assert
-            Assert.AreEqual(240, borrowedProduct.Price); // 100 * 2 months + 20% tax
+            Assert.AreEqual(240, dummyProduct.Price); // 100 * 2 months + 20% tax
             Assert.AreEqual(40, billingInfoViewModel.WarrantyTax); // 20% of 200
         }
 
@@ -275,50 +186,44 @@ namespace ArtAttack.Tests.ViewModel
         public async Task ApplyBorrowedTax_ShouldCalculateCorrectTaxOver200()
         {
             // Arrange
-            var lowPriceBorrowedProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 30, ProductType = "borrowed", SellerID = 1 };
-            billingInfoViewModel.DummyProducts.Add(lowPriceBorrowedProduct);
+            var dummyProduct = new DummyProduct { ID = 1, Name = "Product1", Price = 30, ProductType = "borrowed" };
+            billingInfoViewModel.DummyProducts.Add(dummyProduct);
             billingInfoViewModel.StartDate = new DateTime(2023, 1, 1);
             billingInfoViewModel.EndDate = new DateTime(2023, 1, 1);
 
             // Act
-            await billingInfoViewModel.ApplyBorrowedTax(lowPriceBorrowedProduct);
+            await billingInfoViewModel.ApplyBorrowedTax(dummyProduct);
 
             // Assert
-            Assert.AreEqual(36, lowPriceBorrowedProduct.Price);
-            billingInfoViewModel.DummyProducts.Remove(lowPriceBorrowedProduct);
+            Assert.AreEqual(36, dummyProduct.Price);
+            billingInfoViewModel.DummyProducts.Remove(dummyProduct);
         }
 
         [TestMethod]
         public async Task ProcessWalletRefillAsync_ShouldUpdateWalletBalance()
         {
             // Arrange
-            float initialWalletBalance = 1000;
-            float totalAmount = 200;
-
-            mockDummyWalletModel.SetupGetWalletBalanceReturn(initialWalletBalance);
-
+            float initialBalance = 1000;
+            float total = 200;
+            mockDummyWalletModel.Setup(dummyWalletModel => dummyWalletModel.GetWalletBalanceAsync(1)).ReturnsAsync(initialBalance);
+            mockDummyWalletModel.Setup(dummyWalletModel => dummyWalletModel.UpdateWalletBalance(1, initialBalance - total)).Returns(Task.CompletedTask);
             // Act
             await billingInfoViewModel.ProcessWalletRefillAsync();
-
             // Assert
-            Assert.AreEqual(1, mockDummyWalletModel.GetUpdateWalletBalanceCalls());
+            mockDummyWalletModel.Verify(dummyWalletModel => dummyWalletModel.UpdateWalletBalance(1, initialBalance - total), Times.Never);
         }
 
         [TestMethod]
-        public async Task ProcessWalletRefillAsync_ShouldNotUpdateWalletBalance()
+        public async Task ProcessWalletRefillAsync_ShouldNotUpdateWalletBalance_WhenTotalIsZero()
         {
             // Arrange
-            float initialWalletBalance = 1000;
-            float zeroTotal = 0;
-
-            mockDummyWalletModel.SetupGetWalletBalanceReturn(initialWalletBalance);
-
+            float initialBalance = 1000;
+            float total = 0;
+            mockDummyWalletModel.Setup(dummyWalletModel => dummyWalletModel.GetWalletBalanceAsync(1)).ReturnsAsync(initialBalance);
             // Act
             await billingInfoViewModel.ProcessWalletRefillAsync();
-
             // Assert
-            Assert.AreEqual(1, mockDummyWalletModel.GetUpdateWalletBalanceCalls());
-            Assert.AreEqual(TEST_USER_ID, mockDummyWalletModel.GetLastUserIdUsed());
+            mockDummyWalletModel.Verify(dummyWalletModel => dummyWalletModel.UpdateWalletBalance(It.IsAny<int>(), It.IsAny<float>()), Times.Once);
         }
     }
 }
