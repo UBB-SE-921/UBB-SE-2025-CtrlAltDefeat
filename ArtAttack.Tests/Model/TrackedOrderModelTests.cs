@@ -6,8 +6,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
-using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -26,26 +26,31 @@ namespace ArtAttack.Tests.Model
         [TestInitialize]
         public void TestInitialize()
         {
-            // Setup mock objects
+            // Initialize mock objects
             _mockDatabaseProvider = new Mock<IDatabaseProvider>();
             _mockConnection = new Mock<IDbConnection>();
             _mockCommand = new Mock<IDbCommand>();
             _mockParameterCollection = new Mock<IDataParameterCollection>();
 
-            // Setup parameter collection
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameterCollection.Object);
+            // Setup the command’s parameter collection
+            _mockCommand.Setup(command => command.Parameters).Returns(_mockParameterCollection.Object);
 
             // Setup connection and command creation
-            _mockDatabaseProvider.Setup(p => p.CreateConnection(It.IsAny<string>())).Returns(_mockConnection.Object);
-            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
+            _mockDatabaseProvider
+                .Setup(provider => provider.CreateConnection(It.IsAny<string>()))
+                .Returns(_mockConnection.Object);
+            _mockConnection
+                .Setup(connection => connection.CreateCommand())
+                .Returns(_mockCommand.Object);
 
-            // Create the tracked order model with mocked database provider
+            // Create the TrackedOrderModel with the mocked database provider and connection string
+
             _trackedOrderModel = new TrackedOrderModel(ConnectionString, _mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
+        public void Constructor_WhenNullConnectionString_ThrowsArgumentNullException_()
         {
             // Act
             var model = new TrackedOrderModel(null, _mockDatabaseProvider.Object);
@@ -55,7 +60,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
+        public void Constructor_WhenNullDatabaseProvider_ThrowsArgumentNullException_()
         {
             // Act
             var model = new TrackedOrderModel(ConnectionString, null);
@@ -65,7 +70,7 @@ namespace ArtAttack.Tests.Model
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
-        public async Task AddTrackedOrderAsync_NegativeReturnValue_ThrowsException()
+        public async Task AddTrackedOrderAsync_WhenNegativeReturnValue_ThrowsException_()
         {
             // Arrange
             var order = new TrackedOrder
@@ -76,19 +81,17 @@ namespace ArtAttack.Tests.Model
                 CurrentStatus = OrderStatus.PROCESSING
             };
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            // Use descriptive variable name "dbParameter" for the created parameter
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
-            // Setup output parameter with negative value
-            var outputParam = new SqlParameter("@newTrackedOrderID", SqlDbType.Int) { Value = 0 };
-            _mockCommand.Setup(c => c.Parameters["@newTrackedOrderID"]).Returns(outputParam);
+            // Setup output parameter with an invalid value (0)
+            var outputParameter = new SqlParameter("@newTrackedOrderID", SqlDbType.Int) { Value = 0 };
+            _mockCommand.Setup(command => command.Parameters["@newTrackedOrderID"]).Returns(outputParameter);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
+            // Mock connection open and command execution
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
             // Act
             await _trackedOrderModel.AddTrackedOrderAsync(order);
@@ -97,7 +100,8 @@ namespace ArtAttack.Tests.Model
         }
 
         [TestMethod]
-        public async Task AddOrderCheckpointAsync_SuccessfulExecution_ReturnsNewId()
+        public async Task AddOrderCheckpointAsync_WhenSuccessfulExecution_ReturnsNewId_()
+
         {
             // Arrange
             var checkpoint = new OrderCheckpoint
@@ -109,42 +113,43 @@ namespace ArtAttack.Tests.Model
                 Status = OrderStatus.PROCESSING
             };
 
-            // Create mock parameter for output value
             int expectedCheckpointId = 42;
-            Mock<IDbDataParameter> mockOutputParameter = new Mock<IDbDataParameter>();
-            mockOutputParameter.Setup(p => p.ParameterName).Returns("@newCheckpointID");
-            mockOutputParameter.Setup(p => p.Value).Returns(expectedCheckpointId);
+            // Use a descriptive name for the output parameter
+            Mock<IDbDataParameter> outputDbParameter = new Mock<IDbDataParameter>();
+            outputDbParameter.Setup(parameter => parameter.ParameterName).Returns("@newCheckpointID");
+            outputDbParameter.Setup(parameter => parameter.Value).Returns(expectedCheckpointId);
 
-            // Setup parameter creation to return our custom output parameter
-            _mockCommand.SetupSequence(c => c.CreateParameter())
-                .Returns(new Mock<IDbDataParameter>().Object)
-                .Returns(new Mock<IDbDataParameter>().Object)
-                .Returns(new Mock<IDbDataParameter>().Object)
-                .Returns(new Mock<IDbDataParameter>().Object)
-                .Returns(new Mock<IDbDataParameter>().Object)
-                .Returns(mockOutputParameter.Object);
+            // Setup sequence of parameter creation so that the last one is our output parameter.
+            _mockCommand.SetupSequence(command => command.CreateParameter())
 
-            // Setup the command to return our parameter when accessed by name
-            _mockCommand.Setup(c => c.Parameters["@newCheckpointID"]).Returns(mockOutputParameter.Object);
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(new Mock<IDbDataParameter>().Object)
+                .Returns(outputDbParameter.Object);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
+            _mockCommand
+                .Setup(command => command.Parameters["@newCheckpointID"])
+                .Returns(outputDbParameter.Object);
 
-            // Mock ExecuteNonQueryAsync
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
+
 
             // Act
             int result = await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
 
             // Assert
             Assert.AreEqual(expectedCheckpointId, result);
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseProvider.Verify(provider => provider.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
         }
 
         [TestMethod]
-        public async Task AddTrackedOrderAsync_SuccessfulExecution_ReturnsNewId()
+        public async Task AddTrackedOrderAsync_WhenSuccessfulExecution_ReturnsNewId_()
+
         {
             // Arrange
             var order = new TrackedOrder
@@ -155,43 +160,40 @@ namespace ArtAttack.Tests.Model
                 CurrentStatus = OrderStatus.PROCESSING
             };
 
-            // Create mock parameter for output value
             int expectedTrackedOrderId = 789;
-            Mock<IDbDataParameter> mockOutputParameter = new Mock<IDbDataParameter>();
-            mockOutputParameter.Setup(p => p.ParameterName).Returns("@newTrackedOrderID");
-            mockOutputParameter.Setup(p => p.Value).Returns(expectedTrackedOrderId);
+            Mock<IDbDataParameter> outputDbParameter = new Mock<IDbDataParameter>();
+            outputDbParameter.Setup(parameter => parameter.ParameterName).Returns("@newTrackedOrderID");
+            outputDbParameter.Setup(parameter => parameter.Value).Returns(expectedTrackedOrderId);
 
-            // Setup parameter creation to return our custom output parameter
-            _mockCommand.SetupSequence(c => c.CreateParameter())
+            _mockCommand.SetupSequence(command => command.CreateParameter())
+
                 .Returns(new Mock<IDbDataParameter>().Object)
                 .Returns(new Mock<IDbDataParameter>().Object)
                 .Returns(new Mock<IDbDataParameter>().Object)
                 .Returns(new Mock<IDbDataParameter>().Object)
-                .Returns(mockOutputParameter.Object);
+                .Returns(outputDbParameter.Object);
 
-            // Setup the command to return our parameter when accessed by name
-            _mockCommand.Setup(c => c.Parameters["@newTrackedOrderID"]).Returns(mockOutputParameter.Object);
+            _mockCommand.Setup(command => command.Parameters["@newTrackedOrderID"])
+                .Returns(outputDbParameter.Object);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
-            // Mock ExecuteNonQueryAsync
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
 
             // Act
             int result = await _trackedOrderModel.AddTrackedOrderAsync(order);
 
             // Assert
             Assert.AreEqual(expectedTrackedOrderId, result);
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseProvider.Verify(provider => provider.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
         }
-
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
-        public async Task AddOrderCheckpointAsync_NegativeReturnValue_ThrowsException()
+        public async Task AddOrderCheckpointAsync_WhenNegativeReturnValue_ThrowsException_()
+
         {
             // Arrange
             var checkpoint = new OrderCheckpoint
@@ -203,19 +205,15 @@ namespace ArtAttack.Tests.Model
                 Status = OrderStatus.PROCESSING
             };
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            // Use "dbParameter" as descriptive name
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
-            // Setup output parameter with negative value
-            var outputParam = new SqlParameter("@newCheckpointID", SqlDbType.Int) { Value = 0 };
-            _mockCommand.Setup(c => c.Parameters["@newCheckpointID"]).Returns(outputParam);
+            var outputParameter = new SqlParameter("@newCheckpointID", SqlDbType.Int) { Value = 0 };
+            _mockCommand.Setup(command => command.Parameters["@newCheckpointID"]).Returns(outputParameter);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
             // Act
             await _trackedOrderModel.AddOrderCheckpointAsync(checkpoint);
@@ -224,100 +222,55 @@ namespace ArtAttack.Tests.Model
         }
 
         [TestMethod]
-        public async Task DeleteTrackedOrderAsync_ValidID_ReturnsTrue()
+        public async Task DeleteTrackedOrderAsync_WhenValidID_ReturnsTrue_()
         {
             // Arrange
             int trackOrderID = 123;
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync to return 1 (indicating success)
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
 
             // Act
             bool result = await _trackedOrderModel.DeleteTrackedOrderAsync(trackOrderID);
 
             // Assert
             Assert.IsTrue(result);
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseProvider.Verify(provider => provider.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(connection => connection.CreateCommand(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Verify command properties
-            _mockCommand.VerifySet(c => c.CommandText = "uspDeleteTrackedOrder");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-
-            // Verify parameters were created correctly
-            _mockCommand.Verify(c => c.CreateParameter(), Times.Once);
-            _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Once);
+            _mockCommand.VerifySet(command => command.CommandText = "uspDeleteTrackedOrder");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.Verify(command => command.CreateParameter(), Times.Once);
+            _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Once);
         }
 
         [TestMethod]
-        public async Task DeleteTrackedOrderAsync_NoRowsAffected_ReturnsFalse()
+        public async Task DeleteTrackedOrderAsync_WhenNoRowsAffected_ReturnsFalse_()
         {
             // Arrange
             int trackOrderID = 123;
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(0);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync to return 0 (indicating no rows affected)
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(0);
 
             // Act
             bool result = await _trackedOrderModel.DeleteTrackedOrderAsync(trackOrderID);
 
             // Assert
             Assert.IsFalse(result);
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
-        }
+            _mockDatabaseProvider.Verify(provider => provider.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(connection => connection.CreateCommand(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-        [TestMethod]
-        public async Task DeleteOrderCheckpointAsync_ValidID_ReturnsTrue()
-        {
-            // Arrange
-            int checkpointID = 456;
-
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
-
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync to return 1 (indicating success)
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
-
-            // Act
-            bool result = await _trackedOrderModel.DeleteOrderCheckpointAsync(checkpointID);
-
-            // Assert
-            Assert.IsTrue(result);
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
-
-            // Verify command properties
-            _mockCommand.VerifySet(c => c.CommandText = "uspDeleteOrderCheckpoint");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-
-            // Verify parameters were created correctly
-            _mockCommand.Verify(c => c.CreateParameter(), Times.Once);
-            _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Once);
         }
 
         [TestMethod]
@@ -325,9 +278,8 @@ namespace ArtAttack.Tests.Model
         {
             // Arrange
             SetupMockDataReaderForTrackedOrders();
+            _mockConnection.Setup(connection => connection.Open());
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
 
             // Act
             List<TrackedOrder> result = await _trackedOrderModel.GetAllTrackedOrdersAsync();
@@ -339,22 +291,22 @@ namespace ArtAttack.Tests.Model
             Assert.AreEqual(201, result[0].OrderID);
             Assert.AreEqual(OrderStatus.PROCESSING, result[0].CurrentStatus);
 
-            _mockCommand.VerifySet(c => c.CommandText = "SELECT * FROM TrackedOrders");
+            _mockCommand.VerifySet(command => command.CommandText = "SELECT * FROM TrackedOrders");
         }
 
         [TestMethod]
-        public async Task GetAllOrderCheckpointsAsync_ValidTrackedOrderID_ReturnsCheckpointList()
+        public async Task GetAllOrderCheckpointsAsync_WhenValidTrackedOrderID_ReturnsCheckpointList_()
+
         {
             // Arrange
             int trackedOrderID = 101;
             SetupMockDataReaderForOrderCheckpoints();
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
+            _mockConnection.Setup(connection => connection.Open());
+
 
             // Act
             List<OrderCheckpoint> result = await _trackedOrderModel.GetAllOrderCheckpointsAsync(trackedOrderID);
@@ -367,24 +319,24 @@ namespace ArtAttack.Tests.Model
             Assert.AreEqual("Order processed", result[0].Description);
             Assert.AreEqual(OrderStatus.PROCESSING, result[0].Status);
 
-            _mockCommand.VerifySet(c => c.CommandText = "SELECT * FROM OrderCheckpoints WHERE TrackedOrderID = @trackedOrderID");
-            _mockCommand.Verify(c => c.CreateParameter(), Times.Once);
-            _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Once);
+            _mockCommand.VerifySet(command => command.CommandText = "SELECT * FROM OrderCheckpoints WHERE TrackedOrderID = @trackedOrderID");
+            _mockCommand.Verify(command => command.CreateParameter(), Times.Once);
+            _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetTrackedOrderByIdAsync_ValidID_ReturnsTrackedOrder()
+        public async Task GetTrackedOrderByIdAsync_WhenValidID_ReturnsTrackedOrder_()
+
         {
             // Arrange
             int trackedOrderID = 101;
             SetupMockDataReaderForTrackedOrders();
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
+            _mockConnection.Setup(connection => connection.Open());
+
 
             // Act
             TrackedOrder result = await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
@@ -395,31 +347,25 @@ namespace ArtAttack.Tests.Model
             Assert.AreEqual(201, result.OrderID);
             Assert.AreEqual(OrderStatus.PROCESSING, result.CurrentStatus);
 
-            _mockCommand.VerifySet(c => c.CommandText = "SELECT * FROM TrackedOrders WHERE TrackedOrderID = @trackedOrderID");
-            _mockCommand.Verify(c => c.CreateParameter(), Times.Once);
-            _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Once);
+            _mockCommand.VerifySet(command => command.CommandText = "SELECT * FROM TrackedOrders WHERE TrackedOrderID = @trackedOrderID");
+            _mockCommand.Verify(command => command.CreateParameter(), Times.Once);
+            _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Once);
+
         }
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
-        public async Task GetTrackedOrderByIdAsync_NonExistentID_ThrowsException()
+        public async Task GetTrackedOrderByIdAsync_WhenNonExistentID_ThrowsException_()
         {
             // Arrange
             int trackedOrderID = 999;
+            var mockDataReader = new Mock<IDataReader>();
+            mockDataReader.Setup(reader => reader.Read()).Returns(false);
 
-            // Setup an empty data reader (no rows)
-            Mock<IDataReader> mockDataReader = new Mock<IDataReader>();
-            mockDataReader.Setup(r => r.Read()).Returns(false);
-
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
-
-            // Setup command to return the mock data reader
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(mockDataReader.Object);
-
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(mockDataReader.Object);
+            _mockConnection.Setup(connection => connection.Open());
 
             // Act
             await _trackedOrderModel.GetTrackedOrderByIdAsync(trackedOrderID);
@@ -428,18 +374,18 @@ namespace ArtAttack.Tests.Model
         }
 
         [TestMethod]
-        public async Task GetOrderCheckpointByIdAsync_ValidID_ReturnsOrderCheckpoint()
+        public async Task GetOrderCheckpointByIdAsync_WhenValidID_ReturnsOrderCheckpoint_()
+
         {
             // Arrange
             int checkpointID = 201;
             SetupMockDataReaderForOrderCheckpoints();
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
+            _mockConnection.Setup(connection => connection.Open());
+
 
             // Act
             OrderCheckpoint result = await _trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
@@ -451,31 +397,25 @@ namespace ArtAttack.Tests.Model
             Assert.AreEqual("Order processed", result.Description);
             Assert.AreEqual(OrderStatus.PROCESSING, result.Status);
 
-            _mockCommand.VerifySet(c => c.CommandText = "SELECT * FROM OrderCheckpoints WHERE CheckpointID = @checkpointID");
-            _mockCommand.Verify(c => c.CreateParameter(), Times.Once);
-            _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Once);
+            _mockCommand.VerifySet(command => command.CommandText = "SELECT * FROM OrderCheckpoints WHERE CheckpointID = @checkpointID");
+            _mockCommand.Verify(command => command.CreateParameter(), Times.Once);
+            _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Once);
+
         }
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
-        public async Task GetOrderCheckpointByIdAsync_NonExistentID_ThrowsException()
+        public async Task GetOrderCheckpointByIdAsync_WhenNonExistentID_ThrowsException_()
         {
             // Arrange
             int checkpointID = 999;
+            var mockDataReader = new Mock<IDataReader>();
+            mockDataReader.Setup(reader => reader.Read()).Returns(false);
 
-            // Setup an empty data reader (no rows)
-            Mock<IDataReader> mockDataReader = new Mock<IDataReader>();
-            mockDataReader.Setup(r => r.Read()).Returns(false);
-
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
-
-            // Setup command to return the mock data reader
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(mockDataReader.Object);
-
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(mockDataReader.Object);
+            _mockConnection.Setup(connection => connection.Open());
 
             // Act
             await _trackedOrderModel.GetOrderCheckpointByIdAsync(checkpointID);
@@ -484,43 +424,38 @@ namespace ArtAttack.Tests.Model
         }
 
         [TestMethod]
-        public async Task UpdateTrackedOrderAsync_ValidParameters_ExecutesStoredProcedure()
+        public async Task UpdateTrackedOrderAsync_WhenValidParameters_ExecutesStoredProcedure_()
+
         {
             // Arrange
             int trackedOrderID = 101;
             DateOnly estimatedDeliveryDate = new DateOnly(2025, 4, 20);
             OrderStatus currentStatus = OrderStatus.SHIPPED;
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
 
             // Act
             await _trackedOrderModel.UpdateTrackedOrderAsync(trackedOrderID, estimatedDeliveryDate, currentStatus);
 
             // Assert
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseProvider.Verify(provider => provider.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(connection => connection.CreateCommand(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Verify command properties
-            _mockCommand.VerifySet(c => c.CommandText = "uspUpdateTrackedOrder");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-
-            // Verify parameters were created correctly
-            _mockCommand.Verify(c => c.CreateParameter(), Times.Exactly(3));
-            _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Exactly(3));
+            _mockCommand.VerifySet(command => command.CommandText = "uspUpdateTrackedOrder");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.Verify(command => command.CreateParameter(), Times.Exactly(3));
+            _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Exactly(3));
         }
 
         [TestMethod]
-        public async Task UpdateOrderCheckpointAsync_ValidParameters_ExecutesStoredProcedure()
+        public async Task UpdateOrderCheckpointAsync_WhenValidParameters_ExecutesStoredProcedure_()
+
         {
             // Arrange
             int checkpointID = 201;
@@ -529,36 +464,30 @@ namespace ArtAttack.Tests.Model
             string description = "Order in transit";
             OrderStatus status = OrderStatus.SHIPPED;
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
 
             // Act
             await _trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
 
             // Assert
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseProvider.Verify(provider => provider.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(connection => connection.CreateCommand(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            // Verify command properties
-            _mockCommand.VerifySet(c => c.CommandText = "uspUpdateOrderCheckpoint");
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-
-            // Verify parameters were created correctly
-            _mockCommand.Verify(c => c.CreateParameter(), Times.Exactly(5));
-            _mockParameterCollection.Verify(p => p.Add(It.IsAny<object>()), Times.Exactly(5));
+            _mockCommand.VerifySet(command => command.CommandText = "uspUpdateOrderCheckpoint");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.Verify(command => command.CreateParameter(), Times.Exactly(5));
+            _mockParameterCollection.Verify(collection => collection.Add(It.IsAny<object>()), Times.Exactly(5));
         }
 
         [TestMethod]
-        public async Task UpdateOrderCheckpointAsync_NullLocation_HandlesNullValue()
+        public async Task UpdateOrderCheckpointAsync_WhenNullLocation_HandlesNullValue_()
+
         {
             // Arrange
             int checkpointID = 201;
@@ -567,90 +496,76 @@ namespace ArtAttack.Tests.Model
             string description = "Order in transit";
             OrderStatus status = OrderStatus.SHIPPED;
 
-            // Setup parameter creation
-            Mock<IDbDataParameter> mockParameter = new Mock<IDbDataParameter>();
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(mockParameter.Object);
+            Mock<IDbDataParameter> dbParameter = new Mock<IDbDataParameter>();
+            _mockCommand.Setup(command => command.CreateParameter()).Returns(dbParameter.Object);
+            _mockConnection.Setup(connection => connection.Open());
+            _mockCommand.Setup(command => command.ExecuteNonQuery()).Returns(1);
 
-            // Mock the behavior of OpenAsync
-            _mockConnection.Setup(c => c.Open());
-
-            // Mock ExecuteNonQueryAsync
-            _mockCommand.Setup(c => c.ExecuteNonQuery()).Returns(1);
 
             // Act
             await _trackedOrderModel.UpdateOrderCheckpointAsync(checkpointID, timestamp, location, description, status);
 
             // Assert
-            _mockDatabaseProvider.Verify(p => p.CreateConnection(ConnectionString), Times.Once);
-            _mockConnection.Verify(c => c.CreateCommand(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            _mockDatabaseProvider.Verify(provider => provider.CreateConnection(ConnectionString), Times.Once);
+            _mockConnection.Verify(connection => connection.CreateCommand(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
         }
 
-        #region Helper Methods
 
         private void SetupMockDataReaderForTrackedOrders()
         {
-            // Create a mock data reader
-            Mock<IDataReader> mockDataReader = new Mock<IDataReader>();
+            // Create a mock data reader that returns one tracked order record.
+            var mockDataReader = new Mock<IDataReader>();
+            int readCallCount = 0;
+            mockDataReader.Setup(reader => reader.Read()).Returns(() => readCallCount++ == 0);
 
-            // Setup Read behavior to return true once then false
-            int callCount = 0;
-            mockDataReader.Setup(r => r.Read()).Returns(() => callCount++ == 0);
+            // Setup column ordinal mapping.
+            mockDataReader.Setup(reader => reader.GetOrdinal("TrackedOrderID")).Returns(0);
+            mockDataReader.Setup(reader => reader.GetOrdinal("OrderID")).Returns(1);
+            mockDataReader.Setup(reader => reader.GetOrdinal("OrderStatus")).Returns(2);
+            mockDataReader.Setup(reader => reader.GetOrdinal("EstimatedDeliveryDate")).Returns(3);
+            mockDataReader.Setup(reader => reader.GetOrdinal("DeliveryAddress")).Returns(4);
 
-            // Setup GetOrdinal for field indexes
-            mockDataReader.Setup(r => r.GetOrdinal("TrackedOrderID")).Returns(0);
-            mockDataReader.Setup(r => r.GetOrdinal("OrderID")).Returns(1);
-            mockDataReader.Setup(r => r.GetOrdinal("OrderStatus")).Returns(2);
-            mockDataReader.Setup(r => r.GetOrdinal("EstimatedDeliveryDate")).Returns(3);
-            mockDataReader.Setup(r => r.GetOrdinal("DeliveryAddress")).Returns(4);
+            // Setup field value retrieval.
+            mockDataReader.Setup(reader => reader.GetInt32(0)).Returns(101);
+            mockDataReader.Setup(reader => reader.GetInt32(1)).Returns(201);
+            mockDataReader.Setup(reader => reader.GetString(2)).Returns(OrderStatus.PROCESSING.ToString());
+            mockDataReader.Setup(reader => reader.GetDateTime(3)).Returns(new DateTime(2025, 4, 15));
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns("123 Test St, Test City");
 
-            // Setup field value retrieval
-            mockDataReader.Setup(r => r.GetInt32(0)).Returns(101);
-            mockDataReader.Setup(r => r.GetInt32(1)).Returns(201);
-            mockDataReader.Setup(r => r.GetString(2)).Returns(OrderStatus.PROCESSING.ToString());
-            mockDataReader.Setup(r => r.GetDateTime(3)).Returns(new DateTime(2025, 4, 15));
-            mockDataReader.Setup(r => r.GetString(4)).Returns("123 Test St, Test City");
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(mockDataReader.Object);
 
-            // Setup for DateOnly conversion via GetFieldValue
-            mockDataReader.Setup(r => r.GetDateTime(3)).Returns(new DateTime(2025, 4, 15));
-
-            // Setup command to return the mock data reader
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(mockDataReader.Object);
         }
 
         private void SetupMockDataReaderForOrderCheckpoints()
         {
-            // Create a mock data reader
-            Mock<IDataReader> mockDataReader = new Mock<IDataReader>();
-
-            // Setup Read behavior to return true once then false
+            // Create a mock data reader that returns one order checkpoint record.
+            var mockDataReader = new Mock<IDataReader>();
             int callCount = 0;
-            mockDataReader.Setup(r => r.Read()).Returns(() => callCount++ == 0);
+            mockDataReader.Setup(reader => reader.Read()).Returns(() => callCount++ == 0);
 
-            // Setup GetOrdinal for field indexes
-            mockDataReader.Setup(r => r.GetOrdinal("CheckpointID")).Returns(0);
-            mockDataReader.Setup(r => r.GetOrdinal("Timestamp")).Returns(1);
-            mockDataReader.Setup(r => r.GetOrdinal("Location")).Returns(2);
-            mockDataReader.Setup(r => r.GetOrdinal("Description")).Returns(3);
-            mockDataReader.Setup(r => r.GetOrdinal("CheckpointStatus")).Returns(4);
-            mockDataReader.Setup(r => r.GetOrdinal("TrackedOrderID")).Returns(5);
+            // Setup column ordinal mapping.
+            mockDataReader.Setup(reader => reader.GetOrdinal("CheckpointID")).Returns(0);
+            mockDataReader.Setup(reader => reader.GetOrdinal("Timestamp")).Returns(1);
+            mockDataReader.Setup(reader => reader.GetOrdinal("Location")).Returns(2);
+            mockDataReader.Setup(reader => reader.GetOrdinal("Description")).Returns(3);
+            mockDataReader.Setup(reader => reader.GetOrdinal("CheckpointStatus")).Returns(4);
+            mockDataReader.Setup(reader => reader.GetOrdinal("TrackedOrderID")).Returns(5);
 
-            // Setup IsDBNull for nullable fields
-            mockDataReader.Setup(r => r.IsDBNull(2)).Returns(false);
+            // Setup IsDBNull for nullable fields.
+            mockDataReader.Setup(reader => reader.IsDBNull(2)).Returns(false);
 
-            // Setup field value retrieval
-            mockDataReader.Setup(r => r.GetInt32(0)).Returns(201);
-            mockDataReader.Setup(r => r.GetDateTime(1)).Returns(new DateTime(2025, 4, 10, 12, 0, 0));
-            mockDataReader.Setup(r => r.GetString(2)).Returns("Distribution Center");
-            mockDataReader.Setup(r => r.GetString(3)).Returns("Order processed");
-            mockDataReader.Setup(r => r.GetString(4)).Returns(OrderStatus.PROCESSING.ToString());
-            mockDataReader.Setup(r => r.GetInt32(5)).Returns(101);
+            // Setup field value retrieval.
+            mockDataReader.Setup(reader => reader.GetInt32(0)).Returns(201);
+            mockDataReader.Setup(reader => reader.GetDateTime(1)).Returns(new DateTime(2025, 4, 10, 12, 0, 0));
+            mockDataReader.Setup(reader => reader.GetString(2)).Returns("Distribution Center");
+            mockDataReader.Setup(reader => reader.GetString(3)).Returns("Order processed");
+            mockDataReader.Setup(reader => reader.GetString(4)).Returns(OrderStatus.PROCESSING.ToString());
+            mockDataReader.Setup(reader => reader.GetInt32(5)).Returns(101);
 
-            // Setup command to return the mock data reader
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(mockDataReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(mockDataReader.Object);
         }
-
-        #endregion
     }
 }
+

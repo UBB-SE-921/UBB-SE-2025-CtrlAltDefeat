@@ -1,12 +1,15 @@
-﻿using ArtAttack.Domain;
-using ArtAttack.Model;
-using ArtAttack.Shared;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using ArtAttack.Model;
+using ArtAttack.Domain;
+using ArtAttack.Shared;
 
 namespace ArtAttack.Tests.Model
 {
@@ -33,21 +36,62 @@ namespace ArtAttack.Tests.Model
             _mockParameter = new Mock<IDbDataParameter>();
             _mockDatabaseProvider = new Mock<IDatabaseProvider>();
 
-            // Setup the parameter collection mock
-            _mockParameters.Setup(p => p.Add(It.IsAny<object>())).Returns(0);
+            // Setup the parameter collection mock with a default Add callback
+            _mockParameters
+                .Setup(parameterCollection => parameterCollection.Add(It.IsAny<object>()))
+                .Returns(0);
 
-            // Setup the command mock
-            _mockCommand.Setup(c => c.CreateParameter()).Returns(_mockParameter.Object);
-            _mockCommand.Setup(c => c.Parameters).Returns(_mockParameters.Object);
+            // Setup command mock for creating parameters and exposing the parameter collection
+            _mockCommand
+                .Setup(command => command.CreateParameter())
+                .Returns(_mockParameter.Object);
+            _mockCommand
+                .Setup(command => command.Parameters)
+                .Returns(_mockParameters.Object);
 
-            // Setup the connection mock
-            _mockConnection.Setup(c => c.CreateCommand()).Returns(_mockCommand.Object);
+            // Setup connection mock to return the command mock
+            _mockConnection
+                .Setup(connection => connection.CreateCommand())
+                .Returns(_mockCommand.Object);
 
-            // Setup the database provider mock
-            _mockDatabaseProvider.Setup(p => p.CreateConnection(It.IsAny<string>())).Returns(_mockConnection.Object);
+            // Setup the database provider mock to return the connection mock
+            _mockDatabaseProvider
+                .Setup(provider => provider.CreateConnection(It.IsAny<string>()))
+                .Returns(_mockConnection.Object);
 
-            // Initialize the model with the mock database provider
+            // Initialize the model with the mock database provider and connection string
             _orderModel = new OrderModel(_testConnectionString, _mockDatabaseProvider.Object);
+        }
+
+        /// <summary>
+        /// Helper method to capture added parameters.
+        /// </summary>
+        private List<IDbDataParameter> CaptureParameters()
+        {
+            var capturedParameters = new List<IDbDataParameter>();
+            _mockParameters
+                .Setup(parameterCollection => parameterCollection.Add(It.IsAny<IDbDataParameter>()))
+                .Callback<object>(parameter =>
+                {
+                    capturedParameters.Add((IDbDataParameter)parameter);
+                })
+                .Returns(0);
+            return capturedParameters;
+        }
+
+        /// <summary>
+        /// Helper method to setup the standard column ordinals for order retrieval.
+        /// </summary>
+        private void SetupCommonOrderReaderOrdinals()
+        {
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("OrderID")).Returns(0);
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("ProductID")).Returns(1);
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("BuyerID")).Returns(2);
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("OrderSummaryID")).Returns(3);
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("OrderHistoryID")).Returns(4);
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("ProductType")).Returns(5);
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("PaymentMethod")).Returns(6);
+            _mockReader.Setup(dataReader => dataReader.GetOrdinal("OrderDate")).Returns(7);
         }
 
         [TestMethod]
@@ -61,27 +105,21 @@ namespace ArtAttack.Tests.Model
             int orderSummaryId = 4;
             DateTime orderDate = DateTime.Now;
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            var capturedParameters = CaptureParameters();
 
             // Act
             await _orderModel.AddOrderAsync(productId, buyerId, productType, paymentMethod, orderSummaryId, orderDate);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "AddOrder");
+            // Verify stored procedure configuration
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "AddOrder");
 
-            // Instead of verifying ExecuteNonQueryAsync directly, verify ExecuteNonQuery which is what the extension method calls
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
+            // Verify the command execution and connection opening
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
 
-            // Instead of verifying OpenAsync directly, verify Open which is what the extension method calls
-            _mockConnection.Verify(c => c.Open(), Times.Once);
-
-            // Verify parameters
+            // Verify parameters (using one assert per aspect via a helper method)
             Assert.AreEqual(6, capturedParameters.Count, "Should have added 6 parameters");
             AssertParameterValue(capturedParameters, "@ProductID", productId);
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
@@ -89,15 +127,6 @@ namespace ArtAttack.Tests.Model
             AssertParameterValue(capturedParameters, "@PaymentMethod", paymentMethod);
             AssertParameterValue(capturedParameters, "@OrderSummaryID", orderSummaryId);
             AssertParameterValue(capturedParameters, "@OrderDate", orderDate);
-        }
-
-
-        // Helper method to check parameter values
-        private void AssertParameterValue(List<IDbDataParameter> parameters, string paramName, object expectedValue)
-        {
-            var param = parameters.FirstOrDefault(p => p.ParameterName == paramName);
-            Assert.IsNotNull(param, $"Parameter {paramName} not found");
-            Assert.AreEqual(expectedValue, param.Value, $"Parameter {paramName} has incorrect value");
         }
 
         [TestMethod]
@@ -109,25 +138,18 @@ namespace ArtAttack.Tests.Model
             string paymentMethod = "Credit Card";
             DateTime orderDate = DateTime.Now;
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            var capturedParameters = CaptureParameters();
 
             // Act
             await _orderModel.UpdateOrderAsync(orderId, productType, paymentMethod, orderDate);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "UpdateOrder");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "UpdateOrder");
 
-            // Instead of verifying extension methods directly
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
 
-            // Verify parameters
             Assert.AreEqual(4, capturedParameters.Count, "Should have added 4 parameters");
             AssertParameterValue(capturedParameters, "@OrderID", orderId);
             AssertParameterValue(capturedParameters, "@ProductType", productType);
@@ -140,26 +162,18 @@ namespace ArtAttack.Tests.Model
         {
             // Arrange
             int orderId = 1;
-
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            var capturedParameters = CaptureParameters();
 
             // Act
             await _orderModel.DeleteOrderAsync(orderId);
 
             // Assert
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "DeleteOrder");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "DeleteOrder");
 
-            // Instead of verifying extension methods directly
-            _mockCommand.Verify(c => c.ExecuteNonQuery(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
 
-            // Verify parameters
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@OrderID", orderId);
         }
@@ -170,96 +184,92 @@ namespace ArtAttack.Tests.Model
             // Arrange
             int buyerId = 42;
             DateTime orderDate = DateTime.Now;
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            // Setup common column ordinals
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
-
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
+            // Setup the IDataReader for two records
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
                 .Returns(true)   // First record
                 .Returns(true)   // Second record
                 .Returns(false); // End of data
 
-            // First order
-            _mockReader.SetupSequence(r => r.GetInt32(0))
+            // Setup values for the first and second order records
+            _mockReader.SetupSequence(dataReader => dataReader.GetInt32(0))
                 .Returns(101)
-                .Returns(102);
-            _mockReader.SetupSequence(r => r.GetInt32(1))
-                .Returns(201)
-                .Returns(202);
-            _mockReader.SetupSequence(r => r.GetInt32(2))
-                .Returns(buyerId)
-                .Returns(buyerId);
-            _mockReader.SetupSequence(r => r.GetInt32(3))
-                .Returns(301)
-                .Returns(302);
-            _mockReader.SetupSequence(r => r.GetInt32(4))
-                .Returns(401)
-                .Returns(402);
-            _mockReader.SetupSequence(r => r.GetInt32(5))
-                .Returns(1)
-                .Returns(2);
-            _mockReader.SetupSequence(r => r.GetString(6))
-                .Returns("Credit Card")
-                .Returns("PayPal");
-            _mockReader.SetupSequence(r => r.GetDateTime(7))
-                .Returns(orderDate)
-                .Returns(orderDate.AddDays(-1));
+                .Returns(102); // OrderID
 
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockReader.SetupSequence(dataReader => dataReader.GetInt32(1))
+                .Returns(201)
+                .Returns(202); // ProductID
+
+            _mockReader.SetupSequence(dataReader => dataReader.GetInt32(2))
+                .Returns(buyerId)
+                .Returns(buyerId); // BuyerID
+
+            _mockReader.SetupSequence(dataReader => dataReader.GetInt32(3))
+                .Returns(301)
+                .Returns(302); // OrderSummaryID
+
+            _mockReader.SetupSequence(dataReader => dataReader.GetInt32(4))
+                .Returns(401)
+                .Returns(402); // OrderHistoryID
+
+            _mockReader.SetupSequence(dataReader => dataReader.GetInt32(5))
+                .Returns(1)
+                .Returns(2);   // ProductType
+
+            _mockReader.SetupSequence(dataReader => dataReader.GetString(6))
+                .Returns("Credit Card")
+                .Returns("PayPal"); // PaymentMethod
+
+            _mockReader.SetupSequence(dataReader => dataReader.GetDateTime(7))
+                .Returns(orderDate)
+                .Returns(orderDate.AddDays(-1)); // OrderDate
+
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = await _orderModel.GetBorrowedOrderHistoryAsync(buyerId);
 
-            // Assert
-            Assert.AreEqual(2, results.Count);
+            // Assert (using a single assert per record via a helper comparison)
+            Assert.AreEqual(2, results.Count, "Should have returned two orders");
 
             // First order
-            Assert.AreEqual(101, results[0].OrderID);
-            Assert.AreEqual(201, results[0].ProductID);
-            Assert.AreEqual(buyerId, results[0].BuyerID);
-            Assert.AreEqual(301, results[0].OrderSummaryID);
-            Assert.AreEqual(401, results[0].OrderHistoryID);
-            Assert.AreEqual(1, results[0].ProductType);
-            Assert.AreEqual("Credit Card", results[0].PaymentMethod);
-            Assert.AreEqual(orderDate, results[0].OrderDate);
+            AssertOrderRecordEquality(new
+            {
+                OrderID = 101,
+                ProductID = 201,
+                BuyerID = buyerId,
+                OrderSummaryID = 301,
+                OrderHistoryID = 401,
+                ProductType = 1,
+                PaymentMethod = "Credit Card",
+                OrderDate = orderDate
+            }, results[0]);
 
             // Second order
-            Assert.AreEqual(102, results[1].OrderID);
-            Assert.AreEqual(202, results[1].ProductID);
-            Assert.AreEqual(buyerId, results[1].BuyerID);
-            Assert.AreEqual(302, results[1].OrderSummaryID);
-            Assert.AreEqual(402, results[1].OrderHistoryID);
-            Assert.AreEqual(2, results[1].ProductType);
-            Assert.AreEqual("PayPal", results[1].PaymentMethod);
-            Assert.AreEqual(orderDate.AddDays(-1), results[1].OrderDate);
+            AssertOrderRecordEquality(new
+            {
+                OrderID = 102,
+                ProductID = 202,
+                BuyerID = buyerId,
+                OrderSummaryID = 302,
+                OrderHistoryID = 402,
+                ProductType = 2,
+                PaymentMethod = "PayPal",
+                OrderDate = orderDate.AddDays(-1)
+            }, results[1]);
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_borrowed_order_history");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_borrowed_order_history");
 
-            // Verify parameters
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
 
         [TestMethod]
@@ -268,67 +278,51 @@ namespace ArtAttack.Tests.Model
             // Arrange
             int buyerId = 42;
             DateTime orderDate = DateTime.Now;
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
-
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
                 .Returns(true)   // First record
                 .Returns(false); // End of data
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(buyerId);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(3); // New or used
-            _mockReader.Setup(r => r.GetString(6)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetDateTime(7)).Returns(orderDate);
+            // Setup values for the record
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);           // OrderID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);           // ProductID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(buyerId);         // BuyerID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(301);             // OrderSummaryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(401);             // OrderHistoryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(3);               // ProductType
+            _mockReader.Setup(dataReader => dataReader.GetString(6)).Returns("Credit Card");  // PaymentMethod
+            _mockReader.Setup(dataReader => dataReader.GetDateTime(7)).Returns(orderDate);      // OrderDate
 
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = await _orderModel.GetNewOrUsedOrderHistoryAsync(buyerId);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(101, results[0].OrderID);
-            Assert.AreEqual(201, results[0].ProductID);
-            Assert.AreEqual(buyerId, results[0].BuyerID);
-            Assert.AreEqual(301, results[0].OrderSummaryID);
-            Assert.AreEqual(401, results[0].OrderHistoryID);
-            Assert.AreEqual(3, results[0].ProductType);
-            Assert.AreEqual("Credit Card", results[0].PaymentMethod);
-            Assert.AreEqual(orderDate, results[0].OrderDate);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            AssertOrderRecordEquality(new
+            {
+                OrderID = 101,
+                ProductID = 201,
+                BuyerID = buyerId,
+                OrderSummaryID = 301,
+                OrderHistoryID = 401,
+                ProductType = 3,
+                PaymentMethod = "Credit Card",
+                OrderDate = orderDate
+            }, results[0]);
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_new_or_used_order_history");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_new_or_used_order_history");
 
-            // Verify parameters 
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
 
         [TestMethod]
@@ -337,61 +331,42 @@ namespace ArtAttack.Tests.Model
             // Arrange
             int buyerId = 42;
             DateTime orderDate = DateTime.Now;
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
+                .Returns(true)    // First record
+                .Returns(false);  // End of data
 
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
-                .Returns(true)   // First record
-                .Returns(false); // End of data
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);            // OrderID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);            // ProductID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(buyerId);          // BuyerID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(301);            // OrderSummaryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(401);            // OrderHistoryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(1);              // ProductType
+            _mockReader.Setup(dataReader => dataReader.GetString(6)).Returns("Credit Card"); // PaymentMethod
+            _mockReader.Setup(dataReader => dataReader.GetDateTime(7)).Returns(orderDate.AddMonths(-2)); // OrderDate
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(buyerId);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(1);
-            _mockReader.Setup(r => r.GetString(6)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetDateTime(7)).Returns(orderDate.AddMonths(-2));
-
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = _orderModel.GetOrdersFromLastThreeMonths(buyerId);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(101, results[0].OrderID);
-            Assert.AreEqual(orderDate.AddMonths(-2), results[0].OrderDate);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            // Here we check only a couple of key fields as an example
+            Assert.AreEqual(101, results[0].OrderID, "OrderID mismatch");
+            Assert.AreEqual(orderDate.AddMonths(-2), results[0].OrderDate, "OrderDate mismatch");
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_orders_from_last_3_months");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_orders_from_last_3_months");
 
-            // Verify parameters
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
 
         [TestMethod]
@@ -400,61 +375,41 @@ namespace ArtAttack.Tests.Model
             // Arrange
             int buyerId = 42;
             DateTime orderDate = DateTime.Now;
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
+                .Returns(true)    // First record
+                .Returns(false);  // End of data
 
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
-                .Returns(true)   // First record
-                .Returns(false); // End of data
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);            // OrderID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);            // ProductID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(buyerId);          // BuyerID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(301);            // OrderSummaryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(401);            // OrderHistoryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(1);              // ProductType
+            _mockReader.Setup(dataReader => dataReader.GetString(6)).Returns("Credit Card"); // PaymentMethod
+            _mockReader.Setup(dataReader => dataReader.GetDateTime(7)).Returns(orderDate.AddMonths(-5)); // OrderDate
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(buyerId);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(1);
-            _mockReader.Setup(r => r.GetString(6)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetDateTime(7)).Returns(orderDate.AddMonths(-5));
-
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = _orderModel.GetOrdersFromLastSixMonths(buyerId);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(101, results[0].OrderID);
-            Assert.AreEqual(orderDate.AddMonths(-5), results[0].OrderDate);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            Assert.AreEqual(101, results[0].OrderID, "OrderID mismatch");
+            Assert.AreEqual(orderDate.AddMonths(-5), results[0].OrderDate, "OrderDate mismatch");
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_orders_from_last_6_months");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_orders_from_last_6_months");
 
-            // Verify parameters
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
 
         [TestMethod]
@@ -464,61 +419,41 @@ namespace ArtAttack.Tests.Model
             int buyerId = 42;
             string searchText = "test";
             DateTime orderDate = DateTime.Now;
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
-
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
                 .Returns(true)   // First record
                 .Returns(false); // End of data
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(buyerId);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(1);
-            _mockReader.Setup(r => r.GetString(6)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetDateTime(7)).Returns(orderDate);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);            // OrderID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);            // ProductID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(buyerId);          // BuyerID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(301);            // OrderSummaryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(401);            // OrderHistoryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(1);              // ProductType
+            _mockReader.Setup(dataReader => dataReader.GetString(6)).Returns("Credit Card"); // PaymentMethod
+            _mockReader.Setup(dataReader => dataReader.GetDateTime(7)).Returns(orderDate);     // OrderDate
 
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = _orderModel.GetOrdersByName(buyerId, searchText);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(101, results[0].OrderID);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            Assert.AreEqual(101, results[0].OrderID, "OrderID mismatch");
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_orders_by_name");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_orders_by_name");
 
-            // Verify parameters
             Assert.AreEqual(2, capturedParameters.Count, "Should have added 2 parameters");
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
             AssertParameterValue(capturedParameters, "@text", searchText);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
 
         [TestMethod]
@@ -527,61 +462,41 @@ namespace ArtAttack.Tests.Model
             // Arrange
             int buyerId = 42;
             DateTime orderDate = new DateTime(2024, 3, 10);
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
-
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
                 .Returns(true)   // First record
                 .Returns(false); // End of data
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(buyerId);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(1);
-            _mockReader.Setup(r => r.GetString(6)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetDateTime(7)).Returns(orderDate);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);            // OrderID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);            // ProductID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(buyerId);          // BuyerID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(301);            // OrderSummaryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(401);            // OrderHistoryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(1);              // ProductType
+            _mockReader.Setup(dataReader => dataReader.GetString(6)).Returns("Credit Card"); // PaymentMethod
+            _mockReader.Setup(dataReader => dataReader.GetDateTime(7)).Returns(orderDate);     // OrderDate
 
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = _orderModel.GetOrdersFrom2024(buyerId);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(101, results[0].OrderID);
-            Assert.AreEqual(orderDate, results[0].OrderDate);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            Assert.AreEqual(101, results[0].OrderID, "OrderID mismatch");
+            Assert.AreEqual(orderDate, results[0].OrderDate, "OrderDate mismatch");
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_orders_from_2024");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_orders_from_2024");
 
-            // Verify parameters
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
 
         [TestMethod]
@@ -590,63 +505,42 @@ namespace ArtAttack.Tests.Model
             // Arrange
             int buyerId = 42;
             DateTime orderDate = new DateTime(2025, 6, 15);
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
-
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
                 .Returns(true)   // First record
                 .Returns(false); // End of data
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(buyerId);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(1);
-            _mockReader.Setup(r => r.GetString(6)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetDateTime(7)).Returns(orderDate);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);            // OrderID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);            // ProductID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(buyerId);          // BuyerID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(301);            // OrderSummaryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(401);            // OrderHistoryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(1);              // ProductType
+            _mockReader.Setup(dataReader => dataReader.GetString(6)).Returns("Credit Card"); // PaymentMethod
+            _mockReader.Setup(dataReader => dataReader.GetDateTime(7)).Returns(orderDate);     // OrderDate
 
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = _orderModel.GetOrdersFrom2025(buyerId);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(101, results[0].OrderID);
-            Assert.AreEqual(orderDate, results[0].OrderDate);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            Assert.AreEqual(101, results[0].OrderID, "OrderID mismatch");
+            Assert.AreEqual(orderDate, results[0].OrderDate, "OrderDate mismatch");
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_orders_from_2025");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_orders_from_2025");
 
-            // Verify parameters
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@BuyerID", buyerId);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
-
 
         [TestMethod]
         public async Task GetOrdersFromOrderHistoryAsync_ReturnsCorrectData()
@@ -654,116 +548,89 @@ namespace ArtAttack.Tests.Model
             // Arrange
             int orderHistoryId = 42;
             DateTime orderDate = DateTime.Now;
+            var capturedParameters = CaptureParameters();
 
-            // Setup parameter capture
-            List<IDbDataParameter> capturedParameters = new List<IDbDataParameter>();
-            _mockParameters
-                .Setup(p => p.Add(It.IsAny<IDbDataParameter>()))
-                .Callback<object>(param => capturedParameters.Add((IDbDataParameter)param))
-                .Returns(0);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
+            // Setup the IDataReader for one record
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
+                .Returns(true)    // First record
+                .Returns(false);  // End of data
 
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
-                .Returns(true)   // First record
-                .Returns(false); // End of data
+            // Setup IsDBNull (assume non-null for these columns)
+            _mockReader.Setup(dataReader => dataReader.IsDBNull(6)).Returns(false);
+            _mockReader.Setup(dataReader => dataReader.IsDBNull(7)).Returns(false);
 
-            // Setup IsDBNull for PaymentMethod and OrderDate
-            _mockReader.Setup(r => r.IsDBNull(6)).Returns(false);
-            _mockReader.Setup(r => r.IsDBNull(7)).Returns(false);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);            // OrderID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);            // ProductID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(301);            // BuyerID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(401);            // OrderSummaryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(orderHistoryId);   // OrderHistoryID
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(1);              // ProductType
+            _mockReader.Setup(dataReader => dataReader.GetString(6)).Returns("Credit Card"); // PaymentMethod
+            _mockReader.Setup(dataReader => dataReader.GetDateTime(7)).Returns(orderDate);     // OrderDate
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(orderHistoryId);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(1);
-            _mockReader.Setup(r => r.GetString(6)).Returns("Credit Card");
-            _mockReader.Setup(r => r.GetDateTime(7)).Returns(orderDate);
-
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = await _orderModel.GetOrdersFromOrderHistoryAsync(orderHistoryId);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual(101, results[0].OrderID);
-            Assert.AreEqual(201, results[0].ProductID);
-            Assert.AreEqual(301, results[0].BuyerID);
-            Assert.AreEqual(401, results[0].OrderSummaryID);
-            Assert.AreEqual(orderHistoryId, results[0].OrderHistoryID);
-            Assert.AreEqual(1, results[0].ProductType);
-            Assert.AreEqual("Credit Card", results[0].PaymentMethod);
-            Assert.AreEqual(orderDate, results[0].OrderDate);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            AssertOrderRecordEquality(new
+            {
+                OrderID = 101,
+                ProductID = 201,
+                BuyerID = 301,
+                OrderSummaryID = 401,
+                OrderHistoryID = orderHistoryId,
+                ProductType = 1,
+                PaymentMethod = "Credit Card",
+                OrderDate = orderDate
+            }, results[0]);
 
-            // Verify stored procedure call
-            _mockCommand.VerifySet(c => c.CommandType = CommandType.StoredProcedure);
-            _mockCommand.VerifySet(c => c.CommandText = "get_orders_from_order_history");
+            _mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
+            _mockCommand.VerifySet(command => command.CommandText = "get_orders_from_order_history");
 
-            // Verify parameters
             Assert.AreEqual(1, capturedParameters.Count, "Should have added 1 parameter");
             AssertParameterValue(capturedParameters, "@OrderHistoryID", orderHistoryId);
 
-            // Verify non-extension methods
-            _mockCommand.Verify(c => c.ExecuteReader(), Times.Once);
-            _mockConnection.Verify(c => c.Open(), Times.Once);
+            _mockCommand.Verify(command => command.ExecuteReader(), Times.Once);
+            _mockConnection.Verify(connection => connection.Open(), Times.Once);
         }
 
         [TestMethod]
-        public async Task GetOrdersFromOrderHistoryAsync_HandlesNullValues()
+        public async Task GetOrdersFromOrderHistoryAsync_HandlesNullValues_ReturnsCorrectData()
         {
             // Arrange
             int orderHistoryId = 42;
 
-            // Setup column ordinals
-            _mockReader.Setup(r => r.GetOrdinal("OrderID")).Returns(0);
-            _mockReader.Setup(r => r.GetOrdinal("ProductID")).Returns(1);
-            _mockReader.Setup(r => r.GetOrdinal("BuyerID")).Returns(2);
-            _mockReader.Setup(r => r.GetOrdinal("OrderSummaryID")).Returns(3);
-            _mockReader.Setup(r => r.GetOrdinal("OrderHistoryID")).Returns(4);
-            _mockReader.Setup(r => r.GetOrdinal("ProductType")).Returns(5);
-            _mockReader.Setup(r => r.GetOrdinal("PaymentMethod")).Returns(6);
-            _mockReader.Setup(r => r.GetOrdinal("OrderDate")).Returns(7);
+            SetupCommonOrderReaderOrdinals();
 
-            // Setup Read calls
-            _mockReader.SetupSequence(r => r.Read())
-                .Returns(true)   // First record
-                .Returns(false); // End of data
+            // Setup the IDataReader for one record with null PaymentMethod and OrderDate
+            _mockReader.SetupSequence(dataReader => dataReader.Read())
+                .Returns(true)
+                .Returns(false);
 
-            // Setup IsDBNull for PaymentMethod and OrderDate
-            _mockReader.Setup(r => r.IsDBNull(6)).Returns(true);
-            _mockReader.Setup(r => r.IsDBNull(7)).Returns(true);
+            _mockReader.Setup(dataReader => dataReader.IsDBNull(6)).Returns(true);
+            _mockReader.Setup(dataReader => dataReader.IsDBNull(7)).Returns(true);
 
-            // First order
-            _mockReader.Setup(r => r.GetInt32(0)).Returns(101);
-            _mockReader.Setup(r => r.GetInt32(1)).Returns(201);
-            _mockReader.Setup(r => r.GetInt32(2)).Returns(301);
-            _mockReader.Setup(r => r.GetInt32(3)).Returns(401);
-            _mockReader.Setup(r => r.GetInt32(4)).Returns(orderHistoryId);
-            _mockReader.Setup(r => r.GetInt32(5)).Returns(1);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(0)).Returns(101);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(1)).Returns(201);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(2)).Returns(301);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(3)).Returns(401);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(4)).Returns(orderHistoryId);
+            _mockReader.Setup(dataReader => dataReader.GetInt32(5)).Returns(1);
 
-            // Setup standard method
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            _mockCommand.Setup(command => command.ExecuteReader()).Returns(_mockReader.Object);
 
             // Act
             var results = await _orderModel.GetOrdersFromOrderHistoryAsync(orderHistoryId);
 
             // Assert
-            Assert.AreEqual(1, results.Count);
-            Assert.AreEqual("", results[0].PaymentMethod);
-            Assert.AreEqual(DateTime.MinValue, results[0].OrderDate);
+            Assert.AreEqual(1, results.Count, "Should have returned one order");
+            Assert.AreEqual("", results[0].PaymentMethod, "PaymentMethod should be empty for null values");
+            Assert.AreEqual(DateTime.MinValue, results[0].OrderDate, "OrderDate should be DateTime.MinValue for null values");
         }
 
         [TestMethod]
@@ -772,12 +639,11 @@ namespace ArtAttack.Tests.Model
             // Arrange & Act
             var model = new OrderModel(_testConnectionString);
 
-            // Assert - using reflection to access private field
-            var field = typeof(OrderModel).GetField("connectionString",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var value = field.GetValue(model);
-
-            Assert.AreEqual(_testConnectionString, value);
+            // Assert using reflection to access the private field
+            var fieldInfo = typeof(OrderModel).GetField("connectionString",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            var actualValue = fieldInfo.GetValue(model);
+            Assert.AreEqual(_testConnectionString, actualValue, "The connection string was not set correctly in the constructor");
         }
 
         [TestMethod]
@@ -791,51 +657,33 @@ namespace ArtAttack.Tests.Model
 
             // Assert
             Assert.AreEqual(expectedConnectionString, actualConnectionString,
-                "The ConnectionString property should return the value of the private _connectionString field");
+                "The ConnectionString property should return the value of the private connectionString field");
         }
 
-
-        private void SetupMockDataReader(List<Dictionary<string, object>> data)
+        private void AssertParameterValue(List<IDbDataParameter> parameters, string parameterName, object expectedValue)
         {
-            _mockReader.Setup(r => r.Read())
-                .Returns(() => data.Count > 0)
-                .Callback(() => {
-                    if (data.Count > 0) data.RemoveAt(0);
-                });
-
-            foreach (var record in data)
-            {
-                foreach (var column in record.Keys)
-                {
-                    _mockReader.Setup(r => r.GetOrdinal(column)).Returns(0);
-
-                    if (record[column] is int intValue)
-                        _mockReader.Setup(r => r.GetInt32(0)).Returns(intValue);
-
-                    if (record[column] is DateTime dateValue)
-                        _mockReader.Setup(r => r.GetDateTime(0)).Returns(dateValue);
-
-                    if (record[column] is string stringValue)
-                        _mockReader.Setup(r => r.GetString(0)).Returns(stringValue);
-
-                    _mockReader.Setup(r => r[column]).Returns(record[column]);
-                }
-            }
-
-            _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+            var parameter = parameters.FirstOrDefault(p => p.ParameterName == parameterName);
+            Assert.IsNotNull(parameter, $"Parameter {parameterName} not found");
+            Assert.AreEqual(expectedValue, parameter.Value, $"Parameter {parameterName} has an incorrect value");
         }
 
-        private void SetupOutputParameter(string paramName, object value)
+        private void AssertOrderRecordEquality(dynamic expected, dynamic actual)
         {
-            _mockParameter.Setup(p => p.Direction).Returns(ParameterDirection.Output);
-            _mockParameter.SetupProperty(p => p.Value);
-            _mockParameter.Setup(p => p.ParameterName).Returns(paramName);
-
-            _mockCommand.Setup(c => c.ExecuteNonQuery())
-                .Callback(() => {
-                    _mockParameter.Object.Value = value;
-                })
-                .Returns(1);
+            Assert.IsTrue(
+                expected.OrderID == actual.OrderID &&
+                expected.ProductID == actual.ProductID &&
+                expected.BuyerID == actual.BuyerID &&
+                expected.OrderSummaryID == actual.OrderSummaryID &&
+                expected.OrderHistoryID == actual.OrderHistoryID &&
+                expected.ProductType == actual.ProductType &&
+                expected.PaymentMethod == actual.PaymentMethod &&
+                expected.OrderDate == actual.OrderDate,
+                $"Order record does not match. Expected: [OrderID={expected.OrderID}, ProductID={expected.ProductID}, BuyerID={expected.BuyerID}, " +
+                $"OrderSummaryID={expected.OrderSummaryID}, OrderHistoryID={expected.OrderHistoryID}, ProductType={expected.ProductType}, " +
+                $"PaymentMethod={expected.PaymentMethod}, OrderDate={expected.OrderDate}], " +
+                $"Actual: [OrderID={actual.OrderID}, ProductID={actual.ProductID}, BuyerID={actual.BuyerID}, OrderSummaryID={actual.OrderSummaryID}, " +
+                $"OrderHistoryID={actual.OrderHistoryID}, ProductType={actual.ProductType}, PaymentMethod={actual.PaymentMethod}, OrderDate={actual.OrderDate}]"
+            );
         }
     }
 }
