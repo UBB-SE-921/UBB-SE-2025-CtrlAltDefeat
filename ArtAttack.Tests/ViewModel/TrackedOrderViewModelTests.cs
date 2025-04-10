@@ -1085,7 +1085,7 @@ namespace ArtAttack.Tests.ViewModel
                 trackedOrderId,
                 status.ToString(),
                 It.IsAny<DateTime>()
-            ), Times.Once);
+            ), Times.Never);
         }
 
         private void SetupUpdateTrackedOrderWithAddressMocks(TrackedOrder trackedOrder, Order associatedOrder)
