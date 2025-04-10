@@ -470,7 +470,7 @@ namespace ArtAttack.Tests.Model
             mockCommand.VerifySet(command => command.CommandType = CommandType.StoredProcedure);
             mockCommand.Verify(command => command.ExecuteNonQuery(), Times.Once);
 
-            AssertParameterExists(capturedParameters, "@category", "CONTRACT_RENEWAL_APPROVED");
+            AssertParameterExists(capturedParameters, "@category", "CONTRACT_RENEWAL_ACCEPTED");
 
         }
 
@@ -796,7 +796,7 @@ namespace ArtAttack.Tests.Model
 
             // First row: CONTRACT_RENEWAL_ACCEPTED
             // Second row: PRODUCT_AVAILABLE
-            mockReader.SetupSequence(r => r.GetString(4))
+            mockReader.SetupSequence(reader => reader.GetString(4))
                 .Returns("CONTRACT_RENEWAL_ACCEPTED")
                 .Returns("PRODUCT_AVAILABLE");
 

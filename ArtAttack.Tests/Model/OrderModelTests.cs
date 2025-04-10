@@ -662,7 +662,7 @@ namespace ArtAttack.Tests.Model
 
         private void AssertParameterValue(List<IDbDataParameter> parameters, string parameterName, object expectedValue)
         {
-            var parameter = parameters.FirstOrDefault(p => p.ParameterName == parameterName);
+            var parameter = parameters.FirstOrDefault(parameter => parameter.ParameterName == parameterName);
             Assert.IsNotNull(parameter, $"Parameter {parameterName} not found");
             Assert.AreEqual(expectedValue, parameter.Value, $"Parameter {parameterName} has an incorrect value");
         }
