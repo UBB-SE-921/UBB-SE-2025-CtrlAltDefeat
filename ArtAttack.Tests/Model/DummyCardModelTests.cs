@@ -12,14 +12,14 @@ namespace ArtAttack.Tests.Model
     [TestClass]
     public class DummyCardModelTests
     {
-        private Mock<IDatabaseProvider> _mockDatabaseProvider;
-        private Mock<IDbConnection> _mockDatabaseConnection;
-        private Mock<IDbCommand> _mockDatabaseCommand;
-        private Mock<IDataReader> _mockDataReader;
-        private Mock<IDataParameterCollection> _mockParameterCollection;
-        private Mock<IDbDataParameter> _mockDatabaseParameter;
-        private DummyCardModel _dummyCardModel;
-        private string _testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
+        private Mock<IDatabaseProvider> mockDatabaseProvider;
+        private Mock<IDbConnection> mockDatabaseConnection;
+        private Mock<IDbCommand> mockDatabaseCommand;
+        private Mock<IDataReader> mockDataReader;
+        private Mock<IDataParameterCollection> mockParameterCollection;
+        private Mock<IDbDataParameter> mockDatabaseParameter;
+        private DummyCardModel dummyCardModel;
+        private string testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         // Constants for database column indices
         private const int ColumnIndex_Balance = 0;
@@ -44,33 +44,33 @@ namespace ArtAttack.Tests.Model
         public void Setup()
         {
             // Initialize mocks
-            _mockDatabaseProvider = new Mock<IDatabaseProvider>();
-            _mockDatabaseConnection = new Mock<IDbConnection>();
-            _mockDatabaseCommand = new Mock<IDbCommand>();
-            _mockDataReader = new Mock<IDataReader>();
-            _mockParameterCollection = new Mock<IDataParameterCollection>();
-            _mockDatabaseParameter = new Mock<IDbDataParameter>();
+            mockDatabaseProvider = new Mock<IDatabaseProvider>();
+            mockDatabaseConnection = new Mock<IDbConnection>();
+            mockDatabaseCommand = new Mock<IDbCommand>();
+            mockDataReader = new Mock<IDataReader>();
+            mockParameterCollection = new Mock<IDataParameterCollection>();
+            mockDatabaseParameter = new Mock<IDbDataParameter>();
 
             // Setup parameter collection
-            _mockParameterCollection.Setup(Database_parameters => Database_parameters.Add(It.IsAny<object>())).Returns(0);
+            mockParameterCollection.Setup(Database_parameters => Database_parameters.Add(It.IsAny<object>())).Returns(0);
 
             // Setup command
-            _mockDatabaseCommand.Setup(Database_command => Database_command.CreateParameter()).Returns(_mockDatabaseParameter.Object);
-            _mockDatabaseCommand.Setup(Database_command => Database_command.Parameters).Returns(_mockParameterCollection.Object);
+            mockDatabaseCommand.Setup(Database_command => Database_command.CreateParameter()).Returns(mockDatabaseParameter.Object);
+            mockDatabaseCommand.Setup(Database_command => Database_command.Parameters).Returns(mockParameterCollection.Object);
 
             // Setup connection
-            _mockDatabaseConnection.Setup(Database_connection => Database_connection.CreateCommand()).Returns(_mockDatabaseCommand.Object);
-            _mockDatabaseProvider.Setup(Database_provider => Database_provider.CreateConnection(_testConnectionString)).Returns(_mockDatabaseConnection.Object);
+            mockDatabaseConnection.Setup(Database_connection => Database_connection.CreateCommand()).Returns(mockDatabaseCommand.Object);
+            mockDatabaseProvider.Setup(Database_provider => Database_provider.CreateConnection(testConnectionString)).Returns(mockDatabaseConnection.Object);
 
             // Create the model with mocked provider
-            _dummyCardModel = new DummyCardModel(_testConnectionString, _mockDatabaseProvider.Object);
+            dummyCardModel = new DummyCardModel(testConnectionString, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionString_InitializesCorrectly()
         {
             // Arrange & Act
-            var cardModel = new DummyCardModel(_testConnectionString, _mockDatabaseProvider.Object);
+            var cardModel = new DummyCardModel(testConnectionString, mockDatabaseProvider.Object);
 
             // Assert - using reflection to access private field
             var connectionStringField = typeof(DummyCardModel).GetField("connectionString",
@@ -78,7 +78,7 @@ namespace ArtAttack.Tests.Model
             var connectionStringValue = connectionStringField.GetValue(cardModel);
 
             Assert.IsNotNull(connectionStringValue);
-            Assert.AreEqual(_testConnectionString, connectionStringValue);
+            Assert.AreEqual(testConnectionString, connectionStringValue);
         }
 
         [TestMethod]
@@ -86,7 +86,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var cardModel = new DummyCardModel(null, _mockDatabaseProvider.Object);
+            var cardModel = new DummyCardModel(null, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var cardModel = new DummyCardModel(_testConnectionString, null);
+            var cardModel = new DummyCardModel(testConnectionString, null);
         }
 
         [TestMethod]
@@ -104,15 +104,15 @@ namespace ArtAttack.Tests.Model
             string cardNumber = TestCardNumber;
 
             // Act
-            await _dummyCardModel.DeleteCardAsync(cardNumber);
+            await dummyCardModel.DeleteCardAsync(cardNumber);
 
             // Assert
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_DeleteCard);
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
-            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CardNumber);
-            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
-            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
-            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteNonQuery(), Times.Once);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_DeleteCard);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CardNumber);
+            mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
+            mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteNonQuery(), Times.Once);
         }
 
         [TestMethod]
@@ -124,20 +124,20 @@ namespace ArtAttack.Tests.Model
             var capturedParameters = new List<(string Name, object Value)>();
 
             // Setup parameter capture
-            _mockDatabaseParameter.SetupSet(Database_parameter => Database_parameter.ParameterName = It.IsAny<string>())
+            mockDatabaseParameter.SetupSet(Database_parameter => Database_parameter.ParameterName = It.IsAny<string>())
                 .Callback<string>(name => capturedParameters.Add((name, null)));
-            _mockDatabaseParameter.SetupSet(Database_parameter => Database_parameter.Value = It.IsAny<object>())
+            mockDatabaseParameter.SetupSet(Database_parameter => Database_parameter.Value = It.IsAny<object>())
                 .Callback<object>(value => capturedParameters[capturedParameters.Count - 1] =
                     (capturedParameters[capturedParameters.Count - 1].Name, value));
 
             // Act
-            await _dummyCardModel.UpdateCardBalanceAsync(cardNumber, cardBalance);
+            await dummyCardModel.UpdateCardBalanceAsync(cardNumber, cardBalance);
 
             // Assert
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_UpdateCardBalance);
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
-            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
-            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteNonQuery(), Times.Once);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_UpdateCardBalance);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteNonQuery(), Times.Once);
 
             // Check parameters
             int expectedParameterCount = 2;
@@ -156,44 +156,44 @@ namespace ArtAttack.Tests.Model
             double expectedBalance = TestCardBalanceDouble;
 
             // Setup reader
-            _mockDataReader.Setup(Database_reader => Database_reader.Read()).Returns(true);
-            _mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("balance")).Returns(ColumnIndex_Balance);
-            _mockDataReader.Setup(Database_reader => Database_reader.GetDouble(ColumnIndex_Balance)).Returns(expectedBalance);
-            _mockDatabaseCommand.Setup(Database_command => Database_command.ExecuteReader()).Returns(_mockDataReader.Object);
+            mockDataReader.Setup(Database_reader => Database_reader.Read()).Returns(true);
+            mockDataReader.Setup(Database_reader => Database_reader.GetOrdinal("balance")).Returns(ColumnIndex_Balance);
+            mockDataReader.Setup(Database_reader => Database_reader.GetDouble(ColumnIndex_Balance)).Returns(expectedBalance);
+            mockDatabaseCommand.Setup(Database_command => Database_command.ExecuteReader()).Returns(mockDataReader.Object);
 
             // Act
-            float actualBalance = await _dummyCardModel.GetCardBalanceAsync(cardNumber);
+            float actualBalance = await dummyCardModel.GetCardBalanceAsync(cardNumber);
 
             // Assert
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_GetBalance);
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
-            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CompactCardNumber);
-            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
-            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
-            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteReader(), Times.Once);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_GetBalance);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CompactCardNumber);
+            mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
+            mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteReader(), Times.Once);
             Assert.AreEqual((float)expectedBalance, actualBalance);
         }
 
         [TestMethod]
-        public async Task GetCardBalanceAsync_ReturnsNegativeOne_WhenCardNotFound()
+        public async Task GetCardBalanceAsync_WhenCardNotFound_ReturnsNegativeOne()
         {
             // Arrange
             string cardNumber = TestCardNumber;
 
             // Setup reader to return no results
-            _mockDataReader.Setup(Database_reader => Database_reader.Read()).Returns(false);
-            _mockDatabaseCommand.Setup(Database_command => Database_command.ExecuteReader()).Returns(_mockDataReader.Object);
+            mockDataReader.Setup(Database_reader => Database_reader.Read()).Returns(false);
+            mockDatabaseCommand.Setup(Database_command => Database_command.ExecuteReader()).Returns(mockDataReader.Object);
 
             // Act
-            float actualBalance = await _dummyCardModel.GetCardBalanceAsync(cardNumber);
+            float actualBalance = await dummyCardModel.GetCardBalanceAsync(cardNumber);
 
             // Assert
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_GetBalance);
-            _mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
-            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CompactCardNumber);
-            _mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
-            _mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
-            _mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteReader(), Times.Once);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandText = StoredProcedure_GetBalance);
+            mockDatabaseCommand.VerifySet(Database_command => Database_command.CommandType = CommandType.StoredProcedure);
+            mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.ParameterName = ParameterName_CompactCardNumber);
+            mockDatabaseParameter.VerifySet(Database_parameter => Database_parameter.Value = cardNumber);
+            mockDatabaseConnection.Verify(Database_connection => Database_connection.Open(), Times.Once);
+            mockDatabaseCommand.Verify(Database_command => Database_command.ExecuteReader(), Times.Once);
             Assert.AreEqual(NoCardFoundValue, actualBalance);
         }
     }
