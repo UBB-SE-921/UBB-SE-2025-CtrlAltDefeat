@@ -8,11 +8,11 @@ namespace ArtAttack.Tests
 {
     internal class Program
     {
-        static void Main(string[] args)
-        {
-            // Entry point for the application
-            Console.WriteLine("Hello World!");
-        }
+        //static void Main(string[] args)
+        //{
+        //    // Entry point for the application
+        //    Console.WriteLine("Hello World!");
+        //}
     }
 }
 

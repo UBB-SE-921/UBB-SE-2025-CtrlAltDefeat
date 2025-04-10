@@ -393,10 +393,19 @@ namespace ArtAttack.Tests.Model
             int readCount = 0;
             mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ < 1);
 
-            foreach (var item in summaryData)
-            {
-                mockReader.Setup(reader => reader[item.Key]).Returns(item.Value);
-            }
+            // Setup each key-value pair explicitly
+            mockReader.Setup(reader => reader["ID"]).Returns(summaryData["ID"]);
+            mockReader.Setup(reader => reader["subtotal"]).Returns(summaryData["subtotal"]);
+            mockReader.Setup(reader => reader["warrantyTax"]).Returns(summaryData["warrantyTax"]);
+            mockReader.Setup(reader => reader["deliveryFee"]).Returns(summaryData["deliveryFee"]);
+            mockReader.Setup(reader => reader["finalTotal"]).Returns(summaryData["finalTotal"]);
+            mockReader.Setup(reader => reader["fullName"]).Returns(summaryData["fullName"]);
+            mockReader.Setup(reader => reader["email"]).Returns(summaryData["email"]);
+            mockReader.Setup(reader => reader["phoneNumber"]).Returns(summaryData["phoneNumber"]);
+            mockReader.Setup(reader => reader["address"]).Returns(summaryData["address"]);
+            mockReader.Setup(reader => reader["postalCode"]).Returns(summaryData["postalCode"]);
+            mockReader.Setup(reader => reader["additionalInfo"]).Returns(summaryData["additionalInfo"]);
+            mockReader.Setup(reader => reader["ContractDetails"]).Returns(summaryData["ContractDetails"]);
 
             // Act
             var result = await contractModel.GetOrderSummaryInformationAsync(contractId);
@@ -404,11 +413,22 @@ namespace ArtAttack.Tests.Model
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(summaryData.Count, result.Count);
-            foreach (var item in summaryData)
-            {
-                Assert.AreEqual(item.Value, result[item.Key]);
-            }
+
+            // Assert each key-value pair explicitly
+            Assert.AreEqual(summaryData["ID"], result["ID"]);
+            Assert.AreEqual(summaryData["subtotal"], result["subtotal"]);
+            Assert.AreEqual(summaryData["warrantyTax"], result["warrantyTax"]);
+            Assert.AreEqual(summaryData["deliveryFee"], result["deliveryFee"]);
+            Assert.AreEqual(summaryData["finalTotal"], result["finalTotal"]);
+            Assert.AreEqual(summaryData["fullName"], result["fullName"]);
+            Assert.AreEqual(summaryData["email"], result["email"]);
+            Assert.AreEqual(summaryData["phoneNumber"], result["phoneNumber"]);
+            Assert.AreEqual(summaryData["address"], result["address"]);
+            Assert.AreEqual(summaryData["postalCode"], result["postalCode"]);
+            Assert.AreEqual(summaryData["additionalInfo"], result["additionalInfo"]);
+            Assert.AreEqual(summaryData["ContractDetails"], result["ContractDetails"]);
         }
+
 
         [TestMethod]
         public async Task GetProductDetailsByContractIdAsync_ReturnsProductDetails()
@@ -472,23 +492,15 @@ namespace ArtAttack.Tests.Model
             int buyerId = 123;
 
             // Setup columns for contracts with additional terms
-            var columns = new Dictionary<string, int>
-            {
-                ["ID"] = COLUMN_INDEX_ID,
-                ["orderID"] = COLUMN_INDEX_ORDER_ID,
-                ["contractStatus"] = COLUMN_INDEX_CONTRACT_STATUS,
-                ["contractContent"] = COLUMN_INDEX_CONTRACT_CONTENT,
-                ["renewalCount"] = COLUMN_INDEX_RENEWAL_COUNT,
-                ["predefinedContractID"] = COLUMN_INDEX_PREDEFINED_CONTRACT_ID,
-                ["pdfID"] = COLUMN_INDEX_PDF_ID,
-                ["AdditionalTerms"] = COLUMN_INDEX_ADDITIONAL_TERMS,
-                ["renewedFromContractID"] = COLUMN_INDEX_RENEWED_FROM_CONTRACT_ID
-            };
-
-            foreach (var col in columns)
-            {
-                mockReader.Setup(reader => reader.GetOrdinal(col.Key)).Returns(col.Value);
-            }
+            mockReader.Setup(reader => reader.GetOrdinal("ID")).Returns(COLUMN_INDEX_ID);
+            mockReader.Setup(reader => reader.GetOrdinal("orderID")).Returns(COLUMN_INDEX_ORDER_ID);
+            mockReader.Setup(reader => reader.GetOrdinal("contractStatus")).Returns(COLUMN_INDEX_CONTRACT_STATUS);
+            mockReader.Setup(reader => reader.GetOrdinal("contractContent")).Returns(COLUMN_INDEX_CONTRACT_CONTENT);
+            mockReader.Setup(reader => reader.GetOrdinal("renewalCount")).Returns(COLUMN_INDEX_RENEWAL_COUNT);
+            mockReader.Setup(reader => reader.GetOrdinal("predefinedContractID")).Returns(COLUMN_INDEX_PREDEFINED_CONTRACT_ID);
+            mockReader.Setup(reader => reader.GetOrdinal("pdfID")).Returns(COLUMN_INDEX_PDF_ID);
+            mockReader.Setup(reader => reader.GetOrdinal("AdditionalTerms")).Returns(COLUMN_INDEX_ADDITIONAL_TERMS);
+            mockReader.Setup(reader => reader.GetOrdinal("renewedFromContractID")).Returns(COLUMN_INDEX_RENEWED_FROM_CONTRACT_ID);
 
             int readCount = 0;
             mockReader.Setup(reader => reader.Read()).Returns(() => readCount++ < 2); // Return 2 contracts
@@ -510,13 +522,18 @@ namespace ArtAttack.Tests.Model
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count);
+
+            // Assert contract 1
             Assert.AreEqual(101, result[0].ContractID);
-            Assert.AreEqual(102, result[1].ContractID);
             Assert.AreEqual("ACTIVE", result[0].ContractStatus);
-            Assert.AreEqual("EXPIRED", result[1].ContractStatus);
             Assert.AreEqual("Additional 1", result[0].AdditionalTerms);
+
+            // Assert contract 2
+            Assert.AreEqual(102, result[1].ContractID);
+            Assert.AreEqual("EXPIRED", result[1].ContractStatus);
             Assert.AreEqual("Additional 2", result[1].AdditionalTerms);
         }
+
 
         [TestMethod]
         public async Task GetOrderDetailsAsync_ReturnsOrderDetails()

@@ -747,4 +747,5 @@ namespace ArtAttack.Tests.Model
             // Implementation not needed for current tests
         }
     }
+    #endregion
 }
