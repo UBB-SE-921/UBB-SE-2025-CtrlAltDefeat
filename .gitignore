@@ -1,43 +1,47 @@
-################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+# Ignore the appsettings.json file
+ArtAttack/appsettings.json
 
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.AssemblyInfo.cs
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.AssemblyInfoInputs.cache
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.assets.cache
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.csproj.AssemblyReference.cache
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.GeneratedMSBuildEditorConfig.editorconfig
-/ArtAttack/obj/project.assets.json
-/ArtAttack/obj/project.nuget.cache
-/ArtAttack/obj/ArtAttack.csproj.nuget.dgspec.json
-/ArtAttack/obj/ArtAttack.csproj.nuget.g.props
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/XamlSaveStateFile.xml
-/ArtAttack/.vs/ArtAttack/DesignTimeBuild/.dtbcache.v2
-/ArtAttack/.vs/ArtAttack/v17/DocumentLayout.backup.json
-/ArtAttack/obj/project.nuget.cache
-/ArtAttack/.vs/ArtAttack/v17/.futdcache.v2
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.assets.cache
-/ArtAttack/ArtAttack.csproj
-/ArtAttack/obj/ArtAttack.csproj.nuget.dgspec.json
-/ArtAttack/obj/ArtAttack.csproj.nuget.g.props
-/ArtAttack/obj/ArtAttack.csproj.nuget.g.targets
-/ArtAttack/obj/project.assets.json
-/ArtAttack/obj/project.nuget.cache
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/XamlSaveStateFile.xml
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.GeneratedMSBuildEditorConfig.editorconfig
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.AssemblyInfoInputs.cache
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.assets.cache
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.csproj.AssemblyReference.cache
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/App.g.i.cs
-/ArtAttack/obj/x64/Debug/net8.0-windows10.0.19041.0/win-x64/ArtAttack.AssemblyInfo.cs
-/ArtAttack/.vs/ArtAttack/v17/.suo
-/ArtAttack/app.config
-/ArtAttack/.vs/ArtAttack/v17/DocumentLayout.backup.json
-/ArtAttack/.vs/ArtAttack/v17/DocumentLayout.json
-ArtAttack/Shared/Configuration.cs
-/ArtAttack/bin/x64/Debug/net8.0-windows10.0.19041.0/win-x64/System.IO.Compression.Native.dll
-/ArtAttack/Shared/Configuration.cs
-/ArtAttack/ArtAttack.csproj.user
-/ArtAttack/ArtAttack.csproj.user
-/ArtAttack/ArtAttack.csproj
-/ArtAttack/ArtAttack.sln
+# Ignore Visual Studio specific files
+.vs/
+ArtAttack/.vs/
+
+# Ignore build outputs
+ArtAttack/bin/
+ArtAttack/obj/
+*.log
+
+# Ignore .NET-related files
+ArtAttack/*.dll
+ArtAttack/*.exe
+ArtAttack/*.pdb
+*.cache
+*.nuget
+*.nupkg
+*.snupkg
+
+# Ignore package and dependencies
+ArtAttack/packages/
+node_modules/
+
+# Ignore User-specific settings
+*.userosscache
+*.sln.ide
+
+# Ignore temporary files
+~$*
+*.tmp
+*.bak
+
+# Ignore Rider and JetBrains files
+.idea/
+*.sln.DotSettings.user
+
+# Ignore SDK-related files
+sdk/
+.vscode/
+.env
+
+# Ignore the build files from ArtAttack.Tests folder
+ArtAttack.Tests/bin
+ArtAttack.Tests/obj
+ArtAttack.Tests/packages/
