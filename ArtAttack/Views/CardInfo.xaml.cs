@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ArtAttack.ViewModel;
+using ArtAttack.Service;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using ArtAttack.Model;
+using ArtAttack.Repository;
 
 namespace ArtAttack
 {
@@ -16,7 +19,12 @@ namespace ArtAttack
         public CardInfo(int orderHistoryID)
         {
             this.InitializeComponent();
-            viewModel = new CardInfoViewModel(orderHistoryID);
+            string connectionString = "connection-string"; // replace with actual connection string
+            var cardInfoService = new CardInfoService(
+                new OrderHistoryModel(connectionString),
+                new OrderSummaryModel(connectionString),
+                new DummyCardRepository(connectionString));
+            viewModel = new CardInfoViewModel(cardInfoService, orderHistoryID);
             DataContext = viewModel;
         }
 
@@ -29,7 +37,7 @@ namespace ArtAttack
         {
             if (DataContext is CardInfoViewModel viewModel)
             {
-                await viewModel.OnPayButtonClickedAsync();
+                await viewModel.ProcessCardPaymentAsync();
             }
         }
     }
