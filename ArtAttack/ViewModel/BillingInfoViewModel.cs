@@ -8,6 +8,7 @@ using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.Shared;
 using ArtAttack.Utils;
+using ArtAttack.Repository;
 
 namespace ArtAttack.ViewModel
 {
@@ -19,8 +20,8 @@ namespace ArtAttack.ViewModel
         private readonly IOrderHistoryModel orderHistoryModel;
         private readonly IOrderSummaryModel orderSummaryModel;
         private readonly IOrderModel orderModel;
-        private readonly IDummyProductModel dummyProductModel;
-        private readonly IDummyWalletModel dummyWalletModel;
+        private readonly IDummyProductRepository dummyProductModel;
+        private readonly IDummyWalletRepository dummyWalletModel;
 
         private int orderHistoryID;
 
@@ -57,8 +58,8 @@ namespace ArtAttack.ViewModel
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
             orderModel = new OrderModel(Configuration.CONNECTION_STRING);
             orderSummaryModel = new OrderSummaryModel(Configuration.CONNECTION_STRING);
-            dummyWalletModel = new DummyWalletModel(Configuration.CONNECTION_STRING);
-            dummyProductModel = new DummyProductModel(Configuration.CONNECTION_STRING);
+            dummyWalletModel = new DummyWalletRepository(Configuration.CONNECTION_STRING);
+            dummyProductModel = new DummyProductRepository(Configuration.CONNECTION_STRING);
             DummyProducts = new List<DummyProduct>();
             this.orderHistoryID = orderHistoryID;
 

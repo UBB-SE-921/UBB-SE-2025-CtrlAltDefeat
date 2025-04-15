@@ -1,4 +1,4 @@
-﻿using ArtAttack.Model;
+﻿using ArtAttack.Repository;
 using ArtAttack.Shared;
 using Moq;
 using System.Data;
@@ -14,7 +14,7 @@ namespace ArtAttack.Tests.Model
         private Mock<IDataReader> mockReader;
         private Mock<IDataParameterCollection> mockParameters;
         private Mock<IDbDataParameter> mockParameter;
-        private DummyWalletModel dummyWalletModel;
+        private DummyWalletRepository dummyWalletModel;
         private readonly string testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         [TestInitialize]
@@ -41,17 +41,17 @@ namespace ArtAttack.Tests.Model
             mockDatabaseProvider.Setup(databaseProviderMock => databaseProviderMock.CreateConnection(testConnectionString)).Returns(mockConnection.Object);
 
             // Create the model with mocked provider
-            dummyWalletModel = new DummyWalletModel(testConnectionString, mockDatabaseProvider.Object);
+            dummyWalletModel = new DummyWalletRepository(testConnectionString, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         public void ConstructorWithConnectionString_ShouldInitializCorrectly()
         {
             // Arrange & Act
-            var dummyWalletModel = new DummyWalletModel(testConnectionString, mockDatabaseProvider.Object);
+            var dummyWalletModel = new DummyWalletRepository(testConnectionString, mockDatabaseProvider.Object);
 
             // Assert - using reflection to access private field
-            var connectionStringField = typeof(DummyWalletModel).GetField("connectionString",
+            var connectionStringField = typeof(DummyWalletRepository).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var connectionStringValue = connectionStringField.GetValue(dummyWalletModel);
 
@@ -63,7 +63,7 @@ namespace ArtAttack.Tests.Model
         public void ConstructorWithNullConnectionString_ShouldThrowArgumentNullException()
         {
             // Act
-            var dummyWalletModel = new DummyWalletModel(null, mockDatabaseProvider.Object);
+            var dummyWalletModel = new DummyWalletRepository(null, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
@@ -71,7 +71,7 @@ namespace ArtAttack.Tests.Model
         public void ConstructorWithNullDatabaseProvider_ShouldThrowArgumentNullException()
         {
             // Act
-            var dummyWalletModel = new DummyWalletModel(testConnectionString, null);
+            var dummyWalletModel = new DummyWalletRepository(testConnectionString, null);
         }
 
         [TestMethod]

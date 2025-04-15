@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using Microsoft.Data.SqlClient;
+using ArtAttack.Repository;
 
 namespace ArtAttack.Services
 {
     public class WaitListViewModel : IWaitListViewModel
     {
         private readonly IWaitListModel waitListModel;
-        private readonly IDummyProductModel dummyProductModel;
+        private readonly IDummyProductRepository dummyProductModel;
 
         /// <summary>
         /// Default constructor for WaitListViewModel.
@@ -23,7 +24,7 @@ namespace ArtAttack.Services
         public WaitListViewModel(string connectionString)
         {
             waitListModel = new WaitListModel(connectionString);
-            dummyProductModel = new DummyProductModel(connectionString);
+            dummyProductModel = new DummyProductRepository(connectionString);
         }
 
         /// <summary>

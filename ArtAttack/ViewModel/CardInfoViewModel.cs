@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.Shared;
+using ArtAttack.Repository;
 
 namespace ArtAttack.ViewModel
 {
@@ -18,7 +19,7 @@ namespace ArtAttack.ViewModel
         private readonly IOrderHistoryModel orderHistoryModel;
         private readonly IOrderSummaryModel orderSummaryModel;
         private readonly IOrderModel orderModel;
-        private readonly IDummyCardModel dummyCardModel;
+        private readonly IDummyCardRepository dummyCardModel;
 
         private int orderHistoryID;
 
@@ -38,7 +39,7 @@ namespace ArtAttack.ViewModel
             IOrderHistoryModel orderHistoryModel,
             IOrderSummaryModel orderSummaryModel,
             IOrderModel orderModel,
-            IDummyCardModel dummyCardModel,
+            IDummyCardRepository dummyCardModel,
             int orderHistoryID)
         {
             if (orderHistoryModel == null)
@@ -77,7 +78,7 @@ namespace ArtAttack.ViewModel
             orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
             orderModel = new OrderModel(Configuration.CONNECTION_STRING);
             orderSummaryModel = new OrderSummaryModel(Configuration.CONNECTION_STRING);
-            dummyCardModel = new DummyCardModel(Configuration.CONNECTION_STRING);
+            dummyCardModel = new DummyCardRepository(Configuration.CONNECTION_STRING);
 
             this.orderHistoryID = orderHistoryID;
 

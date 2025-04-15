@@ -1,5 +1,4 @@
-﻿using ArtAttack.Model;
-using ArtAttack.Domain;
+﻿using ArtAttack.Domain;
 using ArtAttack.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -8,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using System.Reflection;
+using ArtAttack.Repository;
 
 namespace ArtAttack.Tests.Model
 {
@@ -58,7 +58,7 @@ namespace ArtAttack.Tests.Model
         private Mock<IDataReader> mockDatabase_Reader;
         private Mock<IDataParameterCollection> mockDatabase_ParameterCollection;
         private Mock<IDbDataParameter> mockDatabase_Parameter;
-        private DummyProductModel dummyProductModel;
+        private DummyProductRepository dummyProductModel;
         private readonly string testDatabase_ConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         [TestInitialize]
@@ -85,17 +85,17 @@ namespace ArtAttack.Tests.Model
             mockDatabase_Provider.Setup(Database_Provider => Database_Provider.CreateConnection(testDatabase_ConnectionString)).Returns(mockDatabase_Connection.Object);
 
             // Create the model with mocked provider
-            dummyProductModel = new DummyProductModel(testDatabase_ConnectionString, mockDatabase_Provider.Object);
+            dummyProductModel = new DummyProductRepository(testDatabase_ConnectionString, mockDatabase_Provider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionString_InitializesCorrectly()
         {
             // Arrange & Act
-            var productModel = new DummyProductModel(testDatabase_ConnectionString, mockDatabase_Provider.Object);
+            var productModel = new DummyProductRepository(testDatabase_ConnectionString, mockDatabase_Provider.Object);
 
             // Assert - using reflection to access private field
-            var Database_ConnectionStringField = typeof(DummyProductModel).GetField("connectionString",
+            var Database_ConnectionStringField = typeof(DummyProductRepository).GetField("connectionString",
                 BindingFlags.NonPublic | BindingFlags.Instance);
             var actualDatabase_ConnectionString = Database_ConnectionStringField.GetValue(productModel);
 
@@ -108,7 +108,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var productModel = new DummyProductModel(null, mockDatabase_Provider.Object);
+            var productModel = new DummyProductRepository(null, mockDatabase_Provider.Object);
         }
 
         [TestMethod]
@@ -116,7 +116,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var productModel = new DummyProductModel(testDatabase_ConnectionString, null);
+            var productModel = new DummyProductRepository(testDatabase_ConnectionString, null);
         }
 
         [TestMethod]
@@ -128,10 +128,10 @@ namespace ArtAttack.Tests.Model
                 .Returns(mockDatabase_Connection.Object);
 
             // Create with the two-parameter constructor to avoid real connection attempts
-            var productModel = new DummyProductModel(testDatabase_ConnectionString, mockDatabase_Provider.Object);
+            var productModel = new DummyProductRepository(testDatabase_ConnectionString, mockDatabase_Provider.Object);
 
             // Check that connection string was set correctly
-            var Database_ConnectionStringField = typeof(DummyProductModel).GetField("connectionString",
+            var Database_ConnectionStringField = typeof(DummyProductRepository).GetField("connectionString",
                 BindingFlags.NonPublic | BindingFlags.Instance);
             var actualDatabase_ConnectionString = Database_ConnectionStringField.GetValue(productModel);
 

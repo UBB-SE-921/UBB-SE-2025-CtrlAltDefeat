@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
-    public class DummyProductModel : IDummyProductModel
+    public class DummyProductRepository : IDummyProductRepository
     {
         private readonly string connectionString;
         private readonly IDatabaseProvider databaseProvider;
 
         [ExcludeFromCodeCoverage]
-        public DummyProductModel(string connectionString)
+        public DummyProductRepository(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {
         }
 
-        public DummyProductModel(string connectionString, IDatabaseProvider databaseProvider)
+        public DummyProductRepository(string connectionString, IDatabaseProvider databaseProvider)
         {
             if (connectionString == null)
             {
@@ -79,7 +79,7 @@ namespace ArtAttack.Model
             }
         }
 
-        public async Task DeleteDummyProduct(int id)
+        public async Task DeleteDummyProductAsync(int id)
         {
             using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
@@ -144,10 +144,10 @@ namespace ArtAttack.Model
                                 ID = reader.GetInt32(reader.GetOrdinal("ID")),
                                 Name = reader.GetString(reader.GetOrdinal("Name")),
                                 Price = (float)reader.GetDouble(reader.GetOrdinal("Price")),
-                                SellerID = reader.IsDBNull(reader.GetOrdinal("SellerID")) ? null : (int?)reader.GetInt32(reader.GetOrdinal("SellerID")),
+                                SellerID = reader.IsDBNull(reader.GetOrdinal("SellerID")) ? null : reader.GetInt32(reader.GetOrdinal("SellerID")),
                                 ProductType = reader.GetString(reader.GetOrdinal("ProductType")),
-                                StartDate = reader.IsDBNull(reader.GetOrdinal("StartDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("StartDate")),
-                                EndDate = reader.IsDBNull(reader.GetOrdinal("EndDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("EndDate"))
+                                StartDate = reader.IsDBNull(reader.GetOrdinal("StartDate")) ? null : reader.GetDateTime(reader.GetOrdinal("StartDate")),
+                                EndDate = reader.IsDBNull(reader.GetOrdinal("EndDate")) ? null : reader.GetDateTime(reader.GetOrdinal("EndDate"))
                             };
                         }
                         return null;

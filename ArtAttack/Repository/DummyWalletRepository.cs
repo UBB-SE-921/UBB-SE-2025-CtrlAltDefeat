@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
-    public class DummyWalletModel : IDummyWalletModel
+    public class DummyWalletRepository : IDummyWalletRepository
     {
         private readonly string connectionString;
         private readonly IDatabaseProvider databaseProvider;
 
         [ExcludeFromCodeCoverage]
-        public DummyWalletModel(string connectionString)
+        public DummyWalletRepository(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {
         }
 
-        public DummyWalletModel(string connectionString, IDatabaseProvider databaseProvider)
+        public DummyWalletRepository(string connectionString, IDatabaseProvider databaseProvider)
         {
             if (connectionString == null)
             {

@@ -1,4 +1,4 @@
-﻿using ArtAttack.Model;
+﻿using ArtAttack.Repository;
 using ArtAttack.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -18,7 +18,7 @@ namespace ArtAttack.Tests.Model
         private Mock<IDataReader> mockDataReader;
         private Mock<IDataParameterCollection> mockParameterCollection;
         private Mock<IDbDataParameter> mockDatabaseParameter;
-        private DummyCardModel dummyCardModel;
+        private DummyCardRepository dummyCardModel;
         private string testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         // Constants for database column indices
@@ -63,17 +63,17 @@ namespace ArtAttack.Tests.Model
             mockDatabaseProvider.Setup(Database_provider => Database_provider.CreateConnection(testConnectionString)).Returns(mockDatabaseConnection.Object);
 
             // Create the model with mocked provider
-            dummyCardModel = new DummyCardModel(testConnectionString, mockDatabaseProvider.Object);
+            dummyCardModel = new DummyCardRepository(testConnectionString, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionString_InitializesCorrectly()
         {
             // Arrange & Act
-            var cardModel = new DummyCardModel(testConnectionString, mockDatabaseProvider.Object);
+            var cardModel = new DummyCardRepository(testConnectionString, mockDatabaseProvider.Object);
 
             // Assert - using reflection to access private field
-            var connectionStringField = typeof(DummyCardModel).GetField("connectionString",
+            var connectionStringField = typeof(DummyCardRepository).GetField("connectionString",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var connectionStringValue = connectionStringField.GetValue(cardModel);
 
@@ -86,7 +86,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var cardModel = new DummyCardModel(null, mockDatabaseProvider.Object);
+            var cardModel = new DummyCardRepository(null, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Act - should throw ArgumentNullException
-            var cardModel = new DummyCardModel(testConnectionString, null);
+            var cardModel = new DummyCardRepository(testConnectionString, null);
         }
 
         [TestMethod]
