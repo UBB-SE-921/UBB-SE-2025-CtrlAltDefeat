@@ -3,14 +3,16 @@ using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
+using ArtAttack.Repository;
+using ArtAttack.Service;
 using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
+    [Obsolete("This class is deprecated. Please use DummyProductRepository and DummyProductService instead.")]
     public class DummyProductModel : IDummyProductModel
     {
-        private readonly string connectionString;
-        private readonly IDatabaseProvider databaseProvider;
+        private readonly IDummyProductRepository dummyProductRepository;
 
         [ExcludeFromCodeCoverage]
         public DummyProductModel(string connectionString)
@@ -30,147 +32,32 @@ namespace ArtAttack.Model
                 throw new ArgumentNullException(nameof(databaseProvider));
             }
 
-            this.connectionString = connectionString;
-            this.databaseProvider = databaseProvider;
+            dummyProductRepository = new DummyProductRepository(connectionString, databaseProvider);
         }
 
         public async Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
-            {
-                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
-                {
-                    databaseCommand.CommandText = "AddDummyProduct";
-                    databaseCommand.CommandType = CommandType.StoredProcedure;
-
-                    AddParameter(databaseCommand, "@Name", name);
-                    AddParameter(databaseCommand, "@Price", price);
-                    AddParameter(databaseCommand, "@SellerID", sellerId);
-                    AddParameter(databaseCommand, "@ProductType", productType);
-                    AddParameter(databaseCommand, "@StartDate", startDate);
-                    AddParameter(databaseCommand, "@EndDate", endDate);
-
-                    await databaseConnection.OpenAsync();
-                    await databaseCommand.ExecuteNonQueryAsync();
-                }
-            }
+            await dummyProductRepository.AddDummyProductAsync(name, price, sellerId, productType, startDate, endDate);
         }
 
         public async Task UpdateDummyProductAsync(int id, string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
         {
-            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
-            {
-                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
-                {
-                    databaseCommand.CommandText = "UpdateDummyProduct";
-                    databaseCommand.CommandType = CommandType.StoredProcedure;
-
-                    AddParameter(databaseCommand, "@ID", id);
-                    AddParameter(databaseCommand, "@Name", name);
-                    AddParameter(databaseCommand, "@Price", price);
-                    AddParameter(databaseCommand, "@SellerID", sellerId);
-                    AddParameter(databaseCommand, "@ProductType", productType);
-                    AddParameter(databaseCommand, "@StartDate", startDate);
-                    AddParameter(databaseCommand, "@EndDate", endDate);
-
-                    await databaseConnection.OpenAsync();
-                    await databaseCommand.ExecuteNonQueryAsync();
-                }
-            }
+            await dummyProductRepository.UpdateDummyProductAsync(id, name, price, sellerId, productType, startDate, endDate);
         }
 
         public async Task DeleteDummyProduct(int id)
         {
-            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
-            {
-                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
-                {
-                    databaseCommand.CommandText = "DeleteDummyProduct";
-                    databaseCommand.CommandType = CommandType.StoredProcedure;
-
-                    AddParameter(databaseCommand, "@ID", id);
-
-                    await databaseConnection.OpenAsync();
-                    await databaseCommand.ExecuteNonQueryAsync();
-                }
-            }
+            await dummyProductRepository.DeleteDummyProduct(id);
         }
 
         public async Task<string> GetSellerNameAsync(int? sellerId)
         {
-            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
-            {
-                using (IDbCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "GetSellerById";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    if (sellerId.HasValue)
-                    {
-                        AddParameter(command, "@SellerID", sellerId.Value);
-                    }
-                    else
-                    {
-                        AddParameter(command, "@SellerID", DBNull.Value);
-                    }
-
-                    await connection.OpenAsync();
-
-                    object result = await command.ExecuteScalarAsync();
-                    return result?.ToString();
-                }
-            }
+            return await dummyProductRepository.GetSellerNameAsync(sellerId);
         }
 
         public async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
         {
-            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
-            {
-                using (IDbCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "GetDummyProductByID";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    AddParameter(command, "@productID", productId);
-
-                    await connection.OpenAsync();
-
-                    using (IDataReader reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new DummyProduct
-                            {
-                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
-                                Name = reader.GetString(reader.GetOrdinal("Name")),
-                                Price = (float)reader.GetDouble(reader.GetOrdinal("Price")),
-                                SellerID = reader.IsDBNull(reader.GetOrdinal("SellerID")) ? null : (int?)reader.GetInt32(reader.GetOrdinal("SellerID")),
-                                ProductType = reader.GetString(reader.GetOrdinal("ProductType")),
-                                StartDate = reader.IsDBNull(reader.GetOrdinal("StartDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("StartDate")),
-                                EndDate = reader.IsDBNull(reader.GetOrdinal("EndDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("EndDate"))
-                            };
-                        }
-                        return null;
-                    }
-                }
-            }
-        }
-
-        private void AddParameter(IDbCommand command, string name, object value)
-        {
-            var parameter = command.CreateParameter();
-            parameter.ParameterName = name;
-
-            if (value == null)
-            {
-                parameter.Value = DBNull.Value;
-            }
-            else
-            {
-                parameter.Value = value;
-            }
-
-            command.Parameters.Add(parameter);
+            return await dummyProductRepository.GetDummyProductByIdAsync(productId);
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.Repository;
@@ -12,20 +11,17 @@ namespace ArtAttack.Service
     public class WaitListService : IWaitListService
     {
         private readonly IWaitListRepository waitListRepository;
-        private readonly IDummyProductModel dummyProductModel;
         private readonly INotificationDataAdapter notificationAdapter;
 
         public WaitListService(string connectionString)
         {
             waitListRepository = new WaitListRepository(connectionString);
-            dummyProductModel = new DummyProductModel(connectionString);
             notificationAdapter = new NotificationDataAdapter(connectionString);
         }
 
-        public WaitListService(IWaitListRepository waitListRepository, IDummyProductModel dummyProductModel, INotificationDataAdapter notificationAdapter)
+        public WaitListService(IWaitListRepository waitListRepository, INotificationDataAdapter notificationAdapter)
         {
             this.waitListRepository = waitListRepository;
-            this.dummyProductModel = dummyProductModel;
             this.notificationAdapter = notificationAdapter;
         }
 
@@ -64,16 +60,6 @@ namespace ArtAttack.Service
             return waitListRepository.GetUserWaitlistPosition(userId, productId);
         }
 
-        public async Task<string> GetSellerNameAsync(int? sellerId)
-        {
-            return await dummyProductModel.GetSellerNameAsync(sellerId);
-        }
-
-        public async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
-        {
-            return await dummyProductModel.GetDummyProductByIdAsync(productId);
-        }
-
         public void ScheduleRestockAlerts(int productId, DateTime restockDate)
         {
             int waitlistProductId = waitListRepository.GetWaitlistProductId(productId);
@@ -93,6 +79,7 @@ namespace ArtAttack.Service
                     timestamp: CalculateNotifyTime(restockDate, userIndex),
                     productId: productId,
                     isRead: false);
+                
                 notificationAdapter.AddNotification(notification);
             }
         }

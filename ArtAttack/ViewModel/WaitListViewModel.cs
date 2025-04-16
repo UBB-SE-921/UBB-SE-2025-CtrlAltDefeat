@@ -6,27 +6,33 @@ using Microsoft.Data.SqlClient;
 
 namespace ArtAttack.ViewModel
 {
+    /// <summary>
+    /// Provides functionality for managing waitlists in the view model layer.
+    /// </summary>
     public class WaitListViewModel : IWaitListViewModel
     {
         private readonly IWaitListService waitListService;
+        private readonly IDummyProductService dummyProductService;
 
         /// <summary>
-        /// Default constructor for WaitListViewModel.
+        /// Initializes a new instance of the <see cref="WaitListViewModel"/> class.
         /// </summary>
-        /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
-        /// <remarks>
-        /// Initializes a new instance of the WaitListViewModel class with the specified connection string,
-        /// creating new instances of the required model dependencies (WaitListModel and DummyProductModel).
-        /// This constructor is typically used in production scenarios where real database connections are needed.
-        /// </remarks>
+        /// <param name="connectionString">The database connection string.</param>
         public WaitListViewModel(string connectionString)
         {
             waitListService = new WaitListService(connectionString);
+            dummyProductService = new DummyProductService(connectionString);
         }
 
-        public WaitListViewModel(IWaitListService waitListService)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitListViewModel"/> class with specified services.
+        /// </summary>
+        /// <param name="waitListService">The waitlist service to use.</param>
+        /// <param name="dummyProductService">The dummy product service to use.</param>
+        public WaitListViewModel(IWaitListService waitListService, IDummyProductService dummyProductService)
         {
             this.waitListService = waitListService;
+            this.dummyProductService = dummyProductService;
         }
 
         /// <summary>
@@ -116,7 +122,7 @@ namespace ArtAttack.ViewModel
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public async Task<string> GetSellerNameAsync(int? sellerId)
         {
-            return await waitListService.GetSellerNameAsync(sellerId);
+            return await dummyProductService.GetSellerNameAsync(sellerId);
         }
 
         /// <summary>
@@ -127,7 +133,7 @@ namespace ArtAttack.ViewModel
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
         {
-            return await waitListService.GetDummyProductByIdAsync(productId);
+            return await dummyProductService.GetDummyProductByIdAsync(productId);
         }
     }
 }

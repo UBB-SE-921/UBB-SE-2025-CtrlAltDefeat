@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using ArtAttack.Domain;
 using ArtAttack.Repository;
 using ArtAttack.Service;
@@ -12,18 +13,24 @@ namespace ArtAttack.Model
     public class WaitListModel : IWaitListModel
     {
         private readonly IWaitListService waitListService;
+        private readonly IDummyProductService dummyProductService;
+        private readonly IWaitListRepository waitListRepository;
 
         public WaitListModel(string connectionString)
         {
             waitListService = new WaitListService(connectionString);
+            dummyProductService = new DummyProductService(connectionString);
+            waitListRepository = new WaitListRepository(connectionString);
         }
 
         public WaitListModel(string connectionString, IDatabaseProvider databaseProvider)
         {
-            var repository = new WaitListRepository(connectionString, databaseProvider);
+            waitListRepository = new WaitListRepository(connectionString, databaseProvider);
             var notificationAdapter = new NotificationDataAdapter(connectionString, databaseProvider);
             var dummyProductModel = new DummyProductModel(connectionString, databaseProvider);
-            waitListService = new WaitListService(repository, dummyProductModel, notificationAdapter);
+            
+            waitListService = new WaitListService(waitListRepository, notificationAdapter);
+            dummyProductService = new DummyProductService(dummyProductModel);
         }
 
         public void AddUserToWaitlist(int userId, int productWaitListId)
@@ -63,11 +70,7 @@ namespace ArtAttack.Model
 
         public List<UserWaitList> GetUsersInWaitlistOrdered(int productId)
         {
-            // This is directly implemented by the repository in the new architecture
-            var repository = (IWaitListRepository)waitListService.GetType()
-                .GetField("waitListRepository", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .GetValue(waitListService);
-            return repository.GetUsersInWaitlistOrdered(productId);
+            return waitListRepository.GetUsersInWaitlistOrdered(productId);
         }
     }
 }

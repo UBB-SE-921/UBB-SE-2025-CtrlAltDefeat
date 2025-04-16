@@ -30,8 +30,41 @@ namespace ArtAttack.Repository
         /// <param name="databaseProvider">The database provider to use.</param>
         public DummyProductRepository(string connectionString, IDatabaseProvider databaseProvider)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            this.databaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (databaseProvider == null)
+            {
+                throw new ArgumentNullException(nameof(databaseProvider));
+            }
+
+            this.connectionString = connectionString;
+            this.databaseProvider = databaseProvider;
+        }
+
+        /// <inheritdoc/>
+        public async Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
+        {
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
+            {
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
+                {
+                    databaseCommand.CommandText = "AddDummyProduct";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+
+                    AddParameter(databaseCommand, "@Name", name);
+                    AddParameter(databaseCommand, "@Price", price);
+                    AddParameter(databaseCommand, "@SellerID", sellerId);
+                    AddParameter(databaseCommand, "@ProductType", productType);
+                    AddParameter(databaseCommand, "@StartDate", startDate);
+                    AddParameter(databaseCommand, "@EndDate", endDate);
+
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -41,26 +74,99 @@ namespace ArtAttack.Repository
             {
                 using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
-                    databaseCommand.CommandText = "UPDATE DummyProduct SET name = @Name, price = @Price, SellerID = @SellerID, productType = @ProductType, startDate = @StartDate, endDate = @EndDate WHERE ID = @ID";
+                    databaseCommand.CommandText = "UpdateDummyProduct";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
 
                     AddParameter(databaseCommand, "@ID", id);
                     AddParameter(databaseCommand, "@Name", name);
                     AddParameter(databaseCommand, "@Price", price);
                     AddParameter(databaseCommand, "@SellerID", sellerId);
                     AddParameter(databaseCommand, "@ProductType", productType);
-                    if (productType == "borrowed")
-                    {
-                        AddParameter(databaseCommand, "@StartDate", startDate);
-                        AddParameter(databaseCommand, "@EndDate", endDate);
-                    }
-                    else
-                    {
-                        AddParameter(databaseCommand, "@StartDate", DBNull.Value);
-                        AddParameter(databaseCommand, "@EndDate", DBNull.Value);
-                    }
+                    AddParameter(databaseCommand, "@StartDate", startDate);
+                    AddParameter(databaseCommand, "@EndDate", endDate);
 
                     await databaseConnection.OpenAsync();
                     await databaseCommand.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteDummyProduct(int id)
+        {
+            using (IDbConnection databaseConnection = databaseProvider.CreateConnection(connectionString))
+            {
+                using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
+                {
+                    databaseCommand.CommandText = "DeleteDummyProduct";
+                    databaseCommand.CommandType = CommandType.StoredProcedure;
+
+                    AddParameter(databaseCommand, "@ID", id);
+
+                    await databaseConnection.OpenAsync();
+                    await databaseCommand.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> GetSellerNameAsync(int? sellerId)
+        {
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
+            {
+                using (IDbCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "GetSellerById";
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    if (sellerId.HasValue)
+                    {
+                        AddParameter(command, "@SellerID", sellerId.Value);
+                    }
+                    else
+                    {
+                        AddParameter(command, "@SellerID", DBNull.Value);
+                    }
+
+                    await connection.OpenAsync();
+
+                    object result = await command.ExecuteScalarAsync();
+                    return result?.ToString();
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
+        {
+            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
+            {
+                using (IDbCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "GetDummyProductByID";
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    AddParameter(command, "@productID", productId);
+
+                    await connection.OpenAsync();
+
+                    using (IDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new DummyProduct
+                            {
+                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Price = (float)reader.GetDouble(reader.GetOrdinal("Price")),
+                                SellerID = reader.IsDBNull(reader.GetOrdinal("SellerID")) ? null : (int?)reader.GetInt32(reader.GetOrdinal("SellerID")),
+                                ProductType = reader.GetString(reader.GetOrdinal("ProductType")),
+                                StartDate = reader.IsDBNull(reader.GetOrdinal("StartDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("StartDate")),
+                                EndDate = reader.IsDBNull(reader.GetOrdinal("EndDate")) ? null : (DateTime?)reader.GetDateTime(reader.GetOrdinal("EndDate"))
+                            };
+                        }
+                        return null;
+                    }
                 }
             }
         }
@@ -73,7 +179,7 @@ namespace ArtAttack.Repository
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
 
-            if (value == null || value == DBNull.Value)
+            if (value == null)
             {
                 parameter.Value = DBNull.Value;
             }

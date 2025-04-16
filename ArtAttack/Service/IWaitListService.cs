@@ -14,8 +14,6 @@ namespace ArtAttack.Service
         int GetWaitlistSize(int productWaitListId);
         bool IsUserInWaitlist(int userId, int productWaitListId);
         int GetUserWaitlistPosition(int userId, int productId);
-        Task<string> GetSellerNameAsync(int? sellerId);
-        Task<DummyProduct> GetDummyProductByIdAsync(int productId);
         void ScheduleRestockAlerts(int productId, DateTime restockDate);
     }
-} 
+}

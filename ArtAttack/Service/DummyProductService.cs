@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Repository;
-using ArtAttack.Shared;
 
 namespace ArtAttack.Service
 {
@@ -18,28 +17,47 @@ namespace ArtAttack.Service
         /// </summary>
         /// <param name="connectionString">The database connection string.</param>
         public DummyProductService(string connectionString)
-            : this(connectionString, new SqlDatabaseProvider())
         {
+            dummyProductRepository = new DummyProductRepository(connectionString);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DummyProductService"/> class with a specified database provider.
+        /// Initializes a new instance of the <see cref="DummyProductService"/> class with a specified repository.
         /// </summary>
-        /// <param name="connectionString">The database connection string.</param>
-        /// <param name="databaseProvider">The database provider to use.</param>
-        public DummyProductService(string connectionString, IDatabaseProvider databaseProvider)
+        /// <param name="dummyProductRepository">The repository to use.</param>
+        public DummyProductService(IDummyProductRepository dummyProductRepository)
         {
-            if (string.IsNullOrEmpty(connectionString))
+            this.dummyProductRepository = dummyProductRepository ?? throw new ArgumentNullException(nameof(dummyProductRepository));
+        }
+
+        /// <inheritdoc/>
+        public async Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate)
+        {
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException(nameof(connectionString));
+                throw new ArgumentException("Product name cannot be empty", nameof(name));
+            }
+            if (price < 0)
+            {
+                throw new ArgumentException("Price cannot be negative", nameof(price));
+            }
+            if (sellerId < 0)
+            {
+                throw new ArgumentException("Seller ID cannot be negative", nameof(sellerId));
+            }
+            if (string.IsNullOrWhiteSpace(productType))
+            {
+                throw new ArgumentException("Product type cannot be empty", nameof(productType));
             }
 
-            if (databaseProvider == null)
+            // Only validate start and end dates for borrowed products
+            if (productType == "borrowed" && startDate > endDate)
             {
-                throw new ArgumentNullException(nameof(databaseProvider));
+                throw new ArgumentException("Start date cannot be after end date", nameof(startDate));
             }
 
-            this.dummyProductRepository = new DummyProductRepository(connectionString, databaseProvider);
+            await dummyProductRepository.AddDummyProductAsync(name, price, sellerId, productType, startDate, endDate);
         }
 
         /// <inheritdoc/>
@@ -58,7 +76,6 @@ namespace ArtAttack.Service
             {
                 throw new ArgumentException("Price cannot be negative", nameof(price));
             }
-
             if (sellerId < 0)
             {
                 throw new ArgumentException("Seller ID cannot be negative", nameof(sellerId));
@@ -69,14 +86,40 @@ namespace ArtAttack.Service
             }
 
             // Only validate start and end dates for borrowed products
-            if (productType == "borrowed")
+            if (productType == "borrowed" && startDate > endDate)
             {
-                if (startDate > endDate)
-                {
-                    throw new ArgumentException("Start date cannot be after end date", nameof(startDate));
-                }
+                throw new ArgumentException("Start date cannot be after end date", nameof(startDate));
             }
+
             await dummyProductRepository.UpdateDummyProductAsync(id, name, price, sellerId, productType, startDate, endDate);
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteDummyProductAsync(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Product ID must be positive", nameof(id));
+            }
+
+            await dummyProductRepository.DeleteDummyProduct(id);
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> GetSellerNameAsync(int? sellerId)
+        {
+            return await dummyProductRepository.GetSellerNameAsync(sellerId);
+        }
+
+        /// <inheritdoc/>
+        public async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
+        {
+            if (productId <= 0)
+            {
+                throw new ArgumentException("Product ID must be positive", nameof(productId));
+            }
+
+            return await dummyProductRepository.GetDummyProductByIdAsync(productId);
         }
     }
 }
