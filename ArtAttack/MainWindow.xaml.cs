@@ -8,6 +8,8 @@ using ArtAttack.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using QuestPDF.Infrastructure;
+using ArtAttack.Model; // Add this using directive
+using ArtAttack.Service; // Add this using directive
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,8 +28,22 @@ namespace ArtAttack
 
             this.InitializeComponent();
             contract = new Contract();
-            contractViewModel = new ContractViewModel(Configuration.CONNECTION_STRING);
-            trackedOrderViewModel = new TrackedOrderViewModel(Configuration.CONNECTION_STRING);
+
+            // Create repository and service instances
+            IContractRepository contractRepository = new ContractRepository(Configuration.CONNECTION_STRING);
+            IContractService contractService = new ContractService(contractRepository);
+
+            // Instantiate ViewModel with the service
+            contractViewModel = new ContractViewModel(contractService);
+
+            // Assuming TrackedOrderViewModel also needs similar setup if it depends on a service
+            // For now, keeping the original instantiation if it only needs the connection string
+            // If TrackedOrderViewModel also needs a service, update it similarly.
+            // Example if TrackedOrderViewModel needs a service:
+            // ITrackedOrderRepository trackedOrderRepository = new TrackedOrderRepository(Configuration.CONNECTION_STRING);
+            // ITrackedOrderService trackedOrderService = new TrackedOrderService(trackedOrderRepository);
+            // trackedOrderViewModel = new TrackedOrderViewModel(trackedOrderService);
+            trackedOrderViewModel = new TrackedOrderViewModel(Configuration.CONNECTION_STRING); // Keep original if it doesn't use a service layer yet
         }
 
         // This event handler is called when the Grid (root element) is loaded.

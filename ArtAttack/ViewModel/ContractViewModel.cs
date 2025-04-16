@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
+using ArtAttack.Service; // Add this using directive
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -14,15 +15,18 @@ namespace ArtAttack.ViewModel
 {
     public class ContractViewModel : IContractViewModel
     {
-        private readonly IContractRepository model;
+        // Change the type from IContractRepository to IContractService
+        private readonly IContractService _contractService;
 
         /// <summary>
         /// Constructor for the ContractViewModel
         /// </summary>
-        /// <param name="connectionString" type="string">The connection string to the database</param>
-        public ContractViewModel(string connectionString)
+        /// <param name="contractService" type="IContractService">The contract service instance</param>
+        // Update the constructor to accept IContractService
+        public ContractViewModel(IContractService contractService)
         {
-            model = new ContractRepository(connectionString);
+            // Assign the injected service instance
+            _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
         }
 
         /// <summary>
@@ -32,16 +36,21 @@ namespace ArtAttack.ViewModel
         /// <returns The contract with the given ID></returns>
         public async Task<IContract> GetContractByIdAsync(long contractId)
         {
-            return await model.GetContractByIdAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetContractByIdAsync(contractId);
         }
 
         /// <summary>
         /// Get all contracts
         /// </summary>
         /// <returns The list of contracts></returns>
+        // Uncomment the method
         public async Task<List<IContract>> GetAllContractsAsync()
         {
-            return await model.GetAllContractsAsync();
+            // Call the method on the service
+            return await _contractService.GetAllContractsAsync();
+            // Remove the NotImplementedException
+            // throw new NotImplementedException("GetAllContractsAsync is not implemented in IContractService.");
         }
 
         /// <summary>
@@ -51,7 +60,8 @@ namespace ArtAttack.ViewModel
         /// <returns The list of contracts that are related to the given contract></returns>
         public async Task<List<IContract>> GetContractHistoryAsync(long contractId)
         {
-            return await model.GetContractHistoryAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetContractHistoryAsync(contractId);
         }
 
         /// <summary>
@@ -60,15 +70,19 @@ namespace ArtAttack.ViewModel
         /// <param name="contract" type="Contract">The contract to add</param>
         /// <param name="pdfFile" type="byte[]">The PDF file of the contract</param>
         /// <returns The added contract></returns>
+        // Uncomment the method
         public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
             if (pdfFile == null)
             {
-                // ArgumentNullException
                 throw new ArgumentNullException(nameof(pdfFile));
             }
-            return await model.AddContractAsync(contract, pdfFile);
+            // Call the method on the service
+            return await _contractService.AddContractAsync(contract, pdfFile);
+            // Remove the NotImplementedException
+            // throw new NotImplementedException("AddContractAsync is not implemented in IContractService.");
         }
+
 
         /// <summary>
         /// Get the seller of a contract
@@ -77,7 +91,8 @@ namespace ArtAttack.ViewModel
         /// <returns The ID and name of the seller></returns>
         public async Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId)
         {
-            return await model.GetContractSellerAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetContractSellerAsync(contractId);
         }
 
         /// <summary>
@@ -87,7 +102,8 @@ namespace ArtAttack.ViewModel
         /// <returns The ID and name of the buyer></returns>
         public async Task<(int BuyerID, string BuyerName)> GetContractBuyerAsync(long contractId)
         {
-            return await model.GetContractBuyerAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetContractBuyerAsync(contractId);
         }
 
         /// <summary>
@@ -97,7 +113,8 @@ namespace ArtAttack.ViewModel
         /// <returns The order summary information></returns>
         public async Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId)
         {
-            return await model.GetOrderSummaryInformationAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetOrderSummaryInformationAsync(contractId);
         }
 
         /// <summary>
@@ -105,11 +122,10 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contractId" type="long">The ID of the contract</param>
         /// <returns The product details></returns>
-        // Change DateTime to DateTime? to match the repository interface and implementation
         public async Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
-            // The return type from the model now correctly matches this method's signature
-            return await model.GetProductDetailsByContractIdAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetProductDetailsByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -119,7 +135,8 @@ namespace ArtAttack.ViewModel
         /// <returns The list of contracts of the buyer></returns>
         public async Task<List<IContract>> GetContractsByBuyerAsync(int buyerId)
         {
-            return await model.GetContractsByBuyerAsync(buyerId);
+            // Call the method on the service
+            return await _contractService.GetContractsByBuyerAsync(buyerId);
         }
 
         /// <summary>
@@ -129,7 +146,8 @@ namespace ArtAttack.ViewModel
         /// <returns The predefined contract with the given type></returns>
         public async Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
-            return await model.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
+            // Call the method on the service
+            return await _contractService.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
         }
 
         /// <summary>
@@ -137,10 +155,10 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contractId" type="long">The ID of the contract</param>
         /// <returns The order details></returns>
-        // Update return type to allow nullable PaymentMethod
         public async Task<(string? PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
-            return await model.GetOrderDetailsAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetOrderDetailsAsync(contractId);
         }
 
         /// <summary>
@@ -150,7 +168,8 @@ namespace ArtAttack.ViewModel
         /// <returns The delivery date></returns>
         public async Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId)
         {
-            return await model.GetDeliveryDateByContractIdAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetDeliveryDateByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -160,17 +179,14 @@ namespace ArtAttack.ViewModel
         /// <returns The PDF of the contract></returns>
         public async Task<byte[]> GetPdfByContractIdAsync(long contractId)
         {
-            return await model.GetPdfByContractIdAsync(contractId);
+            // Call the method on the service
+            return await _contractService.GetPdfByContractIdAsync(contractId);
         }
 
-        /// <summary>
-        /// Generate and save a contract
-        /// </summary>
-        /// <param name="contract" type="Contract">The contract to generate and save</param>
-        /// <param name="predefinedContract" type="PredefinedContractType">The type of the predefined contract</param>
-        /// <param name="fieldReplacements" type="Dictionary<string, string>">The field replacements for the contract</param>
-        /// <returns The task></returns>
-        /// <exception cref="ArgumentNullException" throws on="contract == null">Thrown when the contract is null</exception>
+        // ... existing private methods GenerateContractPdf, GetFieldReplacements, GenerateAndSaveContractAsync ...
+        // These private methods already call the public async methods of this ViewModel,
+        // which now correctly delegate to the _contractService. No changes needed here.
+
         private byte[] GenerateContractPdf(
                 IContract contract,
                 IPredefinedContract predefinedContract,

@@ -313,7 +313,7 @@ namespace ArtAttack.ViewModel
                         o.OrderDate, 
                         o.PaymentMethod, 
                         o.OrderSummaryID
-                    FROM [Order] o
+                    FROM [Orders] o
                     JOIN [DummyProduct] p ON o.ProductType = p.ID
                     WHERE o.BuyerID = @UserId";
 
@@ -415,7 +415,7 @@ namespace ArtAttack.ViewModel
                     string query = @"SELECT 
                         o.OrderSummaryID,
                         p.productType
-                    FROM [Order] o
+                    FROM [Orders] o
                     JOIN [DummyProduct] p ON o.ProductType = p.ID
                     WHERE o.BuyerID = @UserId";
 
