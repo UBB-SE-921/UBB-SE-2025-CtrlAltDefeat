@@ -23,7 +23,6 @@ namespace ArtAttack.ViewModel
         private int unreadCount;
         private bool isLoading;
         private int currentUserId;
-        private bool isNotRead;
 
         /// <summary>
         /// Occurs when a popup message should be displayed.

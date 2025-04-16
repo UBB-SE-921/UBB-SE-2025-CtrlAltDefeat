@@ -29,7 +29,7 @@ namespace ArtAttack
         private void Populate()
         {
             selectedNotificationTitle.Text = this.SelectedNotification.Title;
-            selectedNotificationContent.Text = this.SelectedNotification.Title;
+            selectedNotificationContent.Text = this.SelectedNotification.Content;
         }
 
         /// <summary>
