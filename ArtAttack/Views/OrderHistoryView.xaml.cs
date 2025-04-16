@@ -410,5 +410,111 @@ namespace ArtAttack
             await Task.Delay(300); // 300ms delay
             await LoadOrders(SearchTextBox.Text);
         }
+
+        /// <summary>
+        /// Shows a PDF document in a dialog.
+        /// </summary>
+        /// <param name="pdfBytes">The PDF document as a byte array. Must not be null or empty.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="IOException">Thrown when there is an error writing the PDF to a temporary file.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when pdfBytes is null.</exception>
+        private async Task ShowPdfDialog(byte[] pdfBytes)
+        {
+            var contractFilePath = Path.Combine(Path.GetTempPath(), $"contract_{Guid.NewGuid()}.pdf");
+            await File.WriteAllBytesAsync(contractFilePath, pdfBytes);
+
+            var pdfDialog = new ContentDialog
+            {
+                Title = "Contract PDF",
+                CloseButtonText = "Close",
+                XamlRoot = this.Content.XamlRoot,
+                Content = new WebView2
+                {
+                    Width = 800,
+                    Height = 1000,
+                    Source = new Uri(contractFilePath)
+                }
+            };
+
+            await pdfDialog.ShowAsync();
+
+            try
+            {
+                File.Delete(contractFilePath);
+            }
+            catch
+            {
+            }
+        }
+
+        /// <summary>
+        /// Displays a message dialog with the specified title and message.
+        /// </summary>
+        /// <param name="title">The title of the dialog. Must not be null.</param>
+        /// <param name="message">The message to display. Must not be null.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the XamlRoot is not available.</exception>
+        private Task ShowMessageAsync(string title, string message)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            try
+            {
+                bool enqueued = DispatcherQueue.TryEnqueue(async () =>
+                {
+                    try
+                    {
+                        if (this.Content?.XamlRoot == null)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error: XamlRoot is null. Cannot display message: {title} - {message}");
+                            tcs.SetResult(false);
+                            return;
+                        }
+
+                        var messageDialog = new ContentDialog
+                        {
+                            Title = title,
+                            Content = message,
+                            CloseButtonText = "OK",
+                            XamlRoot = this.Content.XamlRoot,
+                        };
+
+                        await messageDialog.ShowAsync();
+                        tcs.SetResult(true);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error showing message dialog: {ex}");
+                        tcs.SetException(ex);
+                    }
+                });
+
+                if (!enqueued)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to enqueue message dialog operation");
+                    tcs.SetResult(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in ShowMessageAsync: {ex}");
+                tcs.SetException(ex);
+            }
+
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Adds a row with label and value to the order details dialog.
+        /// </summary>
+        /// <param name="label">The label to display. Must not be null.</param>
+        /// <param name="value">The value to display. Must not be null.</param>
+        private void AddDetailRow(string label, string value)
+        {
+            var stackPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 5) };
+            stackPanel.Children.Add(new TextBlock { Text = label, FontWeight = FontWeights.SemiBold, Width = 150 });
+            stackPanel.Children.Add(new TextBlock { Text = value });
+            OrderDetailsContent.Children.Add(stackPanel);
+        }
     }
 }
