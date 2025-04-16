@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using Microsoft.Data.SqlClient;
 using ArtAttack.Repository;
 [ExcludeFromCodeCoverage]

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.ViewModel;
 using Moq;
 
@@ -14,7 +14,7 @@ namespace ArtAttack.Tests.ViewModel
     [TestClass]
     public class ContractViewModelTests
     {
-        private Mock<IContractModel> mockContractModel;
+        private Mock<IContractRepository> mockContractModel;
         private IContractViewModel contractViewModel;
         private IContract mockContract;
         private List<IContract> mockContracts;
@@ -25,7 +25,7 @@ namespace ArtAttack.Tests.ViewModel
         public void TestInitialize()
         {
             // Setup mock contract model
-            mockContractModel = new Mock<IContractModel>();
+            mockContractModel = new Mock<IContractRepository>();
 
             // Create the view model with the mocked model
             contractViewModel = new ContractViewModel("Test_Connection_String");

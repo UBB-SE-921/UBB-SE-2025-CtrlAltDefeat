@@ -6,7 +6,7 @@ using ArtAttack.Domain;
 using Microsoft.Data.SqlClient;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
     public class OrderHistoryModel : IOrderHistoryModel
     {

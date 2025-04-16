@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
+using ArtAttack.Service; // Add this using directive
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -14,15 +15,18 @@ namespace ArtAttack.ViewModel
 {
     public class ContractViewModel : IContractViewModel
     {
-        private readonly IContractModel model;
+        // Change the type from IContractRepository to IContractService
+        private readonly IContractService contractService;
 
         /// <summary>
         /// Constructor for the ContractViewModel
         /// </summary>
-        /// <param name="connectionString" type="string">The connection string to the database</param>
-        public ContractViewModel(string connectionString)
+        /// <param name="contractService" type="IContractService">The contract service instance</param>
+        // Update the constructor to accept IContractService
+        public ContractViewModel(IContractService contractService)
         {
-            model = new ContractModel(connectionString);
+            // Assign the injected service instance
+            this.contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
         }
 
         /// <summary>
@@ -32,16 +36,21 @@ namespace ArtAttack.ViewModel
         /// <returns The contract with the given ID></returns>
         public async Task<IContract> GetContractByIdAsync(long contractId)
         {
-            return await model.GetContractByIdAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetContractByIdAsync(contractId);
         }
 
         /// <summary>
         /// Get all contracts
         /// </summary>
         /// <returns The list of contracts></returns>
+        // Uncomment the method
         public async Task<List<IContract>> GetAllContractsAsync()
         {
-            return await model.GetAllContractsAsync();
+            // Call the method on the service
+            return await contractService.GetAllContractsAsync();
+            // Remove the NotImplementedException
+            // throw new NotImplementedException("GetAllContractsAsync is not implemented in IContractService.");
         }
 
         /// <summary>
@@ -51,7 +60,8 @@ namespace ArtAttack.ViewModel
         /// <returns The list of contracts that are related to the given contract></returns>
         public async Task<List<IContract>> GetContractHistoryAsync(long contractId)
         {
-            return await model.GetContractHistoryAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetContractHistoryAsync(contractId);
         }
 
         /// <summary>
@@ -60,15 +70,19 @@ namespace ArtAttack.ViewModel
         /// <param name="contract" type="Contract">The contract to add</param>
         /// <param name="pdfFile" type="byte[]">The PDF file of the contract</param>
         /// <returns The added contract></returns>
+        // Uncomment the method
         public async Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile)
         {
             if (pdfFile == null)
             {
-                // ArgumentNullException
                 throw new ArgumentNullException(nameof(pdfFile));
             }
-            return await model.AddContractAsync(contract, pdfFile);
+            // Call the method on the service
+            return await contractService.AddContractAsync(contract, pdfFile);
+            // Remove the NotImplementedException
+            // throw new NotImplementedException("AddContractAsync is not implemented in IContractService.");
         }
+
 
         /// <summary>
         /// Get the seller of a contract
@@ -77,7 +91,8 @@ namespace ArtAttack.ViewModel
         /// <returns The ID and name of the seller></returns>
         public async Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId)
         {
-            return await model.GetContractSellerAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetContractSellerAsync(contractId);
         }
 
         /// <summary>
@@ -87,7 +102,8 @@ namespace ArtAttack.ViewModel
         /// <returns The ID and name of the buyer></returns>
         public async Task<(int BuyerID, string BuyerName)> GetContractBuyerAsync(long contractId)
         {
-            return await model.GetContractBuyerAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetContractBuyerAsync(contractId);
         }
 
         /// <summary>
@@ -97,7 +113,8 @@ namespace ArtAttack.ViewModel
         /// <returns The order summary information></returns>
         public async Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId)
         {
-            return await model.GetOrderSummaryInformationAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetOrderSummaryInformationAsync(contractId);
         }
 
         /// <summary>
@@ -105,9 +122,10 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contractId" type="long">The ID of the contract</param>
         /// <returns The product details></returns>
-        public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
+        public async Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
-            return await model.GetProductDetailsByContractIdAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetProductDetailsByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -117,7 +135,8 @@ namespace ArtAttack.ViewModel
         /// <returns The list of contracts of the buyer></returns>
         public async Task<List<IContract>> GetContractsByBuyerAsync(int buyerId)
         {
-            return await model.GetContractsByBuyerAsync(buyerId);
+            // Call the method on the service
+            return await contractService.GetContractsByBuyerAsync(buyerId);
         }
 
         /// <summary>
@@ -127,17 +146,19 @@ namespace ArtAttack.ViewModel
         /// <returns The predefined contract with the given type></returns>
         public async Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
-            return await model.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
+            // Call the method on the service
+            return await contractService.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
         }
 
         /// <summary>
         /// Get the order details of a contract
         /// </summary>
         /// <param name="contractId" type="long">The ID of the contract</param>
-        /// <returns The payment method and order date></returns>
-        public async Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
+        /// <returns The order details></returns>
+        public async Task<(string? PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
-            return await model.GetOrderDetailsAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetOrderDetailsAsync(contractId);
         }
 
         /// <summary>
@@ -147,7 +168,8 @@ namespace ArtAttack.ViewModel
         /// <returns The delivery date></returns>
         public async Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId)
         {
-            return await model.GetDeliveryDateByContractIdAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetDeliveryDateByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -157,17 +179,14 @@ namespace ArtAttack.ViewModel
         /// <returns The PDF of the contract></returns>
         public async Task<byte[]> GetPdfByContractIdAsync(long contractId)
         {
-            return await model.GetPdfByContractIdAsync(contractId);
+            // Call the method on the service
+            return await contractService.GetPdfByContractIdAsync(contractId);
         }
 
-        /// <summary>
-        /// Generate and save a contract
-        /// </summary>
-        /// <param name="contract" type="Contract">The contract to generate and save</param>
-        /// <param name="predefinedContract" type="PredefinedContractType">The type of the predefined contract</param>
-        /// <param name="fieldReplacements" type="Dictionary<string, string>">The field replacements for the contract</param>
-        /// <returns The task></returns>
-        /// <exception cref="ArgumentNullException" throws on="contract == null">Thrown when the contract is null</exception>
+        // ... existing private methods GenerateContractPdf, GetFieldReplacements, GenerateAndSaveContractAsync ...
+        // These private methods already call the public async methods of this ViewModel,
+        // which now correctly delegate to the contractService. No changes needed here.
+
         private byte[] GenerateContractPdf(
                 IContract contract,
                 IPredefinedContract predefinedContract,
@@ -278,11 +297,6 @@ namespace ArtAttack.ViewModel
             return document.GeneratePdf();
         }
 
-        /// <summary>
-        /// Get the field replacements for a contract
-        /// </summary>
-        /// <param name="contract" type="Contract">The contract to get the field replacements for</param>
-        /// <returns The field replacements></returns>
         private async Task<Dictionary<string, string>> GetFieldReplacements(IContract contract)
         {
             var fieldReplacements = new Dictionary<string, string>();
@@ -291,41 +305,63 @@ namespace ArtAttack.ViewModel
             var productDetails = await GetProductDetailsByContractIdAsync(contract.ContractID);
             var buyerDetails = await GetContractBuyerAsync(contract.ContractID);
             var sellerDetails = await GetContractSellerAsync(contract.ContractID);
+            // orderDetails now returns (string? PaymentMethod, DateTime OrderDate)
             var orderDetails = await GetOrderDetailsAsync(contract.ContractID);
             var orderSummaryData = await GetOrderSummaryInformationAsync(contract.ContractID);
             var deliveryDate = await GetDeliveryDateByContractIdAsync(contract.ContractID);
 
             if (productDetails.HasValue)
             {
-                DateTime startDate = productDetails.Value.StartDate;
-                DateTime endDate = productDetails.Value.EndDate;
-                var loanPeriod = (endDate - startDate).TotalDays;
+                // Assign nullable DateTime? values
+                DateTime? startDate = productDetails.Value.StartDate;
+                DateTime? endDate = productDetails.Value.EndDate;
 
-                fieldReplacements["StartDate"] = startDate.ToShortDateString();
-                fieldReplacements["EndDate"] = endDate.ToShortDateString();
-                fieldReplacements["LoanPeriod"] = loanPeriod.ToString();
+                // Check if both dates have values before calculating period or formatting
+                if (startDate.HasValue && endDate.HasValue)
+                {
+                    var loanPeriod = (endDate.Value - startDate.Value).TotalDays;
+                    fieldReplacements["StartDate"] = startDate.Value.ToShortDateString();
+                    fieldReplacements["EndDate"] = endDate.Value.ToShortDateString();
+                    fieldReplacements["LoanPeriod"] = loanPeriod.ToString();
+                    fieldReplacements["AgreementDate"] = startDate.Value.ToShortDateString(); // Assuming AgreementDate is StartDate
+                    fieldReplacements["DueDate"] = endDate.Value.ToShortDateString(); // Assuming DueDate is EndDate
+                }
+                else // Handle cases where one or both dates might be null
+                {
+                    fieldReplacements["StartDate"] = startDate.HasValue ? startDate.Value.ToShortDateString() : "N/A";
+                    fieldReplacements["EndDate"] = endDate.HasValue ? endDate.Value.ToShortDateString() : "N/A";
+                    fieldReplacements["LoanPeriod"] = "N/A";
+                    fieldReplacements["AgreementDate"] = startDate.HasValue ? startDate.Value.ToShortDateString() : "N/A";
+                    fieldReplacements["DueDate"] = endDate.HasValue ? endDate.Value.ToShortDateString() : "N/A";
+                }
+
+                // Add other details (assuming price/name are non-null as per repository comment)
                 fieldReplacements["ProductDescription"] = productDetails.Value.name;
                 fieldReplacements["Price"] = productDetails.Value.price.ToString();
                 fieldReplacements["BuyerName"] = buyerDetails.BuyerName;
                 fieldReplacements["SellerName"] = sellerDetails.SellerName;
-                fieldReplacements["PaymentMethod"] = orderDetails.PaymentMethod;
-                fieldReplacements["AgreementDate"] = startDate.ToShortDateString();
-                fieldReplacements["LateFee"] = orderSummaryData["warrantyTax"].ToString();
-                fieldReplacements["DueDate"] = endDate.ToShortDateString();
+                // Handle potentially null PaymentMethod
+                fieldReplacements["PaymentMethod"] = orderDetails.PaymentMethod ?? "N/A"; // Use null-coalescing operator
+                // Ensure warrantyTax exists and handle potential conversion errors if necessary
+                fieldReplacements["LateFee"] = orderSummaryData.TryGetValue("warrantyTax", out var tax) && tax != null ? tax.ToString() : "N/A";
+                // Handle nullable delivery date
+                fieldReplacements["DeliveryDate"] = deliveryDate.HasValue ? deliveryDate.Value.ToShortDateString() : "N/A";
             }
-            else
+            else // Handle case where productDetails itself is null
             {
                 fieldReplacements["StartDate"] = "N/A";
                 fieldReplacements["EndDate"] = "N/A";
                 fieldReplacements["LoanPeriod"] = "N/A";
                 fieldReplacements["ProductDescription"] = "N/A";
                 fieldReplacements["Price"] = "N/A";
-                fieldReplacements["BuyerName"] = "N/A";
-                fieldReplacements["SellerName"] = "N/A";
-                fieldReplacements["PaymentMethod"] = "N/A";
+                fieldReplacements["BuyerName"] = buyerDetails.BuyerName; // Consider if these should be fetched even if product details are missing
+                fieldReplacements["SellerName"] = sellerDetails.SellerName;
+                // Handle potentially null PaymentMethod even if product details are missing
+                fieldReplacements["PaymentMethod"] = orderDetails.PaymentMethod ?? "N/A";
+                fieldReplacements["LateFee"] = orderSummaryData.TryGetValue("warrantyTax", out var tax) && tax != null ? tax.ToString() : "N/A";
+                fieldReplacements["DeliveryDate"] = deliveryDate.HasValue ? deliveryDate.Value.ToShortDateString() : "N/A";
                 fieldReplacements["AgreementDate"] = "N/A";
-                fieldReplacements["LateFee"] = "N/A";
-                fieldReplacements["DeliveryDate"] = "N/A";
+                fieldReplacements["DueDate"] = "N/A";
             }
 
             return fieldReplacements;

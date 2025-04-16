@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -31,7 +31,7 @@ namespace ArtAttack.Tests.Model
         private Mock<IDbCommand> mockCommand;
         private Mock<IDataReader> mockReader;
         private Mock<IDataParameterCollection> mockParameters;
-        private ContractModel contractModel;
+        private ContractRepository contractModel;
 
         [TestInitialize]
         public void Setup()
@@ -60,14 +60,14 @@ namespace ArtAttack.Tests.Model
             mockDbProvider.Setup(provider => provider.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
 
             // Create the ContractModel with the mock database provider
-            contractModel = new ContractModel(TEST_CONNECTION_STRING, mockDbProvider.Object);
+            contractModel = new ContractRepository(TEST_CONNECTION_STRING, mockDbProvider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionStringOnly_InitializesCorrectly()
         {
             // Arrange & Act
-            var model = new ContractModel(TEST_CONNECTION_STRING);
+            var model = new ContractRepository(TEST_CONNECTION_STRING);
 
             // Assert
             Assert.IsNotNull(model);
@@ -78,7 +78,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
-            _ = new ContractModel(null, mockDbProvider.Object);
+            _ = new ContractRepository(null, mockDbProvider.Object);
         }
 
         [TestMethod]
@@ -86,7 +86,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
-            _ = new ContractModel(TEST_CONNECTION_STRING, null);
+            _ = new ContractRepository(TEST_CONNECTION_STRING, null);
         }
 
         [TestMethod]

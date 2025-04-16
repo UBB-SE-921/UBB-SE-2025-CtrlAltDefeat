@@ -1,5 +1,5 @@
 ﻿using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
