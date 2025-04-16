@@ -12,6 +12,7 @@ namespace ArtAttack.Service
     public class DummyProductService : IDummyProductService
     {
         private readonly IDummyProductRepository dummyProductRepository;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DummyProductService"/> class.
         /// </summary>

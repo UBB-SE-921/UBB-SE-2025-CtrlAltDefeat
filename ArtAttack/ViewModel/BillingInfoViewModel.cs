@@ -37,8 +37,8 @@ namespace ArtAttack.ViewModel
         private string zipCode;
         private string additionalInfo;
 
-        private DateTime startDate;
-        private DateTime endDate;
+        private DateTimeOffset startDate;
+        private DateTimeOffset endDate;
 
         private float subtotal;
         private float deliveryFee;
@@ -273,8 +273,8 @@ namespace ArtAttack.ViewModel
 
             CalculateOrderTotal(orderHistoryID);
 
-            DateTime newStartDate = startDate.Date;
-            DateTime newEndDate = endDate.Date;
+            DateTimeOffset newStartDate = startDate.Date;
+            DateTimeOffset newEndDate = endDate.Date;
 
             dummyProduct.StartDate = newStartDate;
             dummyProduct.EndDate = newEndDate;
@@ -458,7 +458,7 @@ namespace ArtAttack.ViewModel
         }
 
         [ExcludeFromCodeCoverage]
-        public DateTime StartDate
+        public DateTimeOffset StartDate
         {
             get => startDate;
             set
@@ -469,7 +469,7 @@ namespace ArtAttack.ViewModel
         }
 
         [ExcludeFromCodeCoverage]
-        public DateTime EndDate
+        public DateTimeOffset EndDate
         {
             get => endDate;
             set
