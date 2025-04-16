@@ -1,26 +1,28 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
-    public class NotificationDataAdapter : IDisposable, INotificationDataAdapter
+    public class NotificationRepository : INotificationRepository
     {
         private readonly IDatabaseProvider databaseProvider;
         private readonly string connectionString;
         private IDbConnection connection;
 
         [ExcludeFromCodeCoverage]
-        public NotificationDataAdapter(string connectionString)
+        public NotificationRepository(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {
         }
 
-        public NotificationDataAdapter(string connectionString, IDatabaseProvider databaseProvider)
+        public NotificationRepository(string connectionString, IDatabaseProvider databaseProvider)
         {
             if (connectionString == null)
             {
@@ -62,7 +64,7 @@ namespace ArtAttack.Model
                 {
                     while (reader.Read())
                     {
-                        notifications.Add(NotificationFactory.CreateFromDataReader(reader));
+                        notifications.Add(this.CreateFromDataReader(reader));
                     }
                 }
             }
@@ -114,44 +116,44 @@ namespace ArtAttack.Model
                 switch (notification)
                 {
                     case ContractRenewalAnswerNotification ans:
-                        AddParameter(command, "@contractID", ans.GetContractID());
-                        AddParameter(command, "@isAccepted", ans.GetIsAccepted());
+                        AddParameter(command, "@contractID", ans.ContractID);
+                        AddParameter(command, "@isAccepted", ans.IsAccepted);
                         break;
 
                     case ContractRenewalWaitlistNotification waitlist:
-                        AddParameter(command, "@productID", waitlist.GetProductID());
+                        AddParameter(command, "@productID", waitlist.ProductID);
                         break;
 
                     case OutbiddedNotification outbid:
-                        AddParameter(command, "@productID", outbid.GetProductID());
+                        AddParameter(command, "@productID", outbid.ProductID);
                         break;
 
                     case OrderShippingProgressNotification shipping:
-                        AddParameter(command, "@orderID", shipping.GetOrderID());
-                        AddParameter(command, "@shippingState", shipping.GetShippingState());
-                        AddParameter(command, "@deliveryDate", shipping.GetDeliveryDate());
+                        AddParameter(command, "@orderID", shipping.OrderID);
+                        AddParameter(command, "@shippingState", shipping.ShippingState);
+                        AddParameter(command, "@deliveryDate", shipping.DeliveryDate);
                         break;
 
                     case PaymentConfirmationNotification payment:
-                        AddParameter(command, "@orderID", payment.GetOrderID());
-                        AddParameter(command, "@productID", payment.GetProductID());
+                        AddParameter(command, "@orderID", payment.OrderID);
+                        AddParameter(command, "@productID", payment.ProductID);
                         break;
 
                     case ProductRemovedNotification removed:
-                        AddParameter(command, "@productID", removed.GetProductID());
+                        AddParameter(command, "@productID", removed.ProductID);
                         break;
 
                     case ProductAvailableNotification available:
-                        AddParameter(command, "@productID", available.GetProductID());
+                        AddParameter(command, "@productID", available.ProductID);
                         break;
 
                     case ContractRenewalRequestNotification request:
-                        AddParameter(command, "@contractID", request.GetContractID());
+                        AddParameter(command, "@contractID", request.ContractID);
                         break;
 
                     case ContractExpirationNotification expiration:
-                        AddParameter(command, "@contractID", expiration.GetContractID());
-                        AddParameter(command, "@expirationDate", expiration.GetExpirationDate());
+                        AddParameter(command, "@contractID", expiration.ContractID);
+                        AddParameter(command, "@expirationDate", expiration.ExpirationDate);
                         break;
 
                     default:
@@ -217,6 +219,68 @@ namespace ArtAttack.Model
         {
             connection?.Dispose();
             connection = null;
+        }
+
+        /// <summary>
+        /// Creates a Notification object from a data reader
+        /// </summary>
+        /// <param name="reader">The reader to create a notification from</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public Notification CreateFromDataReader(IDataReader reader)
+        {
+            int notificationId = reader.GetInt32(reader.GetOrdinal("notificationID"));
+            int recipientId = reader.GetInt32(reader.GetOrdinal("recipientID"));
+            DateTime timestamp = reader.GetDateTime(reader.GetOrdinal("timestamp"));
+            bool isRead = reader.GetBoolean(reader.GetOrdinal("isRead"));
+            string category = reader.GetString(reader.GetOrdinal("category"));
+
+            switch (category)
+            {
+                case "CONTRACT_RENEWAL_ACCEPTED":
+                    int contractId = reader.GetInt32(reader.GetOrdinal("contractID"));
+                    bool isAccepted = reader.GetBoolean(reader.GetOrdinal("isAccepted"));
+                    return new ContractRenewalAnswerNotification(recipientId, timestamp, contractId, isAccepted, isRead, notificationId);
+
+                case "CONTRACT_RENEWAL_WAITLIST":
+                    int productIdWaitlist = reader.GetInt32(reader.GetOrdinal("productID"));
+                    return new ContractRenewalWaitlistNotification(recipientId, timestamp, productIdWaitlist, isRead, notificationId);
+
+                case "OUTBIDDED":
+                    int productIdOutbidded = reader.GetInt32(reader.GetOrdinal("productID"));
+                    return new OutbiddedNotification(recipientId, timestamp, productIdOutbidded, isRead, notificationId);
+
+                case "ORDER_SHIPPING_PROGRESS":
+                    int orderId = reader.GetInt32(reader.GetOrdinal("orderID"));
+                    string shippingState = reader.GetString(reader.GetOrdinal("shippingState"));
+                    DateTime deliveryDate = reader.GetDateTime(reader.GetOrdinal("deliveryDate"));
+                    return new OrderShippingProgressNotification(recipientId, timestamp, orderId, shippingState, deliveryDate, isRead, notificationId);
+
+                case "PAYMENT_CONFIRMATION":
+                    int productIdPayment = reader.GetInt32(reader.GetOrdinal("productID"));
+                    int orderIdPayment = reader.GetInt32(reader.GetOrdinal("orderID"));
+                    return new PaymentConfirmationNotification(recipientId, timestamp, productIdPayment, orderIdPayment, isRead, notificationId);
+
+                case "PRODUCT_REMOVED":
+                    int productIdRemoved = reader.GetInt32(reader.GetOrdinal("productID"));
+                    return new ProductRemovedNotification(recipientId, timestamp, productIdRemoved, isRead, notificationId);
+
+                case "PRODUCT_AVAILABLE":
+                    int productIdAvailable = reader.GetInt32(reader.GetOrdinal("productID"));
+                    return new ProductAvailableNotification(recipientId, timestamp, productIdAvailable, isRead, notificationId);
+
+                case "CONTRACT_RENEWAL_REQUEST":
+                    int contractIdReq = reader.GetInt32(reader.GetOrdinal("contractID"));
+                    return new ContractRenewalRequestNotification(recipientId, timestamp, contractIdReq, isRead, notificationId);
+
+                case "CONTRACT_EXPIRATION":
+                    int contractIdExp = reader.GetInt32(reader.GetOrdinal("contractID"));
+                    DateTime expirationDate = reader.GetDateTime(reader.GetOrdinal("expirationDate"));
+                    return new ContractExpirationNotification(recipientId, timestamp, contractIdExp, expirationDate, isRead, notificationId);
+
+                default:
+                    throw new ArgumentException($"Unknown notification category: {category}");
+            }
         }
     }
 }
