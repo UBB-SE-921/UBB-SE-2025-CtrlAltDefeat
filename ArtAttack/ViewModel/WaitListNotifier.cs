@@ -4,10 +4,12 @@ using System.Linq;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using Microsoft.Data.SqlClient;
+using ArtAttack.Repository;
+
 [ExcludeFromCodeCoverage]
 public class WaitListNotifier
 {
-    private readonly IWaitListModel waitListModel;
+    private readonly IWaitListRepository waitListModel;
     private readonly NotificationDataAdapter notificationAdapter;
     private readonly string connectionString;
 
@@ -18,7 +20,7 @@ public class WaitListNotifier
     /// <exception cref="ArgumentNullException">Thrown when the connection string is null or empty.</exception>
     public WaitListNotifier(string connectionString)
     {
-        waitListModel = new WaitListModel(connectionString);
+        waitListModel = new WaitListRepository(connectionString);
         notificationAdapter = new NotificationDataAdapter(connectionString);
         this.connectionString = connectionString;
     }

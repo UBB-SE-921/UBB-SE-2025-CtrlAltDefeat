@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using Microsoft.Data.SqlClient;
+using ArtAttack.Repository;
 
 namespace ArtAttack.Services
 {
     public class WaitListViewModel : IWaitListViewModel
     {
-        private readonly IWaitListModel waitListModel;
-        private readonly IDummyProductModel dummyProductModel;
+        private readonly IWaitListRepository waitListRepository;
+        private readonly IDummyProductRepository dummyProductRepository;
 
         /// <summary>
         /// Default constructor for WaitListViewModel.
@@ -17,13 +18,13 @@ namespace ArtAttack.Services
         /// <param name="connectionString">The database connection string. Cannot be null or empty.</param>
         /// <remarks>
         /// Initializes a new instance of the WaitListViewModel class with the specified connection string,
-        /// creating new instances of the required model dependencies (WaitListModel and DummyProductModel).
+        /// creating new instances of the required model dependencies (waitListRepository and dummyProductRepository).
         /// This constructor is typically used in production scenarios where real database connections are needed.
         /// </remarks>
         public WaitListViewModel(string connectionString)
         {
-            waitListModel = new WaitListModel(connectionString);
-            dummyProductModel = new DummyProductModel(connectionString);
+            waitListRepository = new WaitListRepository(connectionString);
+            dummyProductRepository = new dummyProductRepository(connectionString);
         }
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void AddUserToWaitlist(int userId, int productId)
         {
-            waitListModel.AddUserToWaitlist(userId, productId);
+            waitListRepository.AddUserToWaitlist(userId, productId);
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public void RemoveUserFromWaitlist(int userId, int productId)
         {
-            waitListModel.RemoveUserFromWaitlist(userId, productId);
+            waitListRepository.RemoveUserFromWaitlist(userId, productId);
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public List<UserWaitList> GetUsersInWaitlist(int waitListProductId)
         {
-            return waitListModel.GetUsersInWaitlist(waitListProductId);
+            return waitListRepository.GetUsersInWaitlist(waitListProductId);
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public List<UserWaitList> GetUserWaitlists(int userId)
         {
-            return waitListModel.GetUserWaitlists(userId);
+            return waitListRepository.GetUserWaitlists(userId);
         }
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetWaitlistSize(int productWaitListId)
         {
-            return waitListModel.GetWaitlistSize(productWaitListId);
+            return waitListRepository.GetWaitlistSize(productWaitListId);
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public int GetUserWaitlistPosition(int userId, int productId)
         {
-            return waitListModel.GetUserWaitlistPosition(userId, productId);
+            return waitListRepository.GetUserWaitlistPosition(userId, productId);
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public bool IsUserInWaitlist(int userId, int productWaitListId)
         {
-            return waitListModel.IsUserInWaitlist(userId, productWaitListId);
+            return waitListRepository.IsUserInWaitlist(userId, productWaitListId);
         }
 
         /// <summary>
@@ -113,7 +114,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public async Task<string> GetSellerNameAsync(int? sellerId)
         {
-            return await dummyProductModel.GetSellerNameAsync(sellerId);
+            return await dummyProductRepository.GetSellerNameAsync(sellerId);
         }
 
         /// <summary>
@@ -124,7 +125,7 @@ namespace ArtAttack.Services
         /// <exception cref="SqlException">Thrown when there is an error executing the SQL command.</exception>
         public async Task<DummyProduct> GetDummyProductByIdAsync(int productId)
         {
-            return await dummyProductModel.GetDummyProductByIdAsync(productId);
+            return await dummyProductRepository.GetDummyProductByIdAsync(productId);
         }
     }
 }

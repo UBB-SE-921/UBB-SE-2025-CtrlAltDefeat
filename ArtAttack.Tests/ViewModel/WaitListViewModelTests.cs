@@ -12,7 +12,7 @@ namespace ArtAttack.Tests.ViewModel
     [TestClass]
     public class WaitListViewModelTests
     {
-        private Mock<IWaitListModel> mockWaitListModel;
+        private Mock<IWaitListRepository> mockWaitListModel;
         private Mock<IDummyProductModel> mockDummyProductModel;
         private WaitListViewModel waitListViewModel;
         private string testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
@@ -20,7 +20,7 @@ namespace ArtAttack.Tests.ViewModel
         [TestInitialize]
         public void InitializeTestDependencies()
         {
-            mockWaitListModel = new Mock<IWaitListModel>();
+            mockWaitListModel = new Mock<IWaitListRepository>();
             mockDummyProductModel = new Mock<IDummyProductModel>();
 
             var viewModel = new WaitListViewModel(testConnectionString);

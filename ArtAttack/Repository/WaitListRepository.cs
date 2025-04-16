@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using ArtAttack.Domain;
 using Microsoft.Data.SqlClient;
 using ArtAttack.Shared;
+using ArtAttack.Model;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
-    public class WaitListModel : IWaitListModel
+    public class WaitListRepository : IWaitListRepository
     {
         private readonly string connectionString;
         private readonly IDatabaseProvider databaseProvider;
@@ -24,7 +25,7 @@ namespace ArtAttack.Model
         /// Initializes a new instance of the WaitListModel class with the specified connection string
         /// and a default SqlDatabaseProvider. This constructor is typically used in production code.
         /// </remarks>
-        public WaitListModel(string connectionString)
+        public WaitListRepository(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {
         }
@@ -39,7 +40,7 @@ namespace ArtAttack.Model
         /// and database provider. This constructor enables dependency injection and is primarily used for testing
         /// with mock database providers.
         /// </remarks>
-        public WaitListModel(string connectionString, IDatabaseProvider databaseProvider)
+        public WaitListRepository(string connectionString, IDatabaseProvider databaseProvider)
         {
             this.connectionString = connectionString;
             this.databaseProvider = databaseProvider;

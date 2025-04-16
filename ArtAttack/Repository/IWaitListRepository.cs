@@ -3,7 +3,7 @@ using ArtAttack.Domain;
 
 namespace ArtAttack.Model
 {
-    public interface IWaitListModel
+    public interface IWaitListRepository
     {
         void AddUserToWaitlist(int userId, int productWaitListId);
         List<UserWaitList> GetUsersInWaitlist(int waitListProductId);
