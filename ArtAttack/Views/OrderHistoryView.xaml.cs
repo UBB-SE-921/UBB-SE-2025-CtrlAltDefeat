@@ -37,14 +37,8 @@ namespace ArtAttack
         {
             InitializeComponent();
             this.userId = userId;
-            orderViewModel = new OrderViewModel(connectionString); // Assuming OrderViewModel still takes connectionString
-
-            // Create repository and service for ContractViewModel
-            IContractRepository contractRepository = new ContractRepository(connectionString); // Use the provided connectionString
-            IContractService contractService = new ContractService(contractRepository);
-
-            // Instantiate ContractViewModel with the service
-            contractViewModel = new ContractViewModel(contractService);
+            orderViewModel = new OrderViewModel(connectionString);
+            contractViewModel = new ContractViewModel(connectionString);
 
             this.Activated += Window_Activated;
         }
