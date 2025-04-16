@@ -43,12 +43,12 @@ namespace ArtAttack.ViewModel
         {
             string connectionString = Configuration.CONNECTION_STRING;
             IDatabaseProvider databaseProvider = new SqlDatabaseProvider();
-            
+
             orderHistoryService = new OrderHistoryService(connectionString, databaseProvider);
             orderService = new OrderService(connectionString, databaseProvider);
             orderSummaryService = new OrderSummaryService(connectionString, databaseProvider);
             notificationViewModel = new NotificationViewModel(1);
-            
+
             this.orderHistoryID = orderHistoryID;
 
             _ = InitializeViewModelAsync();

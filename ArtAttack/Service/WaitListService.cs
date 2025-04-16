@@ -79,7 +79,7 @@ namespace ArtAttack.Service
                     timestamp: CalculateNotifyTime(restockDate, userIndex),
                     productId: productId,
                     isRead: false);
-                
+
                 notificationAdapter.AddNotification(notification);
             }
         }

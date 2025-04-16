@@ -55,4 +55,4 @@ namespace ArtAttack.Repository
         /// <returns>A task representing the asynchronous operation.</returns>
         Task<DummyProduct> GetDummyProductByIdAsync(int productId);
     }
-} 
+}

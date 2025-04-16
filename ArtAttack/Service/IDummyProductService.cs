@@ -20,7 +20,7 @@ namespace ArtAttack.Service
         /// <param name="endDate">The end date for borrowed products.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task AddDummyProductAsync(string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate);
-        
+
         /// <summary>
         /// Updates a dummy product.
         /// </summary>
@@ -33,21 +33,21 @@ namespace ArtAttack.Service
         /// <param name="endDate">The end date for borrowed products.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task UpdateDummyProductAsync(int id, string name, float price, int sellerId, string productType, DateTime startDate, DateTime endDate);
-        
+
         /// <summary>
         /// Deletes a dummy product.
         /// </summary>
         /// <param name="id">The ID of the product to delete.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task DeleteDummyProductAsync(int id);
-        
+
         /// <summary>
         /// Gets the name of a seller.
         /// </summary>
         /// <param name="sellerId">The ID of the seller.</param>
         /// <returns>The name of the seller.</returns>
         Task<string> GetSellerNameAsync(int? sellerId);
-        
+
         /// <summary>
         /// Gets a dummy product by its ID.
         /// </summary>
@@ -55,4 +55,4 @@ namespace ArtAttack.Service
         /// <returns>The dummy product, or null if not found.</returns>
         Task<DummyProduct> GetDummyProductByIdAsync(int productId);
     }
-} 
+}

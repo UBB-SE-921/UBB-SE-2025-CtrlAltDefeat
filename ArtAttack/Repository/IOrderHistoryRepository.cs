@@ -16,4 +16,4 @@ namespace ArtAttack.Repository
         /// <returns>A task representing the asynchronous operation that returns a list of dummy products.</returns>
         Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryId);
     }
-} 
+}

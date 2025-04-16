@@ -22,4 +22,4 @@ namespace ArtAttack.Service
         /// <returns>A task representing the asynchronous operation.</returns>
         Task UpdateWalletBalance(int userId, float newBalance);
     }
-} 
+}

@@ -50,8 +50,8 @@ namespace ArtAttack.Service
             {
                 throw new ArgumentException("Order history ID must be positive", nameof(orderHistoryId));
             }
-            
+
             return await orderHistoryRepository.GetDummyProductsFromOrderHistoryAsync(orderHistoryId);
         }
     }
-} 
+}

@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace ArtAttack.Utils
 {
-     [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     public class StringToPaymentMethodConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)

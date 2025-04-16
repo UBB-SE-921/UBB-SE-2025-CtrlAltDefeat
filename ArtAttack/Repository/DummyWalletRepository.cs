@@ -41,17 +41,17 @@ namespace ArtAttack.Repository
                 using (IDbCommand databaseCommand = databaseConnection.CreateCommand())
                 {
                     databaseCommand.CommandText = "SELECT balance FROM DummyWallet WHERE userID = @UserID";
-                    
+
                     AddParameter(databaseCommand, "@UserID", userId);
 
                     await databaseConnection.OpenAsync();
                     var result = await databaseCommand.ExecuteScalarAsync();
-                    
+
                     if (result != null && result != DBNull.Value)
                     {
                         return Convert.ToSingle(result);
                     }
-                    
+
                     return 0.0f; // Default balance if no wallet exists
                 }
             }
@@ -67,13 +67,13 @@ namespace ArtAttack.Repository
                     // First, check if a wallet exists for this user
                     databaseCommand.CommandText = "SELECT COUNT(*) FROM DummyWallet WHERE userID = @UserID";
                     AddParameter(databaseCommand, "@UserID", userId);
-                    
+
                     await databaseConnection.OpenAsync();
                     int count = Convert.ToInt32(await databaseCommand.ExecuteScalarAsync());
-                    
+
                     // Reset command and parameters
                     databaseCommand.Parameters.Clear();
-                    
+
                     if (count > 0)
                     {
                         // Update existing wallet
@@ -84,10 +84,10 @@ namespace ArtAttack.Repository
                         // Insert new wallet
                         databaseCommand.CommandText = "INSERT INTO DummyWallet (userID, balance) VALUES (@UserID, @Balance)";
                     }
-                    
+
                     AddParameter(databaseCommand, "@UserID", userId);
                     AddParameter(databaseCommand, "@Balance", newBalance);
-                    
+
                     await databaseCommand.ExecuteNonQueryAsync();
                 }
             }
@@ -113,4 +113,4 @@ namespace ArtAttack.Repository
             command.Parameters.Add(parameter);
         }
     }
-} 
+}

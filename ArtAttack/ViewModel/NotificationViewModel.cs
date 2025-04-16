@@ -182,6 +182,5 @@ namespace ArtAttack.ViewModel
         {
             get => "You've got #" + unreadCount + " unread notifications.";
         }
-
     }
 }

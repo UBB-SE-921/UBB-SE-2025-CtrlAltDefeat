@@ -27,7 +27,7 @@ namespace ArtAttack.Service
         Task UpdateOrderSummaryAsync(int id, float subtotal, float warrantyTax, float deliveryFee, float finalTotal,
                                      string fullName, string email, string phoneNumber, string address,
                                      string postalCode, string additionalInfo, string contractDetails);
-        
+
         /// <summary>
         /// Retrieves an order summary by its ID.
         /// </summary>
@@ -35,4 +35,4 @@ namespace ArtAttack.Service
         /// <returns>A task that returns the <see cref="OrderSummary"/> object if found; otherwise, <c>null</c>.</returns>
         Task<OrderSummary> GetOrderSummaryByIdAsync(int orderSummaryId);
     }
-} 
+}

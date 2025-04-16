@@ -100,4 +100,4 @@ namespace ArtAttack.Repository
             return dummyProducts;
         }
     }
-} 
+}
