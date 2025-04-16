@@ -387,7 +387,7 @@ namespace ArtAttack.Model
         /// </summary>
         /// <param name="contractId">The ID of the contract to retrieve the product details for.</param>
         /// <returns>The product details.</returns>
-        public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
+        public async Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
             using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
             {
@@ -402,17 +402,25 @@ namespace ArtAttack.Model
                     {
                         if (await reader.ReadAsync())
                         {
-                            var startDate = reader.GetDateTime(reader.GetOrdinal("startDate"));
-                            var endDate = reader.GetDateTime(reader.GetOrdinal("endDate"));
-                            var price = reader.GetDouble(reader.GetOrdinal("price"));
-                            var name = reader.GetString(reader.GetOrdinal("name"));
+                            int startDateOrdinal = reader.GetOrdinal("startDate");
+                            int endDateOrdinal = reader.GetOrdinal("endDate");
+                            int priceOrdinal = reader.GetOrdinal("price");
+                            int nameOrdinal = reader.GetOrdinal("name");
+
+                            var startDate = reader.IsDBNull(startDateOrdinal) ? (DateTime?)null : reader.GetDateTime(startDateOrdinal);
+                            var endDate = reader.IsDBNull(endDateOrdinal) ? (DateTime?)null : reader.GetDateTime(endDateOrdinal);
+                            // Assuming price and name are non-nullable based on the original code and exception.
+                            // Add null checks if these can also be null in the database.
+                            var price = reader.GetDouble(priceOrdinal);
+                            var name = reader.GetString(nameOrdinal);
+
                             return (startDate, endDate, price, name);
                         }
                     }
                 }
             }
 
-            return default;
+            return default; // Return null if no record found
         }
 
         /// <summary>
@@ -466,10 +474,11 @@ namespace ArtAttack.Model
         /// Asynchronously retrieves the payment method and order date for a given contract using the GetOrderDetails stored procedure.
         /// </summary>
         /// <param name="contractId">The ID of the contract to retrieve the order details for.</param>
-        /// <returns>The order details.</returns>
-        public async Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
+        /// <returns>The order details, with PaymentMethod potentially null.</returns>
+        // Change return type to allow nullable PaymentMethod
+        public async Task<(string? PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
-            string paymentMethod = null;
+            string? paymentMethod = null; // Use nullable string
             DateTime orderDate = default;
 
             using (var databaseConnection = databaseProvider.CreateConnection(connectionString))
@@ -485,8 +494,16 @@ namespace ArtAttack.Model
                     {
                         if (await reader.ReadAsync())
                         {
-                            paymentMethod = (string)reader["PaymentMethod"];
-                            orderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"));
+                            int paymentMethodOrdinal = reader.GetOrdinal("PaymentMethod");
+                            int orderDateOrdinal = reader.GetOrdinal("OrderDate");
+
+                            // Check for DBNull before casting PaymentMethod
+                            if (!reader.IsDBNull(paymentMethodOrdinal))
+                            {
+                                paymentMethod = reader.GetString(paymentMethodOrdinal);
+                            }
+                            // Assuming OrderDate is never null based on original code. Add check if needed.
+                            orderDate = reader.GetDateTime(orderDateOrdinal);
                         }
                     }
                 }

@@ -15,10 +15,10 @@ namespace ArtAttack.Model
         Task<List<IContract>> GetContractsByBuyerAsync(int buyerId);
         Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId);
         Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId);
-        Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId);
+        Task<(string? PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId);
         Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId);
         Task<byte[]> GetPdfByContractIdAsync(long contractId);
         Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType);
-        Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
+        Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
     }
 }

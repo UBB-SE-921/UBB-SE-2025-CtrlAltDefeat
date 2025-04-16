@@ -115,7 +115,8 @@ namespace ArtAttack.ViewModel
         /// <summary>
         /// Retrieves the start and end dates of the product associated with a given contract.
         /// </summary>
-        public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
+        // Change DateTime to DateTime? to match the interface and repository
+        public async Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
             return await contractModel.GetProductDetailsByContractIdAsync(contractId);
         }
@@ -131,13 +132,16 @@ namespace ArtAttack.ViewModel
                 return false;
             }
 
+            // dates is now (DateTime? StartDate, DateTime? EndDate, double price, string name)?
             var dates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
-            if (dates == null)
+            // Check if the tuple itself is null OR if EndDate within the tuple is null
+            if (!dates.HasValue || !dates.Value.EndDate.HasValue)
             {
                 return false;
             }
 
-            DateTime oldEndDate = dates.Value.EndDate;
+            // Access EndDate safely using .Value as we've checked HasValue
+            DateTime oldEndDate = dates.Value.EndDate.Value;
             DateTime currentDate = dateTimeProvider.Now.Date;
             int daysUntilEnd = (oldEndDate - currentDate).Days;
 
@@ -255,14 +259,16 @@ namespace ArtAttack.ViewModel
                 }
 
                 // Get the current contract's product dates
+                // oldDates is now (DateTime? StartDate, DateTime? EndDate, double price, string name)?
                 var oldDates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
-                if (!oldDates.HasValue)
+                // Check if the tuple itself is null OR if EndDate within the tuple is null
+                if (!oldDates.HasValue || !oldDates.Value.EndDate.HasValue)
                 {
                     return (false, "Could not retrieve current contract dates.");
                 }
 
-                // Ensure the new end date is after the old one
-                if (newEndDate <= oldDates.Value.EndDate)
+                // Ensure the new end date is after the old one (access EndDate safely)
+                if (newEndDate <= oldDates.Value.EndDate.Value)
                 {
                     return (false, "New end date must be after the current end date.");
                 }

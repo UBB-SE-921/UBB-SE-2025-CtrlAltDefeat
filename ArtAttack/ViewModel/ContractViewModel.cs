@@ -105,8 +105,10 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contractId" type="long">The ID of the contract</param>
         /// <returns The product details></returns>
-        public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
+        // Change DateTime to DateTime? to match the repository interface and implementation
+        public async Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
+            // The return type from the model now correctly matches this method's signature
             return await model.GetProductDetailsByContractIdAsync(contractId);
         }
 
@@ -134,8 +136,9 @@ namespace ArtAttack.ViewModel
         /// Get the order details of a contract
         /// </summary>
         /// <param name="contractId" type="long">The ID of the contract</param>
-        /// <returns The payment method and order date></returns>
-        public async Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
+        /// <returns The order details></returns>
+        // Update return type to allow nullable PaymentMethod
+        public async Task<(string? PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
             return await model.GetOrderDetailsAsync(contractId);
         }
@@ -278,11 +281,6 @@ namespace ArtAttack.ViewModel
             return document.GeneratePdf();
         }
 
-        /// <summary>
-        /// Get the field replacements for a contract
-        /// </summary>
-        /// <param name="contract" type="Contract">The contract to get the field replacements for</param>
-        /// <returns The field replacements></returns>
         private async Task<Dictionary<string, string>> GetFieldReplacements(IContract contract)
         {
             var fieldReplacements = new Dictionary<string, string>();
@@ -291,41 +289,63 @@ namespace ArtAttack.ViewModel
             var productDetails = await GetProductDetailsByContractIdAsync(contract.ContractID);
             var buyerDetails = await GetContractBuyerAsync(contract.ContractID);
             var sellerDetails = await GetContractSellerAsync(contract.ContractID);
+            // orderDetails now returns (string? PaymentMethod, DateTime OrderDate)
             var orderDetails = await GetOrderDetailsAsync(contract.ContractID);
             var orderSummaryData = await GetOrderSummaryInformationAsync(contract.ContractID);
             var deliveryDate = await GetDeliveryDateByContractIdAsync(contract.ContractID);
 
             if (productDetails.HasValue)
             {
-                DateTime startDate = productDetails.Value.StartDate;
-                DateTime endDate = productDetails.Value.EndDate;
-                var loanPeriod = (endDate - startDate).TotalDays;
+                // Assign nullable DateTime? values
+                DateTime? startDate = productDetails.Value.StartDate;
+                DateTime? endDate = productDetails.Value.EndDate;
 
-                fieldReplacements["StartDate"] = startDate.ToShortDateString();
-                fieldReplacements["EndDate"] = endDate.ToShortDateString();
-                fieldReplacements["LoanPeriod"] = loanPeriod.ToString();
+                // Check if both dates have values before calculating period or formatting
+                if (startDate.HasValue && endDate.HasValue)
+                {
+                    var loanPeriod = (endDate.Value - startDate.Value).TotalDays;
+                    fieldReplacements["StartDate"] = startDate.Value.ToShortDateString();
+                    fieldReplacements["EndDate"] = endDate.Value.ToShortDateString();
+                    fieldReplacements["LoanPeriod"] = loanPeriod.ToString();
+                    fieldReplacements["AgreementDate"] = startDate.Value.ToShortDateString(); // Assuming AgreementDate is StartDate
+                    fieldReplacements["DueDate"] = endDate.Value.ToShortDateString(); // Assuming DueDate is EndDate
+                }
+                else // Handle cases where one or both dates might be null
+                {
+                    fieldReplacements["StartDate"] = startDate.HasValue ? startDate.Value.ToShortDateString() : "N/A";
+                    fieldReplacements["EndDate"] = endDate.HasValue ? endDate.Value.ToShortDateString() : "N/A";
+                    fieldReplacements["LoanPeriod"] = "N/A";
+                    fieldReplacements["AgreementDate"] = startDate.HasValue ? startDate.Value.ToShortDateString() : "N/A";
+                    fieldReplacements["DueDate"] = endDate.HasValue ? endDate.Value.ToShortDateString() : "N/A";
+                }
+
+                // Add other details (assuming price/name are non-null as per repository comment)
                 fieldReplacements["ProductDescription"] = productDetails.Value.name;
                 fieldReplacements["Price"] = productDetails.Value.price.ToString();
                 fieldReplacements["BuyerName"] = buyerDetails.BuyerName;
                 fieldReplacements["SellerName"] = sellerDetails.SellerName;
-                fieldReplacements["PaymentMethod"] = orderDetails.PaymentMethod;
-                fieldReplacements["AgreementDate"] = startDate.ToShortDateString();
-                fieldReplacements["LateFee"] = orderSummaryData["warrantyTax"].ToString();
-                fieldReplacements["DueDate"] = endDate.ToShortDateString();
+                // Handle potentially null PaymentMethod
+                fieldReplacements["PaymentMethod"] = orderDetails.PaymentMethod ?? "N/A"; // Use null-coalescing operator
+                // Ensure warrantyTax exists and handle potential conversion errors if necessary
+                fieldReplacements["LateFee"] = orderSummaryData.TryGetValue("warrantyTax", out var tax) && tax != null ? tax.ToString() : "N/A";
+                // Handle nullable delivery date
+                fieldReplacements["DeliveryDate"] = deliveryDate.HasValue ? deliveryDate.Value.ToShortDateString() : "N/A";
             }
-            else
+            else // Handle case where productDetails itself is null
             {
                 fieldReplacements["StartDate"] = "N/A";
                 fieldReplacements["EndDate"] = "N/A";
                 fieldReplacements["LoanPeriod"] = "N/A";
                 fieldReplacements["ProductDescription"] = "N/A";
                 fieldReplacements["Price"] = "N/A";
-                fieldReplacements["BuyerName"] = "N/A";
-                fieldReplacements["SellerName"] = "N/A";
-                fieldReplacements["PaymentMethod"] = "N/A";
+                fieldReplacements["BuyerName"] = buyerDetails.BuyerName; // Consider if these should be fetched even if product details are missing
+                fieldReplacements["SellerName"] = sellerDetails.SellerName;
+                // Handle potentially null PaymentMethod even if product details are missing
+                fieldReplacements["PaymentMethod"] = orderDetails.PaymentMethod ?? "N/A";
+                fieldReplacements["LateFee"] = orderSummaryData.TryGetValue("warrantyTax", out var tax) && tax != null ? tax.ToString() : "N/A";
+                fieldReplacements["DeliveryDate"] = deliveryDate.HasValue ? deliveryDate.Value.ToShortDateString() : "N/A";
                 fieldReplacements["AgreementDate"] = "N/A";
-                fieldReplacements["LateFee"] = "N/A";
-                fieldReplacements["DeliveryDate"] = "N/A";
+                fieldReplacements["DueDate"] = "N/A";
             }
 
             return fieldReplacements;
