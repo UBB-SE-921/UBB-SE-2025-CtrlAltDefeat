@@ -7,10 +7,9 @@ using ArtAttack.Service;
 using ArtAttack.Shared;
 using ArtAttack.Repository;
 
-
-namespace ArtAttack.Services
+namespace ArtAttack.ViewModel
 {
-    public class WaitListViewModel : IWaitListViewModel
+    public class WaitListViewModel
     {
         private readonly IWaitListService waitListService;
         private readonly IDummyProductService dummyProductService;
@@ -28,7 +27,6 @@ namespace ArtAttack.Services
         {
             waitListService = new WaitListService(new WaitListRepository(connectionString), new DummyProductRepository(connectionString));
             dummyProductService = new DummyProductService(new DummyProductRepository(connectionString));
-
         }
 
         /// <summary>
