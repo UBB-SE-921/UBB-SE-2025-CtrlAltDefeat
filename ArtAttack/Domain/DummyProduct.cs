@@ -9,7 +9,7 @@ namespace ArtAttack.Domain
         public float Price { get; set; }
         public int? SellerID { get; set; }
         public string ProductType { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTimeOffset? StartDate { get; set; }
+        public DateTimeOffset? EndDate { get; set; }
     }
 }

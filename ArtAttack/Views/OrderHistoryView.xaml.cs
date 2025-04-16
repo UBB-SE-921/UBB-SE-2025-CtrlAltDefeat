@@ -401,6 +401,17 @@ namespace ArtAttack
         }
 
         /// <summary>
+        /// Event handler for the search text box text changed event. Filters orders based on search text.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Event data.</param>
+        private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            await Task.Delay(300); // 300ms delay
+            await LoadOrders(SearchTextBox.Text);
+        }
+
+        /// <summary>
         /// Shows a PDF document in a dialog.
         /// </summary>
         /// <param name="pdfBytes">The PDF document as a byte array. Must not be null or empty.</param>
@@ -504,17 +515,6 @@ namespace ArtAttack
             stackPanel.Children.Add(new TextBlock { Text = label, FontWeight = FontWeights.SemiBold, Width = 150 });
             stackPanel.Children.Add(new TextBlock { Text = value });
             OrderDetailsContent.Children.Add(stackPanel);
-        }
-
-        /// <summary>
-        /// Event handler for the search text box text changed event. Filters orders based on search text.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">Event data.</param>
-        private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            await Task.Delay(300); // 300ms delay
-            await LoadOrders(SearchTextBox.Text);
         }
     }
 }
