@@ -10,7 +10,6 @@ using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using ArtAttack.Model; // Add this using directive if not present
 using ArtAttack.Service; // Add this using directive if not present
 using ArtAttack.Shared; // Add this using directive for Configuration
 
