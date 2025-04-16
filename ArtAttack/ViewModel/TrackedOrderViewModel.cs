@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Repository;
+using ArtAttack.Model;
 using ArtAttack.Shared;
 using ArtAttack.Service;
 

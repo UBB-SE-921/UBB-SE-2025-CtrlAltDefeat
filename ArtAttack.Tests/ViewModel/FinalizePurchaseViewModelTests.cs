@@ -1,5 +1,5 @@
 ﻿using ArtAttack.Domain;
-using ArtAttack.Repository;
+using ArtAttack.Model;
 using ArtAttack.Shared;
 using ArtAttack.ViewModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

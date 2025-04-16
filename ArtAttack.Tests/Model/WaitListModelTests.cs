@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Data;
-using ArtAttack.Repository;
+using ArtAttack.Model;
 using ArtAttack.Domain;
 using System.Collections.Generic;
 using System.Reflection;

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Repository;
+using ArtAttack.Model;
 using ArtAttack.ViewModel;
 using Moq;
 

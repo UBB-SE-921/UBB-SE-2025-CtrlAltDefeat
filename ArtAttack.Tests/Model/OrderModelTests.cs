@@ -7,7 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using ArtAttack.Repository;
+using ArtAttack.Model;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
 

@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ArtAttack.Domain;
-using ArtAttack.Repository;
+using ArtAttack.Model;
 using ArtAttack.Shared;
 using ArtAttack.Repository;
 using ArtAttack.Service;

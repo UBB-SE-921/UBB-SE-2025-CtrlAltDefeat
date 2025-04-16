@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Repository; // Add this using directive
+using ArtAttack.Model; // Add this using directive
 
 namespace ArtAttack.Service
 {

@@ -1,4 +1,4 @@
-﻿using ArtAttack.Repository;
+﻿using ArtAttack.Model;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

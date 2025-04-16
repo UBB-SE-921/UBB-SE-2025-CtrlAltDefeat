@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Repository; // Added using for Repository namespace
+using ArtAttack.Model; // Added using for Repository namespace
 
 namespace ArtAttack.Service
 {
