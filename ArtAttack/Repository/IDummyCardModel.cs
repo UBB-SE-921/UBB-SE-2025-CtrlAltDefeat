@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
     public interface IDummyCardModel
     {

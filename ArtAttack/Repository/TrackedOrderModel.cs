@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Data;
 using ArtAttack.Shared;
 using ArtAttack.Domain;
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
     /// <summary>
     /// Provides functionality for tracking orders and their checkpoints in the system

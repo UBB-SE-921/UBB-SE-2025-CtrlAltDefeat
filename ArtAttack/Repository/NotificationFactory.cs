@@ -4,7 +4,7 @@ using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
     public class NotificationFactory : INotificationFactory
     {
