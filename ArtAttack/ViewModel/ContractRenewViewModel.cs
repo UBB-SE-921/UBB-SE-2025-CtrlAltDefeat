@@ -10,6 +10,7 @@ using ArtAttack.Model;
 using ArtAttack.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using ArtAttack.Repository;
 
 namespace ArtAttack.ViewModel
 {
@@ -17,7 +18,7 @@ namespace ArtAttack.ViewModel
     {
         private readonly IContractModel contractModel;
         private readonly IContractRenewalModel renewalModel;
-        private readonly INotificationDataAdapter notificationAdapter;
+        private readonly INotificationRepository notificationAdapter;
         private readonly IDatabaseProvider databaseProvider;
         private readonly string connectionString;
         private readonly IFileSystem fileSystem;
@@ -31,7 +32,7 @@ namespace ArtAttack.ViewModel
             : this(
                   new ContractModel(connectionString),
                   new ContractRenewalModel(connectionString),
-                  new NotificationDataAdapter(connectionString),
+                  new NotificationRepository(connectionString),
                   new SqlDatabaseProvider(),
                   connectionString,
                   new FileSystemWrapper(),
@@ -43,7 +44,7 @@ namespace ArtAttack.ViewModel
         public ContractRenewViewModel(
             IContractModel contractModel,
             IContractRenewalModel renewalModel,
-            INotificationDataAdapter notificationAdapter,
+            INotificationRepository notificationAdapter,
             IDatabaseProvider databaseProvider,
             string connectionString,
             IFileSystem fileSystem,

@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Data;
+using ArtAttack.Domain;
 
 namespace ArtAttack.Repository
 {
-    internal class INotificationRepository
+    public interface INotificationRepository
     {
+        void AddNotification(Notification notification);
+        Notification CreateFromDataReader(IDataReader reader);
+        void Dispose();
+        List<Notification> GetNotificationsForUser(int recipientId);
+        void MarkAsRead(int notificationId);
     }
 }

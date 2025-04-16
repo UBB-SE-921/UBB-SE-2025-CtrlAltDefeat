@@ -8,6 +8,7 @@ using System.Windows.Input;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.Shared;
+using ArtAttack.Repository;
 
 namespace ArtAttack.ViewModel
 {
@@ -16,7 +17,7 @@ namespace ArtAttack.ViewModel
     /// </summary>
     public class NotificationViewModel : INotifyPropertyChanged, INotificationViewModel
     {
-        private readonly INotificationDataAdapter dataAdapter;
+        private readonly INotificationRepository dataAdapter;
         private ObservableCollection<Notification> notifications;
         private int unreadCount;
         private bool isLoading;
@@ -38,7 +39,7 @@ namespace ArtAttack.ViewModel
         /// <param name="currentUserId">The identifier of the current user for notification retrieval.</param>
         public NotificationViewModel(int currentUserId, bool autoLoad = true)
         {
-            dataAdapter = new NotificationDataAdapter(Configuration.CONNECTION_STRING);
+            dataAdapter = new NotificationRepository(Configuration.CONNECTION_STRING);
             Notifications = new ObservableCollection<Notification>();
             this.currentUserId = currentUserId;
             MarkAsReadCommand = new NotificationRelayCommand<int>(async (id) => await MarkAsReadAsync(id));
@@ -182,6 +183,5 @@ namespace ArtAttack.ViewModel
         {
             get => "You've got #" + unreadCount + " unread notifications.";
         }
-
     }
 }
