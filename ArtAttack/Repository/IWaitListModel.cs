@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ArtAttack.Domain;
 
-namespace ArtAttack.MoRepositorydel
+namespace ArtAttack.Repository
 {
     public interface IWaitListModel
     {
