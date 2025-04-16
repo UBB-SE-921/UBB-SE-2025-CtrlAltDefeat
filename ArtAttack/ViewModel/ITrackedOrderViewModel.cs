@@ -140,5 +140,12 @@ namespace ArtAttack.ViewModel
         /// <param name="currentStatus">The current status of the tracked order.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task UpdateTrackedOrderAsync(int trackedOrderID, DateOnly newEstimatedDeliveryDate, OrderStatus currentStatus);
+
+        // New methods for handling business logic from views
+        Task LoadOrderDataAsync(int trackedOrderID);
+        Task UpdateEstimatedDeliveryDateAsync(int trackedOrderID, DateTime newDate);
+        Task AddNewCheckpointAsync(int trackedOrderID, string description);
+        Task UpdateLastCheckpointAsync(int trackedOrderID, string description);
+        Task RevertLastCheckpointAsync(int trackedOrderID);
     }
 }
