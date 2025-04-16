@@ -23,7 +23,7 @@
                     Click="BackButton_Click"
                     ToolTipService.ToolTip="Back to notifications"/>
 
-                <TextBlock Text="{Binding unReadNotificationsCountText}"
+                <TextBlock Text="{Binding UnReadNotificationsCountText}"
                        Foreground="White"
                        FontSize="24"
                        FontWeight="Bold"
@@ -74,7 +74,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" HorizontalAlignment="Right">
-                                    <TextBlock Text="{Binding timestamp}"
+                                    <TextBlock Text="{Binding Timestamp}"
                                              Foreground="Gray"
                                              FontSize="16"/>
                                     <CheckBox IsChecked="{Binding IsNotRead, Mode=OneWay}"

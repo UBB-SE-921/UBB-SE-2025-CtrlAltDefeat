@@ -9,6 +9,7 @@ using ArtAttack.Domain;
 using ArtAttack.Model;
 using ArtAttack.Shared;
 using ArtAttack.Repository;
+using ArtAttack.Service;
 
 namespace ArtAttack.ViewModel
 {
@@ -17,11 +18,12 @@ namespace ArtAttack.ViewModel
     /// </summary>
     public class NotificationViewModel : INotifyPropertyChanged, INotificationViewModel
     {
-        private readonly INotificationRepository dataAdapter;
         private ObservableCollection<Notification> notifications;
+        private INotificationContentService notificationContentService;
         private int unreadCount;
         private bool isLoading;
         private int currentUserId;
+        private bool isNotRead;
 
         /// <summary>
         /// Occurs when a popup message should be displayed.
@@ -39,9 +41,9 @@ namespace ArtAttack.ViewModel
         /// <param name="currentUserId">The identifier of the current user for notification retrieval.</param>
         public NotificationViewModel(int currentUserId, bool autoLoad = true)
         {
-            dataAdapter = new NotificationRepository(Configuration.CONNECTION_STRING);
             Notifications = new ObservableCollection<Notification>();
             this.currentUserId = currentUserId;
+            this.notificationContentService = new NotificationContentService();
             MarkAsReadCommand = new NotificationRelayCommand<int>(async (id) => await MarkAsReadAsync(id));
 
             if (autoLoad)
@@ -105,7 +107,7 @@ namespace ArtAttack.ViewModel
             try
             {
                 IsLoading = true;
-                var notifications = await Task.Run(() => dataAdapter.GetNotificationsForUser(recipientId));
+                var notifications = await Task.Run(() => this.notificationContentService.GetNotificationsForUser(recipientId));
 
                 Notifications = new ObservableCollection<Notification>(notifications);
                 UnreadCount = Notifications.Count(n => !n.IsRead);
@@ -129,7 +131,7 @@ namespace ArtAttack.ViewModel
         {
             try
             {
-                await Task.Run(() => dataAdapter.MarkAsRead(notificationId));
+                await Task.Run(() => this.notificationContentService.MarkAsRead(notificationId));
             }
             catch (Exception ex)
             {
@@ -152,7 +154,7 @@ namespace ArtAttack.ViewModel
 
             try
             {
-                await Task.Run(() => dataAdapter.AddNotification(notification));
+                await Task.Run(() => this.notificationContentService.AddNotification(notification));
 
                 if (notification.RecipientID == currentUserId)
                 {

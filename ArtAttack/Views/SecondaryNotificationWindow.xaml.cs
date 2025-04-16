@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using ArtAttack.Domain;
 using Microsoft.UI.Xaml;
 using ArtAttack.Services;
+using ArtAttack.Service;
 
 namespace ArtAttack
 {
@@ -12,7 +13,6 @@ namespace ArtAttack
         /// The window for the secondary notification view
         /// </summary>
         public Notification SelectedNotification { get; }
-        public INotificationContentService NotificationContentService { get; } = new NotificationContentService();
 
         public SecondaryNotificationWindow(Notification notification)
         {
@@ -28,8 +28,8 @@ namespace ArtAttack
         /// </summary>
         private void Populate()
         {
-            selectedNotificationTitle.Text = NotificationContentService.GetTitle(this.SelectedNotification);
-            selectedNotificationContent.Text = NotificationContentService.GetContent(this.SelectedNotification);
+            selectedNotificationTitle.Text = this.SelectedNotification.Title;
+            selectedNotificationContent.Text = this.SelectedNotification.Title;
         }
 
         /// <summary>
