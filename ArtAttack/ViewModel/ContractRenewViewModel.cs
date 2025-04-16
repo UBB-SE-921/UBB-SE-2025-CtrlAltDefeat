@@ -19,7 +19,7 @@ namespace ArtAttack.ViewModel
         // Changed repository interfaces to service interfaces
         private readonly IContractService contractService;
         private readonly IContractRenewalService renewalService;
-        private readonly INotificationDataAdapter notificationAdapter;
+        private readonly INotificationRepository notificationAdapter;
         private readonly IDatabaseProvider databaseProvider;
         private readonly string connectionString;
         private readonly IFileSystem fileSystem;
@@ -34,7 +34,7 @@ namespace ArtAttack.ViewModel
                   // Instantiate services which in turn depend on repositories
                   new ContractService(new ContractRepository(connectionString)),
                   new ContractRenewalService(new ContractRenewalRepository(connectionString)),
-                  new NotificationDataAdapter(connectionString),
+                  new NotificationRepository(connectionString),
                   new SqlDatabaseProvider(),
                   connectionString,
                   new FileSystemWrapper(),
@@ -46,7 +46,7 @@ namespace ArtAttack.ViewModel
         public ContractRenewViewModel(
             IContractService contractService, // Changed from IContractRepository
             IContractRenewalService renewalService, // Changed from IContractRenewalRepository
-            INotificationDataAdapter notificationAdapter,
+            INotificationRepository notificationAdapter,
             IDatabaseProvider databaseProvider,
             string connectionString,
             IFileSystem fileSystem,

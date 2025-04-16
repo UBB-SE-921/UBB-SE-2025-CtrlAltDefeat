@@ -1,6 +1,6 @@
 ﻿using Moq;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.ViewModel;
 using System.Reflection;
 using Contract = ArtAttack.Domain.Contract;

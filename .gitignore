@@ -45,3 +45,4 @@ sdk/
 ArtAttack.Tests/bin
 ArtAttack.Tests/obj
 ArtAttack.Tests/packages/
+/ArtAttack/TestResults

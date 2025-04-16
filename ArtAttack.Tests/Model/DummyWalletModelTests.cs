@@ -1,4 +1,4 @@
-﻿using ArtAttack.Model;
+﻿using ArtAttack.Repository;
 using ArtAttack.Shared;
 using Moq;
 using System.Data;
