@@ -228,49 +228,7 @@ namespace ArtAttack.ViewModel
         /// </remarks>
         public async Task<Dictionary<int, string>> GetProductCategoryTypesAsync(int userId)
         {
-            if (userId <= 0)
-            {
-                throw new ArgumentException("User ID must be positive", nameof(userId));
-            }
-
-            Dictionary<int, string> productCategoryTypes = new Dictionary<int, string>();
-
-            using (var connection = databaseProvider.CreateConnection(connectionString))
-            {
-                using (var command = connection.CreateCommand())
-                {
-                    string query = @"SELECT 
-                        o.OrderSummaryID,
-                        p.productType
-                    FROM [Orders] o
-                    JOIN [DummyProduct] p ON o.ProductType = p.ID
-                    WHERE o.BuyerID = @UserId";
-
-                    command.CommandText = query;
-                    command.Parameters.AddWithValue("@UserId", userId);
-
-                    await connection.OpenAsync();
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var orderSummaryId = reader.GetInt32(reader.GetOrdinal("OrderSummaryID"));
-                            var productTypeName = reader.GetString(reader.GetOrdinal("productType"));
-
-                            if (productTypeName == "new" || productTypeName == "used")
-                            {
-                                productCategoryTypes[orderSummaryId] = "new";
-                            }
-                            else
-                            {
-                                productCategoryTypes[orderSummaryId] = "borrowed";
-                            }
-                        }
-                    }
-                }
-            }
-
-            return productCategoryTypes;
+            return await orderService.GetProductCategoryTypesAsync(userId);
         }
     }
 }
