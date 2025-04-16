@@ -4,7 +4,7 @@ using ArtAttack.Domain;
 
 namespace ArtAttack.Model
 {
-    public interface IContractRenewalModel
+    public interface IContractRenewalRepository
     {
         Task AddRenewedContractAsync(IContract contract, byte[] pdfFile);
         Task<List<IContract>> GetRenewedContractsAsync();

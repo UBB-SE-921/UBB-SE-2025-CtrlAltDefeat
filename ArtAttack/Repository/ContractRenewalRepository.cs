@@ -7,7 +7,7 @@ using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
-    public class ContractRenewalModel : IContractRenewalModel
+    public class ContractRenewalRepository : IContractRenewalRepository
     {
         private readonly string connectionString;
         private readonly IDatabaseProvider databaseProvider;
@@ -16,8 +16,7 @@ namespace ArtAttack.Model
         /// Initializes a new instance of the ContractRenewalModel class with default database provider.
         /// </summary>
         /// <param name="connectionString">The connection string to the database.</param>
-        public ContractRenewalModel(string connectionString)
-            : this(connectionString, new SqlDatabaseProvider())
+        public ContractRenewalRepository(string connectionString) : this(connectionString, new SqlDatabaseProvider())
         {
         }
 
@@ -26,7 +25,7 @@ namespace ArtAttack.Model
         /// </summary>
         /// <param name="connectionString">The connection string to the database.</param>
         /// <param name="databaseProvider">The database provider.</param>
-        public ContractRenewalModel(string connectionString, IDatabaseProvider databaseProvider)
+        public ContractRenewalRepository(string connectionString, IDatabaseProvider databaseProvider)
         {
             if (connectionString == null)
             {

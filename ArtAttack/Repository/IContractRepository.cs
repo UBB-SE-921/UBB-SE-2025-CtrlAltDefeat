@@ -5,7 +5,7 @@ using ArtAttack.Domain;
 
 namespace ArtAttack.Model
 {
-    public interface IContractModel
+    public interface IContractRepository
     {
         Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile);
         Task<List<IContract>> GetAllContractsAsync();

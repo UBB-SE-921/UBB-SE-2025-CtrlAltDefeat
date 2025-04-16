@@ -14,7 +14,7 @@ namespace ArtAttack.ViewModel
 {
     public class ContractViewModel : IContractViewModel
     {
-        private readonly IContractModel model;
+        private readonly IContractRepository model;
 
         /// <summary>
         /// Constructor for the ContractViewModel
@@ -22,7 +22,7 @@ namespace ArtAttack.ViewModel
         /// <param name="connectionString" type="string">The connection string to the database</param>
         public ContractViewModel(string connectionString)
         {
-            model = new ContractModel(connectionString);
+            model = new ContractRepository(connectionString);
         }
 
         /// <summary>

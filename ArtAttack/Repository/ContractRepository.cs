@@ -8,17 +8,17 @@ using ArtAttack.Shared;
 
 namespace ArtAttack.Model
 {
-    public class ContractModel : IContractModel
+    public class ContractRepository : IContractRepository
     {
         private readonly string connectionString;
         private readonly IDatabaseProvider databaseProvider;
 
-        public ContractModel(string connectionString)
+        public ContractRepository(string connectionString)
             : this(connectionString, new SqlDatabaseProvider())
         {
         }
 
-        public ContractModel(string connectionString, IDatabaseProvider databaseProvider)
+        public ContractRepository(string connectionString, IDatabaseProvider databaseProvider)
         {
             if (connectionString == null)
             {

@@ -15,8 +15,8 @@ namespace ArtAttack.ViewModel
 {
     public class ContractRenewViewModel : IContractRenewViewModel
     {
-        private readonly IContractModel contractModel;
-        private readonly IContractRenewalModel renewalModel;
+        private readonly IContractRepository contractModel;
+        private readonly IContractRenewalRepository renewalModel;
         private readonly INotificationDataAdapter notificationAdapter;
         private readonly IDatabaseProvider databaseProvider;
         private readonly string connectionString;
@@ -29,8 +29,8 @@ namespace ArtAttack.ViewModel
         [ExcludeFromCodeCoverage]
         public ContractRenewViewModel(string connectionString)
             : this(
-                  new ContractModel(connectionString),
-                  new ContractRenewalModel(connectionString),
+                  new ContractRepository(connectionString),
+                  new ContractRenewalRepository(connectionString),
                   new NotificationDataAdapter(connectionString),
                   new SqlDatabaseProvider(),
                   connectionString,
@@ -41,8 +41,8 @@ namespace ArtAttack.ViewModel
 
         // Constructor with dependency injection for testing
         public ContractRenewViewModel(
-            IContractModel contractModel,
-            IContractRenewalModel renewalModel,
+            IContractRepository contractModel,
+            IContractRenewalRepository renewalModel,
             INotificationDataAdapter notificationAdapter,
             IDatabaseProvider databaseProvider,
             string connectionString,
