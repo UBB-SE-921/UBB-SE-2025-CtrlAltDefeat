@@ -8,7 +8,7 @@ using ArtAttack.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using QuestPDF.Infrastructure;
-using ArtAttack.Model; // Add this using directive
+using ArtAttack.Repository; // Add this using directive
 using ArtAttack.Service; // Add this using directive
 
 // To learn more about WinUI, the WinUI project structure,
