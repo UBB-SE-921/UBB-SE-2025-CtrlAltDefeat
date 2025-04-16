@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using ArtAttack.Model;
 using ArtAttack.Repository;
+using ArtAttack.Shared;
 
 namespace ArtAttack
 {
@@ -19,7 +20,7 @@ namespace ArtAttack
         public CardInfo(int orderHistoryID)
         {
             this.InitializeComponent();
-            string connectionString = "connection-string"; // replace with actual connection string
+            string connectionString = Configuration.CONNECTION_STRING; // replace with actual connection string
             var cardInfoService = new CardInfoService(
                 new OrderHistoryModel(connectionString),
                 new OrderSummaryModel(connectionString),
