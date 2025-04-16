@@ -183,7 +183,7 @@ BEGIN
     SELECT ds.ID AS SellerID,
            ds.name AS SellerName
     FROM Contract c
-    INNER JOIN [Order] o ON c.orderID = o.OrderID
+    INNER JOIN [Orders] o ON c.orderID = o.OrderID -- Changed [Order] to [Orders]
     INNER JOIN DummyProduct dp ON o.ProductId = dp.ID
     INNER JOIN DummySeller ds ON dp.SellerID = ds.ID
     WHERE c.ID = @ContractID;
@@ -199,7 +199,7 @@ BEGIN
     SELECT db.ID AS BuyerID,
            db.name AS BuyerName
     FROM Contract c
-    INNER JOIN [Order] o ON c.orderID = o.OrderID
+    INNER JOIN [Orders] o ON c.orderID = o.OrderID -- Changed [Order] to [Orders]
     INNER JOIN DummyBuyer db ON o.BuyerId = db.ID
     WHERE c.ID = @ContractID;
 END
@@ -213,7 +213,7 @@ BEGIN
 
     SELECT os.*
     FROM Contract c
-    INNER JOIN [Order] o ON c.orderID = o.OrderID
+    INNER JOIN [Orders] o ON c.orderID = o.OrderID -- Changed [Order] to [Orders]
     INNER JOIN OrderSummary os ON o.OrderSummaryID = os.ID
     WHERE c.ID = @ContractID;
 END
@@ -225,7 +225,7 @@ BEGIN
     SET NOCOUNT ON
     SELECT o.PaymentMethod, o.OrderDate
     FROM [Contract] c
-    INNER JOIN [Order] o on c.orderID = o.OrderID
+    INNER JOIN [Orders] o on c.orderID = o.OrderID -- Changed [Order] to [Orders]
     WHERE c.ID = @ContractID
 END
 GO
@@ -238,7 +238,7 @@ BEGIN
 
     SELECT dp.startDate, dp.endDate, dp.price, dp.name
     FROM Contract c
-    INNER JOIN [Order] o ON c.orderID = o.OrderID
+    INNER JOIN [Orders] o ON c.orderID = o.OrderID -- Changed [Order] to [Orders]
     INNER JOIN DummyProduct dp ON o.ProductId = dp.ID
     WHERE c.ID = @ContractID;
 END
@@ -252,7 +252,7 @@ BEGIN
 
     SELECT c.*
     FROM Contract c
-    INNER JOIN [Order] o ON c.orderID = o.OrderID
+    INNER JOIN [Orders] o ON c.orderID = o.OrderID
     WHERE o.BuyerID = @BuyerID;
 END
 GO

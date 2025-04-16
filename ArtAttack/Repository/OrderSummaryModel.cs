@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Shared;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
     public class OrderSummaryModel : IOrderSummaryModel
     {

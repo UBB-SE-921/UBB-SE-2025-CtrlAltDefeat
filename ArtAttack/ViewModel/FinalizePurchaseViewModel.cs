@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Service;
+using ArtAttack.Model;
 using ArtAttack.Shared;
 using Microsoft.UI.Xaml.Controls;
 
@@ -48,7 +48,7 @@ namespace ArtAttack.ViewModel
             orderService = new OrderService(connectionString, databaseProvider);
             orderSummaryService = new OrderSummaryService(connectionString, databaseProvider);
             notificationViewModel = new NotificationViewModel(1);
-
+            // notificationViewModel.ShowPopup += ShowNotificationPopup;
             this.orderHistoryID = orderHistoryID;
 
             _ = InitializeViewModelAsync();

@@ -179,7 +179,7 @@ namespace ArtAttack.Repository
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
 
-            if (value == null || value == DBNull.Value)
+            if (value == null)
             {
                 parameter.Value = DBNull.Value;
             }

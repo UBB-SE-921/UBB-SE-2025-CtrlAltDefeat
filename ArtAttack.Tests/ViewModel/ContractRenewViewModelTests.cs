@@ -17,8 +17,8 @@ namespace ArtAttack.Tests.ViewModel
     [TestClass]
     public class ContractRenewViewModelTests
     {
-        private Mock<IContractModel> mockContractModel;
-        private Mock<IContractRenewalModel> mockRenewalModel;
+        private Mock<IContractRepository> mockContractModel;
+        private Mock<IContractRenewalRepository> mockRenewalModel;
         private Mock<INotificationDataAdapter> mockNotificationAdapter;
         private Mock<IDatabaseProvider> mockDatabaseProvider;
         private Mock<IDbConnection> mockConnection;
@@ -43,8 +43,8 @@ namespace ArtAttack.Tests.ViewModel
         public void Initialize()
         {
             // Setup mock objects
-            mockContractModel = new Mock<IContractModel>();
-            mockRenewalModel = new Mock<IContractRenewalModel>();
+            mockContractModel = new Mock<IContractRepository>();
+            mockRenewalModel = new Mock<IContractRenewalRepository>();
             mockNotificationAdapter = new Mock<INotificationDataAdapter>();
             mockDatabaseProvider = new Mock<IDatabaseProvider>();
             mockConnection = new Mock<IDbConnection>();

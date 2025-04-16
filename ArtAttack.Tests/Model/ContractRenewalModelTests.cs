@@ -19,7 +19,7 @@ namespace ArtAttack.Tests.Model
         private Mock<IDataReader> mockDataReader;
         private Mock<IDataParameterCollection> mockParameterCollection;
         private string testConnectionString = "TestConnection";
-        private ContractRenewalModel contractRenewalModel;
+        private ContractRenewalRepository contractRenewalModel;
 
         // Column indexes for database reader
         private const int ColumnIndex_ID = 0;
@@ -58,14 +58,14 @@ namespace ArtAttack.Tests.Model
             mockDatabaseProvider.Setup(Database_provider => Database_provider.CreateConnection(It.IsAny<string>())).Returns(mockDatabaseConnection.Object);
 
             // Create the ContractRenewalModel with the mock database provider
-            contractRenewalModel = new ContractRenewalModel(testConnectionString, mockDatabaseProvider.Object);
+            contractRenewalModel = new ContractRenewalRepository(testConnectionString, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
         public void Constructor_WithConnectionStringOnly_InitializesCorrectly()
         {
             // Arrange & Act
-            var contractRenewalModel = new ContractRenewalModel(testConnectionString);
+            var contractRenewalModel = new ContractRenewalRepository(testConnectionString);
 
             // Assert
             Assert.IsNotNull(contractRenewalModel);
@@ -76,7 +76,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullConnectionString_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
-            _ = new ContractRenewalModel(null, mockDatabaseProvider.Object);
+            _ = new ContractRenewalRepository(null, mockDatabaseProvider.Object);
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace ArtAttack.Tests.Model
         public void Constructor_WithNullDatabaseProvider_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
-            _ = new ContractRenewalModel(testConnectionString, null);
+            _ = new ContractRenewalRepository(testConnectionString, null);
         }
 
         [TestMethod]

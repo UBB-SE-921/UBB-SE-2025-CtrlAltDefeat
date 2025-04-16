@@ -64,7 +64,7 @@ namespace ArtAttack.ViewModel
         /// <returns>
         /// A task that represents the asynchronous operation and returns a tuple with the start date, end date, price, and name; or <c>null</c> if not found.
         /// </returns>
-        Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
+        Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
 
         /// <summary>
         /// Asynchronously retrieves all contracts for a given buyer.
@@ -93,9 +93,9 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contractId">The unique identifier of the contract.</param>
         /// <returns>
-        /// A task that represents the asynchronous operation and returns a tuple containing the payment method and order date.
+        /// A task that represents the asynchronous operation and returns a tuple containing the payment method (nullable) and order date.
         /// </returns>
-        Task<(string PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId);
+        Task<(string? PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId);
 
         /// <summary>
         /// Asynchronously retrieves the delivery date for the specified contract.

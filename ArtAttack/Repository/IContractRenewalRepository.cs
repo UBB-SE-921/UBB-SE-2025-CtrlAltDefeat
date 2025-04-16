@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
-    public interface IContractRenewalModel
+    public interface IContractRenewalRepository
     {
         Task AddRenewedContractAsync(IContract contract, byte[] pdfFile);
         Task<List<IContract>> GetRenewedContractsAsync();

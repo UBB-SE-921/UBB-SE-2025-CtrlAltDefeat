@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
-    public interface IContractModel
+    public interface IContractRepository
     {
         Task<IContract> AddContractAsync(IContract contract, byte[] pdfFile);
         Task<List<IContract>> GetAllContractsAsync();
@@ -19,6 +19,7 @@ namespace ArtAttack.Model
         Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId);
         Task<byte[]> GetPdfByContractIdAsync(long contractId);
         Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType);
-        Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
+        // Make StartDate and EndDate nullable in the interface to match the implementation
+        Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
     }
 }
