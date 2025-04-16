@@ -12,7 +12,7 @@ namespace ArtAttack.ViewModel
 
         bool CanSellerApproveRenewal(int renewalCount);
         byte[] GenerateContractPdf(IContract contract, string content);
-        Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
+        Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId);
         Task<bool> HasContractBeenRenewedAsync();
         Task<int> InsertPdfAsync(byte[] fileBytes);
         bool IsProductAvailable(int productId);

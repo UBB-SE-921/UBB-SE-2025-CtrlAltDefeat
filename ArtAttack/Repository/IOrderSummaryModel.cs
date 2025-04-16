@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ArtAttack.Domain;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
     public interface IOrderSummaryModel
     {

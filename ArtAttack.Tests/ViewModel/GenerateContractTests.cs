@@ -10,7 +10,7 @@ namespace ArtAttack.Tests.ViewModel
     [TestClass]
     public class GenerateContractTest
     {
-        private Mock<IContractModel> mockContractModel;
+        private Mock<IContractRepository> mockContractModel;
         private IContractViewModel viewModel;
         private IContract mockContract;
         private IPredefinedContract mockPredefinedContract;
@@ -20,7 +20,7 @@ namespace ArtAttack.Tests.ViewModel
         public void TestInitialize()
         {
             // Setup mock contract model
-            mockContractModel = new Mock<IContractModel>();
+            mockContractModel = new Mock<IContractRepository>();
 
             // Create the view model with the mocked model
             viewModel = new ContractViewModel("mock_connection_string");

@@ -213,6 +213,7 @@ namespace ArtAttack.ViewModel
             return await orderService.GetOrdersWithProductInfoAsync(userId, searchText, timePeriod);
         }
 
+
         /// <summary>
         /// Asynchronously retrieves product category types (new/borrowed) for each order summary ID for a specific user.
         /// </summary>

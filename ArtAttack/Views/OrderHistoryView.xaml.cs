@@ -10,6 +10,8 @@ using ArtAttack.Domain;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using ArtAttack.Service; // Add this using directive if not present
+using ArtAttack.Shared; // Add this using directive for Configuration
 
 namespace ArtAttack
 {
@@ -37,6 +39,7 @@ namespace ArtAttack
             this.userId = userId;
             orderViewModel = new OrderViewModel(connectionString);
             contractViewModel = new ContractViewModel(connectionString);
+
             this.Activated += Window_Activated;
         }
 

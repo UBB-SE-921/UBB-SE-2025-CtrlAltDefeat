@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Service; // Added using for Service namespace
 using ArtAttack.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -16,9 +16,10 @@ namespace ArtAttack.ViewModel
 {
     public class ContractRenewViewModel : IContractRenewViewModel
     {
-        private readonly IContractModel contractModel;
-        private readonly IContractRenewalModel renewalModel;
-        private readonly INotificationRepository notificationAdapter;
+        // Changed repository interfaces to service interfaces
+        private readonly IContractService contractService;
+        private readonly IContractRenewalService renewalService;
+        private readonly INotificationDataAdapter notificationAdapter;
         private readonly IDatabaseProvider databaseProvider;
         private readonly string connectionString;
         private readonly IFileSystem fileSystem;
@@ -30,9 +31,10 @@ namespace ArtAttack.ViewModel
         [ExcludeFromCodeCoverage]
         public ContractRenewViewModel(string connectionString)
             : this(
-                  new ContractModel(connectionString),
-                  new ContractRenewalModel(connectionString),
-                  new NotificationRepository(connectionString),
+                  // Instantiate services which in turn depend on repositories
+                  new ContractService(new ContractRepository(connectionString)),
+                  new ContractRenewalService(new ContractRenewalRepository(connectionString)),
+                  new NotificationDataAdapter(connectionString),
                   new SqlDatabaseProvider(),
                   connectionString,
                   new FileSystemWrapper(),
@@ -40,23 +42,24 @@ namespace ArtAttack.ViewModel
         {
         }
 
-        // Constructor with dependency injection for testing
+        // Constructor with dependency injection for testing - updated parameter types
         public ContractRenewViewModel(
-            IContractModel contractModel,
-            IContractRenewalModel renewalModel,
-            INotificationRepository notificationAdapter,
+            IContractService contractService, // Changed from IContractRepository
+            IContractRenewalService renewalService, // Changed from IContractRenewalRepository
+            INotificationDataAdapter notificationAdapter,
             IDatabaseProvider databaseProvider,
             string connectionString,
             IFileSystem fileSystem,
             IDateTimeProvider dateTimeProvider)
         {
-            if (contractModel == null)
+            // Updated null checks for service interfaces
+            if (contractService == null)
             {
-                throw new ArgumentNullException(nameof(contractModel));
+                throw new ArgumentNullException(nameof(contractService));
             }
-            if (renewalModel == null)
+            if (renewalService == null)
             {
-                throw new ArgumentNullException(nameof(renewalModel));
+                throw new ArgumentNullException(nameof(renewalService));
             }
             if (notificationAdapter == null)
             {
@@ -79,8 +82,9 @@ namespace ArtAttack.ViewModel
                 throw new ArgumentNullException(nameof(dateTimeProvider));
             }
 
-            this.contractModel = contractModel;
-            this.renewalModel = renewalModel;
+            // Assign injected services to fields
+            this.contractService = contractService;
+            this.renewalService = renewalService;
             this.notificationAdapter = notificationAdapter;
             this.databaseProvider = databaseProvider;
             this.connectionString = connectionString;
@@ -96,8 +100,8 @@ namespace ArtAttack.ViewModel
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task LoadContractsForBuyerAsync(int buyerID)
         {
-            // Load all contracts for the buyer
-            var allContracts = await contractModel.GetContractsByBuyerAsync(buyerID);
+            // Load all contracts for the buyer using the service
+            var allContracts = await contractService.GetContractsByBuyerAsync(buyerID); // Changed from contractModel
 
             // Filter the contracts to include only those with status "ACTIVE" or "RENEWED"
             BuyerContracts = allContracts.Where(c => c.ContractStatus == "ACTIVE" || c.ContractStatus == "RENEWED").ToList();
@@ -110,15 +114,16 @@ namespace ArtAttack.ViewModel
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task SelectContractAsync(long contractID)
         {
-            SelectedContract = await contractModel.GetContractByIdAsync(contractID);
+            SelectedContract = await contractService.GetContractByIdAsync(contractID); // Changed from contractModel
         }
 
         /// <summary>
         /// Retrieves the start and end dates of the product associated with a given contract.
         /// </summary>
-        public async Task<(DateTime StartDate, DateTime EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
+        // Change DateTime to DateTime? to match the interface and repository
+        public async Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
-            return await contractModel.GetProductDetailsByContractIdAsync(contractId);
+            return await contractService.GetProductDetailsByContractIdAsync(contractId); // Changed from contractModel
         }
 
         /// <summary>
@@ -132,13 +137,16 @@ namespace ArtAttack.ViewModel
                 return false;
             }
 
+            // dates is now (DateTime? StartDate, DateTime? EndDate, double price, string name)?
             var dates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
-            if (dates == null)
+            // Check if the tuple itself is null OR if EndDate within the tuple is null
+            if (!dates.HasValue || !dates.Value.EndDate.HasValue)
             {
                 return false;
             }
 
-            DateTime oldEndDate = dates.Value.EndDate;
+            // Access EndDate safely using .Value as we've checked HasValue
+            DateTime oldEndDate = dates.Value.EndDate.Value;
             DateTime currentDate = dateTimeProvider.Now.Date;
             int daysUntilEnd = (oldEndDate - currentDate).Days;
 
@@ -198,7 +206,7 @@ namespace ArtAttack.ViewModel
                 return false;
             }
 
-            return await renewalModel.HasContractBeenRenewedAsync(SelectedContract.ContractID);
+            return await renewalService.HasContractBeenRenewedAsync(SelectedContract.ContractID); // Changed from renewalModel
         }
 
         /// <summary>
@@ -230,7 +238,7 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="newEndDate">The new end date for the contract.</param>
         /// <param name="buyerID">The ID of the buyer submitting the renewal request.</param>
-        /// <param name="productID">The ID of the product associated with the contract.</param>
+        /// <param="productID">The ID of the product associated with the contract.</param>
         /// <param name="sellerID">The ID of the seller associated with the contract.</param>
         /// <returns>A tuple containing a boolean indicating success and a message describing the result.</returns>
         public virtual async Task<(bool Success, string Message)> SubmitRenewalRequestAsync(DateTime newEndDate, int buyerID, int productID, int sellerID)
@@ -243,27 +251,28 @@ namespace ArtAttack.ViewModel
                     return (false, "No contract selected.");
                 }
 
-                // Check if the contract was already renewed
-                if (await HasContractBeenRenewedAsync())
+                // Check if the contract was already renewed using the service
+                if (await HasContractBeenRenewedAsync()) // This method now uses renewalService internally
                 {
                     return (false, "This contract has already been renewed.");
                 }
 
                 // Validate the current date is within the renewal window (2 to 7 days before end)
-                if (!await IsRenewalPeriodValidAsync())
+                if (!await IsRenewalPeriodValidAsync()) // This method uses GetProductDetailsByContractIdAsync which now uses contractService
                 {
                     return (false, "Contract is not in a valid renewal period (between 2 and 7 days before end date).");
                 }
 
-                // Get the current contract's product dates
-                var oldDates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID);
-                if (!oldDates.HasValue)
+                // Get the current contract's product dates using the service
+                var oldDates = await GetProductDetailsByContractIdAsync(SelectedContract.ContractID); // This method now uses contractService
+                // Check if the tuple itself is null OR if EndDate within the tuple is null
+                if (!oldDates.HasValue || !oldDates.Value.EndDate.HasValue)
                 {
                     return (false, "Could not retrieve current contract dates.");
                 }
 
-                // Ensure the new end date is after the old one
-                if (newEndDate <= oldDates.Value.EndDate)
+                // Ensure the new end date is after the old one (access EndDate safely)
+                if (newEndDate <= oldDates.Value.EndDate.Value)
                 {
                     return (false, "New end date must be after the current end date.");
                 }
@@ -287,7 +296,7 @@ namespace ArtAttack.ViewModel
                 byte[] pdfBytes = GenerateContractPdf(SelectedContract, contractContent);
 
                 // Insert the new PDF into the database and get its ID
-                int newPdfId = await InsertPdfAsync(pdfBytes);
+                int newPdfId = await InsertPdfAsync(pdfBytes); // This method uses databaseProvider directly, could be moved to a service if needed
 
                 // Save PDF locally in Downloads folder
                 string downloadsPath = fileSystem.GetDownloadsPath();
@@ -295,7 +304,7 @@ namespace ArtAttack.ViewModel
                 string filePath = fileSystem.CombinePath(downloadsPath, fileName);
                 await fileSystem.WriteAllBytesAsync(filePath, pdfBytes);
 
-                // Prepare and insert the new renewed contract into the database
+                // Prepare and insert the new renewed contract into the database using the service
                 var updatedContract = new Contract
                 {
                     OrderID = SelectedContract.OrderID,
@@ -307,7 +316,7 @@ namespace ArtAttack.ViewModel
                     RenewedFromContractID = SelectedContract.ContractID
                 };
 
-                await renewalModel.AddRenewedContractAsync(updatedContract, pdfBytes);
+                await renewalService.AddRenewedContractAsync(updatedContract, pdfBytes); // Changed from renewalModel
 
                 // Send notifications to seller, buyer, and waitlist
                 var now = dateTimeProvider.Now;
