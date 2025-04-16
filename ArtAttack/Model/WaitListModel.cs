@@ -27,10 +27,8 @@ namespace ArtAttack.Model
         {
             waitListRepository = new WaitListRepository(connectionString, databaseProvider);
             var notificationAdapter = new NotificationDataAdapter(connectionString, databaseProvider);
-            var dummyProductModel = new DummyProductModel(connectionString, databaseProvider);
-            
             waitListService = new WaitListService(waitListRepository, notificationAdapter);
-            dummyProductService = new DummyProductService(dummyProductModel);
+            // dummyProductService = new DummyProductService(Config);
         }
 
         public void AddUserToWaitlist(int userId, int productWaitListId)

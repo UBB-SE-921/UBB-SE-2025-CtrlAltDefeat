@@ -63,7 +63,7 @@ namespace ArtAttack.ViewModel
             orderService = new OrderService(connectionString, databaseProvider);
             orderSummaryService = new OrderSummaryService(connectionString, databaseProvider);
             dummyWalletService = new DummyWalletService(connectionString, databaseProvider);
-            dummyProductService = new DummyProductService(connectionString, databaseProvider);
+            dummyProductService = new DummyProductService(connectionString);
 
             DummyProducts = new List<DummyProduct>();
             this.orderHistoryID = orderHistoryID;
