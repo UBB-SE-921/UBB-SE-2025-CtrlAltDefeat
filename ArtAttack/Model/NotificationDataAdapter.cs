@@ -114,44 +114,44 @@ namespace ArtAttack.Model
                 switch (notification)
                 {
                     case ContractRenewalAnswerNotification ans:
-                        AddParameter(command, "@contractID", ans.GetContractID());
-                        AddParameter(command, "@isAccepted", ans.GetIsAccepted());
+                        AddParameter(command, "@contractID", ans.ContractID);
+                        AddParameter(command, "@isAccepted", ans.IsAccepted);
                         break;
 
                     case ContractRenewalWaitlistNotification waitlist:
-                        AddParameter(command, "@productID", waitlist.GetProductID());
+                        AddParameter(command, "@productID", waitlist.ProductID);
                         break;
 
                     case OutbiddedNotification outbid:
-                        AddParameter(command, "@productID", outbid.GetProductID());
+                        AddParameter(command, "@productID", outbid.ProductID);
                         break;
 
                     case OrderShippingProgressNotification shipping:
-                        AddParameter(command, "@orderID", shipping.GetOrderID());
-                        AddParameter(command, "@shippingState", shipping.GetShippingState());
-                        AddParameter(command, "@deliveryDate", shipping.GetDeliveryDate());
+                        AddParameter(command, "@orderID", shipping.OrderID);
+                        AddParameter(command, "@shippingState", shipping.ShippingState);
+                        AddParameter(command, "@deliveryDate", shipping.DeliveryDate);
                         break;
 
                     case PaymentConfirmationNotification payment:
-                        AddParameter(command, "@orderID", payment.GetOrderID());
-                        AddParameter(command, "@productID", payment.GetProductID());
+                        AddParameter(command, "@orderID", payment.OrderID);
+                        AddParameter(command, "@productID", payment.ProductID);
                         break;
 
                     case ProductRemovedNotification removed:
-                        AddParameter(command, "@productID", removed.GetProductID());
+                        AddParameter(command, "@productID", removed.ProductID);
                         break;
 
                     case ProductAvailableNotification available:
-                        AddParameter(command, "@productID", available.GetProductID());
+                        AddParameter(command, "@productID", available.ProductID);
                         break;
 
                     case ContractRenewalRequestNotification request:
-                        AddParameter(command, "@contractID", request.GetContractID());
+                        AddParameter(command, "@contractID", request.ContractID);
                         break;
 
                     case ContractExpirationNotification expiration:
-                        AddParameter(command, "@contractID", expiration.GetContractID());
-                        AddParameter(command, "@expirationDate", expiration.GetExpirationDate());
+                        AddParameter(command, "@contractID", expiration.ContractID);
+                        AddParameter(command, "@expirationDate", expiration.ExpirationDate);
                         break;
 
                     default:

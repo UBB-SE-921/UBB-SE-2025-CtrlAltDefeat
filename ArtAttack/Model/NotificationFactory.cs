@@ -95,44 +95,44 @@ namespace ArtAttack.Model
             {
                 case ProductAvailableNotification actualProductAvailableNotification:
                     var expectedProductAvailableNotification = expectedNotification as ProductAvailableNotification;
-                    return actualProductAvailableNotification.GetProductID() == expectedProductAvailableNotification.GetProductID();
+                    return actualProductAvailableNotification.ProductID == expectedProductAvailableNotification.ProductID;
 
                 case ContractRenewalAnswerNotification actualContractRenewalAnswerNotification:
                     var expectedContractRenewalAnswerNotification = expectedNotification as ContractRenewalAnswerNotification;
-                    return actualContractRenewalAnswerNotification.GetContractID() == expectedContractRenewalAnswerNotification.GetContractID() &&
-                           actualContractRenewalAnswerNotification.GetIsAccepted() == expectedContractRenewalAnswerNotification.GetIsAccepted();
+                    return actualContractRenewalAnswerNotification.ContractID == expectedContractRenewalAnswerNotification.ContractID &&
+                           actualContractRenewalAnswerNotification.IsAccepted == expectedContractRenewalAnswerNotification.IsAccepted;
 
                 case ContractRenewalWaitlistNotification actualContractRenewalWaitlistNotification:
                     var expectedContractRenewalWaitlistNotification = expectedNotification as ContractRenewalWaitlistNotification;
-                    return actualContractRenewalWaitlistNotification.GetProductID() == expectedContractRenewalWaitlistNotification.GetProductID();
+                    return actualContractRenewalWaitlistNotification.ProductID == expectedContractRenewalWaitlistNotification.ProductID;
 
                 case OutbiddedNotification actualOutbiddedNotification:
                     var expectedOutbiddedNotification = expectedNotification as OutbiddedNotification;
-                    return actualOutbiddedNotification.GetProductID() == expectedOutbiddedNotification.GetProductID();
+                    return actualOutbiddedNotification.ProductID == expectedOutbiddedNotification.ProductID;
 
                 case OrderShippingProgressNotification actualOrderShippingProgressNotification:
                     var expectedOrderShippingProgressNotification = expectedNotification as OrderShippingProgressNotification;
-                    return actualOrderShippingProgressNotification.GetOrderID() == expectedOrderShippingProgressNotification.GetOrderID() &&
-                           actualOrderShippingProgressNotification.GetShippingState() == expectedOrderShippingProgressNotification.GetShippingState() &&
-                           actualOrderShippingProgressNotification.GetDeliveryDate() == expectedOrderShippingProgressNotification.GetDeliveryDate();
+                    return actualOrderShippingProgressNotification.OrderID == expectedOrderShippingProgressNotification.OrderID &&
+                           actualOrderShippingProgressNotification.ShippingState == expectedOrderShippingProgressNotification.ShippingState &&
+                           actualOrderShippingProgressNotification.DeliveryDate == expectedOrderShippingProgressNotification.DeliveryDate;
 
                 case PaymentConfirmationNotification actualPaymentConfirmationNotification:
                     var expectedPaymentConfirmationNotification = expectedNotification as PaymentConfirmationNotification;
-                    return actualPaymentConfirmationNotification.GetProductID() == expectedPaymentConfirmationNotification.GetProductID() &&
-                           actualPaymentConfirmationNotification.GetOrderID() == expectedPaymentConfirmationNotification.GetOrderID();
+                    return actualPaymentConfirmationNotification.ProductID == expectedPaymentConfirmationNotification.ProductID &&
+                           actualPaymentConfirmationNotification.OrderID == expectedPaymentConfirmationNotification.OrderID;
 
                 case ProductRemovedNotification actualProductRemovedNotification:
                     var expectedProductRemovedNotification = expectedNotification as ProductRemovedNotification;
-                    return actualProductRemovedNotification.GetProductID() == expectedProductRemovedNotification.GetProductID();
+                    return actualProductRemovedNotification.ProductID == expectedProductRemovedNotification.ProductID;
 
                 case ContractRenewalRequestNotification actualContractRenewalRequestNotification:
                     var expectedContractRenewalRequestNotification = expectedNotification as ContractRenewalRequestNotification;
-                    return actualContractRenewalRequestNotification.GetContractID() == expectedContractRenewalRequestNotification.GetContractID();
+                    return actualContractRenewalRequestNotification.ContractID == expectedContractRenewalRequestNotification.ContractID;
 
                 case ContractExpirationNotification actualContractExpirationNotification:
                     var expectedContractExpirationNotification = expectedNotification as ContractExpirationNotification;
-                    return actualContractExpirationNotification.GetContractID() == expectedContractExpirationNotification.GetContractID() &&
-                           actualContractExpirationNotification.GetExpirationDate() == expectedContractExpirationNotification.GetExpirationDate();
+                    return actualContractExpirationNotification.ContractID == expectedContractExpirationNotification.ContractID &&
+                           actualContractExpirationNotification.ExpirationDate == expectedContractExpirationNotification.ExpirationDate;
 
                 default:
                     return false;
