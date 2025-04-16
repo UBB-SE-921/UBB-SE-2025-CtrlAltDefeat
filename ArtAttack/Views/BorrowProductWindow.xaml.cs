@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Data.SqlClient;
 using ArtAttack.Domain;
-using ArtAttack.Services;
+using ArtAttack.Service;
 using ArtAttack.ViewModel;
 
 namespace ArtAttack

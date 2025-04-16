@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ArtAttack.Domain;
 
-namespace ArtAttack.Model
+namespace ArtAttack.Repository
 {
-    [Obsolete("This interface is deprecated. Please use IWaitListRepository and IWaitListService instead.")]
-    public interface IWaitListModel
+    public interface IWaitListRepository
     {
         void AddUserToWaitlist(int userId, int productWaitListId);
         void RemoveUserFromWaitlist(int userId, int productWaitListId);
@@ -15,5 +15,6 @@ namespace ArtAttack.Model
         bool IsUserInWaitlist(int userId, int productId);
         int GetUserWaitlistPosition(int userId, int productId);
         List<UserWaitList> GetUsersInWaitlistOrdered(int productId);
+        int GetWaitlistProductId(int productId);
     }
 }

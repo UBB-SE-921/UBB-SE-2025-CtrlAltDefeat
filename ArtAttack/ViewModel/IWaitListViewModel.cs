@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 
-namespace ArtAttack.Services
+namespace ArtAttack.ViewModel
 {
     /// <summary>
     /// Defines operations for managing waitlist functionality for users and products.
@@ -21,8 +20,8 @@ namespace ArtAttack.Services
         /// Removes a user from the waitlist for a specified product.
         /// </summary>
         /// <param name="userId">The unique identifier of the user to remove.</param>
-        /// <param name="productWaitListId">The unique identifier of the product waitlist.</param>
-        void RemoveUserFromWaitlist(int userId, int productWaitListId);
+        /// <param name="productId">The unique identifier of the product.</param>
+        void RemoveUserFromWaitlist(int userId, int productId);
 
         /// <summary>
         /// Retrieves all users in the waitlist for the specified product.
@@ -53,9 +52,17 @@ namespace ArtAttack.Services
         /// Determines whether a user is already present in the waitlist for a specified product.
         /// </summary>
         /// <param name="userId">The unique identifier of the user.</param>
-        /// <param name="productWaitListId">The unique identifier of the product waitlist.</param>
+        /// <param name="productId">The unique identifier of the product.</param>
         /// <returns><c>true</c> if the user is in the waitlist; otherwise, <c>false</c>.</returns>
-        bool IsUserInWaitlist(int userId, int productWaitListId);
+        bool IsUserInWaitlist(int userId, int productId);
+
+        /// <summary>
+        /// Retrieves the waitlist position of a user for a specific product.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user.</param>
+        /// <param name="productId">The unique identifier of the product.</param>
+        /// <returns>The user's position in the waitlist.</returns>
+        int GetUserWaitlistPosition(int userId, int productId);
 
         /// <summary>
         /// Asynchronously retrieves the seller's name based on an optional seller identifier.
@@ -70,13 +77,5 @@ namespace ArtAttack.Services
         /// <param name="productId">The unique identifier of the product.</param>
         /// <returns>A task that returns the <see cref="DummyProduct"/> object.</returns>
         Task<DummyProduct> GetDummyProductByIdAsync(int productId);
-
-        /// <summary>
-        /// Retrieves the waitlist position of a user for a specific product.
-        /// </summary>
-        /// <param name="userId">The unique identifier of the user.</param>
-        /// <param name="productId">The unique identifier of the product.</param>
-        /// <returns>The user's position in the waitlist.</returns>
-        int GetUserWaitlistPosition(int userId, int productId);
     }
 }

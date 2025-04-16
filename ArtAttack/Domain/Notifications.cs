@@ -4,10 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace ArtAttack.Domain
 {
     [ExcludeFromCodeCoverage]
-    abstract public class Notification : INotification
+    public class Notification : INotification
     {
         public int NotificationID { get; set; }
         public int RecipientID { get; set; }
+        public string? Message { get; set; }
+        public string? NotificationType { get; set; }
         public NotificationCategory Category { get; set; }
         public bool IsRead { get; set; }
         public DateTime Timestamp { get; set; }
@@ -23,9 +25,9 @@ namespace ArtAttack.Domain
             IsRead = true;
         }
 
-        public abstract string Title { get; }
-        public abstract string Subtitle { get; }
-        public abstract string Content { get; }
+        public string Title { get; }
+        public string Subtitle { get; }
+        public string Content { get; }
     }
 
     public class ContractRenewalAnswerNotification : Notification
@@ -53,11 +55,11 @@ namespace ArtAttack.Domain
             return IsAccepted;
         }
         [ExcludeFromCodeCoverage]
-        public override string Content => IsAccepted ? $"Contract: {ContractID} has been renewed!\reader\n You can download it from below!" : $"Unfortunately, contract: {ContractID} has not been renewed!\reader\n The owner refused the renewal request :(";
+        public string Content => IsAccepted ? $"Contract: {ContractID} has been renewed!\reader\n You can download it from below!" : $"Unfortunately, contract: {ContractID} has not been renewed!\reader\n The owner refused the renewal request :(";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Contract Renewal Answer";
+        public string Title => "Contract Renewal Answer";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"You have received an answer on the renewal request for contract: {ContractID}.";
+        public string Subtitle => $"You have received an answer on the renewal request for contract: {ContractID}.";
     }
 
     public class ContractRenewalWaitlistNotification : Notification
@@ -80,11 +82,11 @@ namespace ArtAttack.Domain
         }
 
         [ExcludeFromCodeCoverage]
-        public override string Content => $"The user that borrowed product: {ProductID} that you are part of the waitlist for, has renewed its contract.";
+        public string Content => $"The user that borrowed product: {ProductID} that you are part of the waitlist for, has renewed its contract.";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Contract Renewal in Waitlist";
+        public string Title => "Contract Renewal in Waitlist";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => "A user has extended their contract.";
+        public string Subtitle => "A user has extended their contract.";
     }
 
     public class OutbiddedNotification : Notification
@@ -105,11 +107,11 @@ namespace ArtAttack.Domain
             return ProductID;
         }
         [ExcludeFromCodeCoverage]
-        public override string Content => $"You've been outbid! Another buyer has placed a higher bid on product: {ProductID}. Place a new bid now!";
+        public string Content => $"You've been outbid! Another buyer has placed a higher bid on product: {ProductID}. Place a new bid now!";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Outbidded";
+        public string Title => "Outbidded";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"You've been outbidded on product: {ProductID}.";
+        public string Subtitle => $"You've been outbidded on product: {ProductID}.";
     }
 
     public class OrderShippingProgressNotification : Notification
@@ -149,11 +151,11 @@ namespace ArtAttack.Domain
         }
 
         [ExcludeFromCodeCoverage]
-        public override string Content => $"Your order: {OrderID} has reached the {ShippingState} stage. Estimated delivery is on {DeliveryDate}.";
+        public string Content => $"Your order: {OrderID} has reached the {ShippingState} stage. Estimated delivery is on {DeliveryDate}.";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Order Shipping Update";
+        public string Title => "Order Shipping Update";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"New info on order: {OrderID} is available.";
+        public string Subtitle => $"New info on order: {OrderID} is available.";
     }
 
     public class PaymentConfirmationNotification : Notification
@@ -185,11 +187,11 @@ namespace ArtAttack.Domain
         }
 
         [ExcludeFromCodeCoverage]
-        public override string Content => $"Thank you for your purchase! Your order: {OrderID} for product: {ProductID} has been successfully processed.";
+        public string Content => $"Thank you for your purchase! Your order: {OrderID} for product: {ProductID} has been successfully processed.";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Payment Confirmation";
+        public string Title => "Payment Confirmation";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"Order: {OrderID} has been processed successfully!";
+        public string Subtitle => $"Order: {OrderID} has been processed successfully!";
     }
 
     public class ProductRemovedNotification : Notification
@@ -213,11 +215,11 @@ namespace ArtAttack.Domain
         }
 
         [ExcludeFromCodeCoverage]
-        public override string Content => $"Unfortunately, the product: {ProductID} that you were waiting for was removed from the marketplace.";
+        public string Content => $"Unfortunately, the product: {ProductID} that you were waiting for was removed from the marketplace.";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Product Removed";
+        public string Title => "Product Removed";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"Product: {ProductID} was removed from the marketplace!";
+        public string Subtitle => $"Product: {ProductID} was removed from the marketplace!";
     }
 
     public class ProductAvailableNotification : Notification
@@ -241,11 +243,11 @@ namespace ArtAttack.Domain
         }
 
         [ExcludeFromCodeCoverage]
-        public override string Content => $"Good news! The product: {ProductID} that you were waiting for is now back in stock.";
+        public string Content => $"Good news! The product: {ProductID} that you were waiting for is now back in stock.";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Product Available";
+        public string Title => "Product Available";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"Product: {ProductID} is available now!";
+        public string Subtitle => $"Product: {ProductID} is available now!";
     }
 
     public class ContractRenewalRequestNotification : Notification
@@ -269,11 +271,11 @@ namespace ArtAttack.Domain
         }
 
         [ExcludeFromCodeCoverage]
-        public override string Content => $"User {RecipientID} would like to renew contract: {ContractID}. Please respond promptly.";
+        public string Content => $"User {RecipientID} would like to renew contract: {ContractID}. Please respond promptly.";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Contract Renewal Request";
+        public string Title => "Contract Renewal Request";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"User {RecipientID} wants to renew contract: {ContractID}.";
+        public string Subtitle => $"User {RecipientID} wants to renew contract: {ContractID}.";
     }
 
     public class ContractExpirationNotification : Notification
@@ -303,10 +305,10 @@ namespace ArtAttack.Domain
         }
 
         [ExcludeFromCodeCoverage]
-        public override string Content => $"Contract: {ContractID} is set to expire on {ExpirationDate}.";
+        public string Content => $"Contract: {ContractID} is set to expire on {ExpirationDate}.";
         [ExcludeFromCodeCoverage]
-        public override string Title => "Contract Expiration";
+        public string Title => "Contract Expiration";
         [ExcludeFromCodeCoverage]
-        public override string Subtitle => $"Contract: {ContractID} is about to expire!";
+        public string Subtitle => $"Contract: {ContractID} is about to expire!";
     }
 }

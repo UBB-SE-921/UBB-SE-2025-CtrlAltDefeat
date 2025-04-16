@@ -37,8 +37,8 @@ namespace ArtAttack.ViewModel
         private string zipCode;
         private string additionalInfo;
 
-        private DateTimeOffset startDate;
-        private DateTimeOffset endDate;
+        private DateTime startDate;
+        private DateTime endDate;
 
         private float subtotal;
         private float deliveryFee;
@@ -458,7 +458,7 @@ namespace ArtAttack.ViewModel
         }
 
         [ExcludeFromCodeCoverage]
-        public DateTimeOffset StartDate
+        public DateTime StartDate
         {
             get => startDate;
             set
@@ -469,7 +469,7 @@ namespace ArtAttack.ViewModel
         }
 
         [ExcludeFromCodeCoverage]
-        public DateTimeOffset EndDate
+        public DateTime EndDate
         {
             get => endDate;
             set

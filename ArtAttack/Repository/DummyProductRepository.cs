@@ -48,7 +48,6 @@ namespace ArtAttack.Repository
                     AddParameter(databaseCommand, "@Price", price);
                     AddParameter(databaseCommand, "@SellerID", sellerId);
                     AddParameter(databaseCommand, "@ProductType", productType);
-
                     if (productType == "borrowed")
                     {
                         AddParameter(databaseCommand, "@StartDate", startDate);
