@@ -273,8 +273,8 @@ namespace ArtAttack.ViewModel
 
             CalculateOrderTotal(orderHistoryID);
 
-            DateTimeOffset newStartDate = startDate.Date;
-            DateTimeOffset newEndDate = endDate.Date;
+            DateTime newStartDate = startDate.Date;
+            DateTime newEndDate = endDate.Date;
 
             dummyProduct.StartDate = newStartDate;
             dummyProduct.EndDate = newEndDate;
