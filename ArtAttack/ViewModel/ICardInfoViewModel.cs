@@ -9,6 +9,8 @@ namespace ArtAttack.ViewModel
 {
     internal interface ICardInfoViewModel
     {
+        Task OnPayButtonClickedAsync();
+
         /// <summary>
         /// Asynchronously initializes the view model.
         /// </summary>

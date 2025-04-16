@@ -62,6 +62,17 @@ namespace ArtAttack.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public async Task OnPayButtonClickedAsync()
+        {
+            await ProcessCardPaymentAsync();
+
+            var billingInfoWindow = new BillingInfoWindow();
+            var finalisePurchasePage = new FinalisePurchase(orderHistoryID);
+            billingInfoWindow.Content = finalisePurchasePage;
+
+            billingInfoWindow.Activate();
+        }
+
         public float Subtotal
         {
             get => subtotal;
