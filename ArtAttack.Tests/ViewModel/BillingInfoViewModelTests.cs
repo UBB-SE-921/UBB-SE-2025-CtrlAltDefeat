@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
 using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml.Controls;
 using Moq;
@@ -19,7 +20,7 @@ namespace ArtAttack.Tests.ViewModel
         private Mock<IOrderHistoryModel> mockOrderHistoryModel;
         private Mock<IOrderSummaryModel> mockOrderSummaryModel;
         private Mock<IOrderModel> mockOrderModel;
-        private Mock<IDummyProductModel> mockDummyProductModel;
+        private Mock<IDummyProductRepository> mockDummyProductModel;
         private Mock<IDummyWalletModel> mockDummyWalletModel;
         private BillingInfoViewModel billingInfoViewModel;
 
@@ -29,7 +30,7 @@ namespace ArtAttack.Tests.ViewModel
             mockOrderHistoryModel = new Mock<IOrderHistoryModel>();
             mockOrderSummaryModel = new Mock<IOrderSummaryModel>();
             mockOrderModel = new Mock<IOrderModel>();
-            mockDummyProductModel = new Mock<IDummyProductModel>();
+            mockDummyProductModel = new Mock<IDummyProductRepository>();
             mockDummyWalletModel = new Mock<IDummyWalletModel>();
 
             billingInfoViewModel = new BillingInfoViewModel(1);

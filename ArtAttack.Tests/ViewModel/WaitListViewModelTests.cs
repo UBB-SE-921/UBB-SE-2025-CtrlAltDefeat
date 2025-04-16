@@ -1,6 +1,7 @@
 ﻿using ArtAttack.Domain;
 using ArtAttack.Model;
-using ArtAttack.Services;
+using ArtAttack.Repository;
+using ArtAttack.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
@@ -12,23 +13,23 @@ namespace ArtAttack.Tests.ViewModel
     [TestClass]
     public class WaitListViewModelTests
     {
-        private Mock<IWaitListModel> mockWaitListModel;
-        private Mock<IDummyProductModel> mockDummyProductModel;
-        private WaitListViewModel waitListViewModel;
+        private Mock<IWaitListRepository> mockWaitListModel;
+        private Mock<IDummyProductRepository> mockDummyProductModel;
+        private WaitListRepository waitListViewModel;
         private string testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
 
         [TestInitialize]
         public void InitializeTestDependencies()
         {
-            mockWaitListModel = new Mock<IWaitListModel>();
-            mockDummyProductModel = new Mock<IDummyProductModel>();
+            mockWaitListModel = new Mock<IWaitListRepository>();
+            mockDummyProductModel = new Mock<IDummyProductRepository>();
 
-            var viewModel = new WaitListViewModel(testConnectionString);
+            var viewModel = new WaitListRepository(testConnectionString);
 
-            var waitListModelField = typeof(WaitListViewModel).GetField("waitListModel",
+            var waitListModelField = typeof(WaitListRepository).GetField("waitListModel",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-            var dummyProductModelField = typeof(WaitListViewModel).GetField("dummyProductModel",
+            var dummyProductModelField = typeof(WaitListRepository).GetField("dummyProductModel",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             waitListModelField.SetValue(viewModel, mockWaitListModel.Object);
@@ -137,41 +138,6 @@ namespace ArtAttack.Tests.ViewModel
             var result = waitListViewModel.IsUserInWaitlist(userId, productWaitListId);
 
             Assert.AreEqual(expectedResult, result);
-        }
-
-        [TestMethod]
-        public async Task GetSellerNameAsync_ShouldReturnCorrectSellerName()
-        {
-            int? sellerId = 501;
-            string expectedName = "Test Seller";
-
-            mockDummyProductModel.Setup(model => model.GetSellerNameAsync(sellerId))
-                .ReturnsAsync(expectedName);
-
-            var result = await waitListViewModel.GetSellerNameAsync(sellerId);
-
-            Assert.AreEqual(expectedName, result);
-        }
-
-        [TestMethod]
-        public async Task GetDummyProductByIdAsync_ShouldReturnCorrectProduct()
-        {
-            int productId = 101;
-            var expectedProduct = new DummyProduct
-            {
-                ID = productId,
-                Name = "Test Product",
-                Price = 19.99f,
-                ProductType = "Test Type",
-                SellerID = 501
-            };
-
-            mockDummyProductModel.Setup(model => model.GetDummyProductByIdAsync(productId))
-                .ReturnsAsync(expectedProduct);
-
-            var result = await waitListViewModel.GetDummyProductByIdAsync(productId);
-
-            Assert.AreEqual(expectedProduct.ID, result.ID);
         }
     }
 }

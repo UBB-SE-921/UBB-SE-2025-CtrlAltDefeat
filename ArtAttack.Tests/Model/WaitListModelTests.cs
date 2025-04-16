@@ -3,12 +3,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Data;
-using ArtAttack.Model;
 using ArtAttack.Domain;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using ArtAttack.Shared;
+using ArtAttack.Repository;
+
 
 namespace ArtAttack.Tests.Model
 {
@@ -21,7 +22,7 @@ namespace ArtAttack.Tests.Model
         private Mock<IDataParameterCollection> _mockParameters;
         private Mock<IDbDataParameter> _mockParameter;
         private readonly string _testConnectionString = "Server=testserver;Database=testdb;User Id=testuser;Password=testpass;";
-        private WaitListModel _waitListModel;
+        private WaitListRepository _waitListModel;
         private MockDatabase _mockDatabase;
 
         [TestInitialize]
@@ -49,17 +50,17 @@ namespace ArtAttack.Tests.Model
             _mockDatabase.SetupMockConnection(_mockConnection.Object);
 
             // Initialize the model with the mock database
-            _waitListModel = new WaitListModel(_testConnectionString, _mockDatabase);
+            _waitListModel = new WaitListRepository(_testConnectionString, _mockDatabase);
         }
 
         [TestMethod]
         public void Constructor_SetsConnectionString()
         {
             // Arrange & Act
-            var model = new WaitListModel(_testConnectionString);
+            var model = new WaitListRepository(_testConnectionString);
 
             // Assert - using reflection to access private field "connectionString"
-            FieldInfo connectionStringField = typeof(WaitListModel).GetField("connectionString",
+            FieldInfo connectionStringField = typeof(WaitListRepository).GetField("connectionString",
                 BindingFlags.NonPublic | BindingFlags.Instance);
             object actualValue = connectionStringField.GetValue(model);
 
