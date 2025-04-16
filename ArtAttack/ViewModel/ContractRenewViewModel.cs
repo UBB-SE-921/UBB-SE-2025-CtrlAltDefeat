@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
 using ArtAttack.Service; // Added using for Service namespace
 using ArtAttack.Shared;
 using QuestPDF.Fluent;
