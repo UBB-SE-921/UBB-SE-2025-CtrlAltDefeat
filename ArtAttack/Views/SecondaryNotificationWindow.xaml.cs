@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using ArtAttack.Domain;
 using Microsoft.UI.Xaml;
+using ArtAttack.Services;
+using ArtAttack.Service;
 
 namespace ArtAttack
 {

@@ -10,7 +10,7 @@ namespace ArtAttack.Domain
         public int ProductType { get; set; }
         public int OrderSummaryID { get; set; }
         public int OrderHistoryID { get; set; }
-        public string PaymentMethod { get; set; }
+        public string? PaymentMethod { get; set; }
         public DateTime OrderDate { get; set; }
     }
 }

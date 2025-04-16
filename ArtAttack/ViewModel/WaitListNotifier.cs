@@ -4,11 +4,12 @@ using System.Linq;
 using ArtAttack.Domain;
 using ArtAttack.Model;
 using Microsoft.Data.SqlClient;
+using ArtAttack.Repository;
 [ExcludeFromCodeCoverage]
 public class WaitListNotifier
 {
     private readonly IWaitListModel waitListModel;
-    private readonly NotificationDataAdapter notificationAdapter;
+    private readonly INotificationRepository notificationAdapter;
     private readonly string connectionString;
 
     /// <summary>
@@ -19,7 +20,7 @@ public class WaitListNotifier
     public WaitListNotifier(string connectionString)
     {
         waitListModel = new WaitListModel(connectionString);
-        notificationAdapter = new NotificationDataAdapter(connectionString);
+        notificationAdapter = new NotificationRepository(connectionString);
         this.connectionString = connectionString;
     }
 

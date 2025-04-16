@@ -4,24 +4,15 @@ using System.Diagnostics.CodeAnalysis;
 namespace ArtAttack.Domain
 {
     [ExcludeFromCodeCoverage]
-    abstract public class Notification : INotification
+    abstract public class Notification
     {
         public int NotificationID { get; set; }
         public int RecipientID { get; set; }
-        public NotificationCategory Category { get; set; }
+        public NotificationCategory Category { get; protected set; }
         public bool IsRead { get; set; }
+
+        public bool IsNotRead { get => !IsRead; }
         public DateTime Timestamp { get; set; }
-
-        public bool IsNotRead
-        {
-            get => !IsRead;
-            set => IsRead = !value;
-        }
-
-        public void MarkAsRead()
-        {
-            IsRead = true;
-        }
 
         public abstract string Title { get; }
         public abstract string Subtitle { get; }
@@ -30,11 +21,12 @@ namespace ArtAttack.Domain
 
     public class ContractRenewalAnswerNotification : Notification
     {
-        private int ContractID { get; }
-        private bool IsAccepted { get; }
+        public int ContractID { get; }
+        public bool IsAccepted { get; }
+
         public ContractRenewalAnswerNotification(int recipientID, DateTime timestamp, int contractID, bool isAccepted, bool isRead = false, int notificationId = 0)
         {
-            NotificationID = notificationId;
+            this.NotificationID = notificationId;
             this.RecipientID = recipientID;
             this.Timestamp = timestamp;
             this.IsRead = isRead;
@@ -42,16 +34,7 @@ namespace ArtAttack.Domain
             Category = NotificationCategory.CONTRACT_RENEWAL_ACCEPTED;
             this.IsAccepted = isAccepted;
         }
-        [ExcludeFromCodeCoverage]
-        public int GetContractID()
-        {
-            return ContractID;
-        }
-        [ExcludeFromCodeCoverage]
-        public bool GetIsAccepted()
-        {
-            return IsAccepted;
-        }
+
         [ExcludeFromCodeCoverage]
         public override string Content => IsAccepted ? $"Contract: {ContractID} has been renewed!\reader\n You can download it from below!" : $"Unfortunately, contract: {ContractID} has not been renewed!\reader\n The owner refused the renewal request :(";
         [ExcludeFromCodeCoverage]
@@ -62,21 +45,16 @@ namespace ArtAttack.Domain
 
     public class ContractRenewalWaitlistNotification : Notification
     {
-        private int ProductID { get; }
+        public int ProductID { get; }
+
         public ContractRenewalWaitlistNotification(int recipientID, DateTime timestamp, int productID, bool isRead = false, int notificationId = 0)
         {
-            NotificationID = notificationId;
+            this.NotificationID = notificationId;
             this.RecipientID = recipientID;
             this.Timestamp = timestamp;
             this.IsRead = isRead;
             this.ProductID = productID;
             Category = NotificationCategory.CONTRACT_RENEWAL_WAITLIST;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetProductID()
-        {
-            return ProductID;
         }
 
         [ExcludeFromCodeCoverage]
@@ -89,21 +67,18 @@ namespace ArtAttack.Domain
 
     public class OutbiddedNotification : Notification
     {
-        private int ProductID { get; }
+        public int ProductID { get; }
+
         public OutbiddedNotification(int recipientId, DateTime timestamp, int productId, bool isRead = false, int notificationId = 0)
         {
             NotificationID = notificationId;
             RecipientID = recipientId;
             this.Timestamp = timestamp;
             this.IsRead = isRead;
-            ProductID = productId;
+            this.ProductID = productId;
             Category = NotificationCategory.OUTBIDDED;
         }
-        [ExcludeFromCodeCoverage]
-        public int GetProductID()
-        {
-            return ProductID;
-        }
+
         [ExcludeFromCodeCoverage]
         public override string Content => $"You've been outbid! Another buyer has placed a higher bid on product: {ProductID}. Place a new bid now!";
         [ExcludeFromCodeCoverage]
@@ -114,9 +89,9 @@ namespace ArtAttack.Domain
 
     public class OrderShippingProgressNotification : Notification
     {
-        private int OrderID { get; }
-        private string ShippingState { get; }
-        private DateTime DeliveryDate { get; }
+        public int OrderID { get; }
+        public string ShippingState { get; }
+        public DateTime DeliveryDate { get; }
 
         public OrderShippingProgressNotification(int recipientId, DateTime timestamp, int id, string state, DateTime deliveryDate, bool isRead = false, int notificationId = 0)
         {
@@ -124,28 +99,10 @@ namespace ArtAttack.Domain
             RecipientID = recipientId;
             this.Timestamp = timestamp;
             this.IsRead = isRead;
-            OrderID = id;
-            ShippingState = state;
+            this.OrderID = id;
+            this.ShippingState = state;
             Category = NotificationCategory.ORDER_SHIPPING_PROGRESS;
             this.DeliveryDate = deliveryDate;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetOrderID()
-        {
-            return OrderID;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public DateTime GetDeliveryDate()
-        {
-            return DeliveryDate;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public string GetShippingState()
-        {
-            return ShippingState;
         }
 
         [ExcludeFromCodeCoverage]
@@ -158,8 +115,8 @@ namespace ArtAttack.Domain
 
     public class PaymentConfirmationNotification : Notification
     {
-        private int ProductID { get; }
-        private int OrderID { get; }
+        public int ProductID { get; }
+        public int OrderID { get; }
 
         public PaymentConfirmationNotification(int recipientId, DateTime timestamp, int productId, int orderId, bool isRead = false, int notificationId = 0)
         {
@@ -167,21 +124,9 @@ namespace ArtAttack.Domain
             RecipientID = recipientId;
             this.Timestamp = timestamp;
             this.IsRead = isRead;
-            ProductID = productId;
-            OrderID = orderId;
+            this.ProductID = productId;
+            this.OrderID = orderId;
             Category = NotificationCategory.PAYMENT_CONFIRMATION;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetProductID()
-        {
-            return ProductID;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetOrderID()
-        {
-            return OrderID;
         }
 
         [ExcludeFromCodeCoverage]
@@ -194,22 +139,16 @@ namespace ArtAttack.Domain
 
     public class ProductRemovedNotification : Notification
     {
-        private int ProductID { get; }
+        public int ProductID { get; }
 
         public ProductRemovedNotification(int recipientId, DateTime timestamp, int productId, bool isRead = false, int notificationId = 0)
         {
             NotificationID = notificationId;
             RecipientID = recipientId;
             this.Timestamp = timestamp;
-            ProductID = productId;
+            this.ProductID = productId;
             this.IsRead = isRead;
             Category = NotificationCategory.PRODUCT_REMOVED;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetProductID()
-        {
-            return ProductID;
         }
 
         [ExcludeFromCodeCoverage]
@@ -222,22 +161,16 @@ namespace ArtAttack.Domain
 
     public class ProductAvailableNotification : Notification
     {
-        private int ProductID { get; }
+        public int ProductID { get; }
 
         public ProductAvailableNotification(int recipientId, DateTime timestamp, int productId, bool isRead = false, int notificationId = 0)
         {
             NotificationID = notificationId;
             RecipientID = recipientId;
             this.Timestamp = timestamp;
-            ProductID = productId;
+            this.ProductID = productId;
             this.IsRead = isRead;
             Category = NotificationCategory.PRODUCT_AVAILABLE;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetProductID()
-        {
-            return ProductID;
         }
 
         [ExcludeFromCodeCoverage]
@@ -250,22 +183,16 @@ namespace ArtAttack.Domain
 
     public class ContractRenewalRequestNotification : Notification
     {
-        private int ContractID { get; }
+        public int ContractID { get; }
 
         public ContractRenewalRequestNotification(int recipientId, DateTime timestamp, int contractId, bool isRead = false, int notificationId = 0)
         {
             NotificationID = notificationId;
             RecipientID = recipientId;
             this.Timestamp = timestamp;
-            ContractID = contractId;
+            this.ContractID = contractId;
             this.IsRead = isRead;
             Category = NotificationCategory.CONTRACT_RENEWAL_REQUEST;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetContractID()
-        {
-            return ContractID;
         }
 
         [ExcludeFromCodeCoverage]
@@ -278,28 +205,18 @@ namespace ArtAttack.Domain
 
     public class ContractExpirationNotification : Notification
     {
-        private int ContractID { get; }
-        private DateTime ExpirationDate { get; }
+        public int ContractID { get; }
+        public DateTime ExpirationDate { get; }
 
         public ContractExpirationNotification(int recipientId, DateTime timestamp, int contractId, DateTime expirationDate, bool isRead = false, int notificationId = 0)
         {
             NotificationID = notificationId;
             RecipientID = recipientId;
             this.Timestamp = timestamp;
-            ContractID = contractId;
+            this.ContractID = contractId;
             this.IsRead = isRead;
             Category = NotificationCategory.CONTRACT_EXPIRATION;
             this.ExpirationDate = expirationDate;
-        }
-
-        [ExcludeFromCodeCoverage]
-        public int GetContractID()
-        {
-            return ContractID;
-        }
-        public DateTime GetExpirationDate()
-        {
-            return ExpirationDate;
         }
 
         [ExcludeFromCodeCoverage]

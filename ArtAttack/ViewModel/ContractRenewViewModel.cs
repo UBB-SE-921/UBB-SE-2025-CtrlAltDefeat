@@ -11,6 +11,7 @@ using ArtAttack.Service; // Added using for Service namespace
 using ArtAttack.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using ArtAttack.Repository;
 
 namespace ArtAttack.ViewModel
 {
