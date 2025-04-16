@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Service;
 using ArtAttack.Shared;
 using ArtAttack.Utils;
 
@@ -16,11 +16,11 @@ namespace ArtAttack.ViewModel
     /// </summary>
     public class BillingInfoViewModel : IBillingInfoViewModel, INotifyPropertyChanged
     {
-        private readonly IOrderHistoryModel orderHistoryModel;
-        private readonly IOrderSummaryModel orderSummaryModel;
-        private readonly IOrderModel orderModel;
-        private readonly IDummyProductModel dummyProductModel;
-        private readonly IDummyWalletModel dummyWalletModel;
+        private readonly IOrderHistoryService orderHistoryService;
+        private readonly IOrderSummaryService orderSummaryService;
+        private readonly IOrderService orderService;
+        private readonly IDummyProductService dummyProductService;
+        private readonly IDummyWalletService dummyWalletService;
 
         private int orderHistoryID;
 
@@ -54,11 +54,17 @@ namespace ArtAttack.ViewModel
         /// <param name="orderHistoryID">The unique identifier for the order history.</param>
         public BillingInfoViewModel(int orderHistoryID)
         {
-            orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
-            orderModel = new OrderModel(Configuration.CONNECTION_STRING);
-            orderSummaryModel = new OrderSummaryModel(Configuration.CONNECTION_STRING);
-            dummyWalletModel = new DummyWalletModel(Configuration.CONNECTION_STRING);
-            dummyProductModel = new DummyProductModel(Configuration.CONNECTION_STRING);
+            // Initialize services with dependency injection support
+            // In a real-world application, these would ideally be injected through constructor
+            string connectionString = Configuration.CONNECTION_STRING;
+            IDatabaseProvider databaseProvider = new SqlDatabaseProvider();
+
+            orderHistoryService = new OrderHistoryService(connectionString, databaseProvider);
+            orderService = new OrderService(connectionString, databaseProvider);
+            orderSummaryService = new OrderSummaryService(connectionString, databaseProvider);
+            dummyWalletService = new DummyWalletService(connectionString, databaseProvider);
+            dummyProductService = new DummyProductService(connectionString, databaseProvider);
+
             DummyProducts = new List<DummyProduct>();
             this.orderHistoryID = orderHistoryID;
 
@@ -121,16 +127,17 @@ namespace ArtAttack.ViewModel
         {
             string paymentMethod = SelectedPaymentMethod;
 
-            // This is subject to change, as the orderModel is to be switched to asynchronous architecture
-            List<Order> orderList = await orderModel.GetOrdersFromOrderHistoryAsync(orderHistoryID);
+            // Get orders from order history using the service
+            List<Order> orderList = await orderService.GetOrdersFromOrderHistoryAsync(orderHistoryID);
 
+            // Update each order with the selected payment method
             foreach (var order in orderList)
             {
-                await orderModel.UpdateOrderAsync(order.OrderID, order.ProductType, SelectedPaymentMethod, DateTime.Now);
+                await orderService.UpdateOrderAsync(order.OrderID, order.ProductType, SelectedPaymentMethod, DateTime.Now);
             }
 
-            // Currently, an order summary has the same ID as the order history for simplicity
-            await orderSummaryModel.UpdateOrderSummaryAsync(orderHistoryID, Subtotal, warrantyTax, DeliveryFee, Total, FullName, Email, PhoneNumber, Address, ZipCode, AdditionalInfo, null);
+            // Update the order summary using the service
+            await orderSummaryService.UpdateOrderSummaryAsync(orderHistoryID, Subtotal, warrantyTax, DeliveryFee, Total, FullName, Email, PhoneNumber, Address, ZipCode, AdditionalInfo, null);
 
             await OpenNextWindowAsync(SelectedPaymentMethod);
         }
@@ -172,11 +179,11 @@ namespace ArtAttack.ViewModel
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task ProcessWalletRefillAsync()
         {
-            float walletBalance = await dummyWalletModel.GetWalletBalanceAsync(1);
+            float walletBalance = await dummyWalletService.GetWalletBalanceAsync(1);
 
             float newBalance = walletBalance - Total;
 
-            await dummyWalletModel.UpdateWalletBalance(1, newBalance);
+            await dummyWalletService.UpdateWalletBalance(1, newBalance);
         }
 
         /// <summary>
@@ -230,7 +237,7 @@ namespace ArtAttack.ViewModel
         /// <returns>A task representing the asynchronous operation that returns a list of <see cref="DummyProduct"/>.</returns>
         public async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
         {
-            return await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
+            return await orderHistoryService.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
         }
 
         /// <summary>
@@ -277,7 +284,7 @@ namespace ArtAttack.ViewModel
                 dummyProduct.SellerID = 0;
             }
 
-            await dummyProductModel.UpdateDummyProductAsync(dummyProduct.ID, dummyProduct.Name, dummyProduct.Price, (int)dummyProduct.SellerID, dummyProduct.ProductType, newStartDate, newEndDate);
+            await dummyProductService.UpdateDummyProductAsync(dummyProduct.ID, dummyProduct.Name, dummyProduct.Price, (int)dummyProduct.SellerID, dummyProduct.ProductType, newStartDate, newEndDate);
         }
         [ExcludeFromCodeCoverage]
         /// <summary>

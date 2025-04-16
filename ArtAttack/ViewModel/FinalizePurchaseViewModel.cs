@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Service;
 using ArtAttack.Shared;
 using Microsoft.UI.Xaml.Controls;
 
@@ -15,9 +15,9 @@ namespace ArtAttack.ViewModel
     /// </summary>
     public class FinalizePurchaseViewModel : IFinalizePurchaseViewModel, INotifyPropertyChanged
     {
-        private readonly IOrderHistoryModel orderHistoryModel;
-        private readonly IOrderSummaryModel orderSummaryModel;
-        private readonly IOrderModel orderModel;
+        private readonly IOrderHistoryService orderHistoryService;
+        private readonly IOrderSummaryService orderSummaryService;
+        private readonly IOrderService orderService;
         private readonly INotificationViewModel notificationViewModel;
 
         private int orderHistoryID;
@@ -41,11 +41,14 @@ namespace ArtAttack.ViewModel
         /// <param name="orderHistoryID">The unique identifier for the order history.</param>
         public FinalizePurchaseViewModel(int orderHistoryID)
         {
-            orderHistoryModel = new OrderHistoryModel(Configuration.CONNECTION_STRING);
-            orderModel = new OrderModel(Configuration.CONNECTION_STRING);
-            orderSummaryModel = new OrderSummaryModel(Configuration.CONNECTION_STRING);
+            string connectionString = Configuration.CONNECTION_STRING;
+            IDatabaseProvider databaseProvider = new SqlDatabaseProvider();
+            
+            orderHistoryService = new OrderHistoryService(connectionString, databaseProvider);
+            orderService = new OrderService(connectionString, databaseProvider);
+            orderSummaryService = new OrderSummaryService(connectionString, databaseProvider);
             notificationViewModel = new NotificationViewModel(1);
-            // notificationViewModel.ShowPopup += ShowNotificationPopup;
+            
             this.orderHistoryID = orderHistoryID;
 
             _ = InitializeViewModelAsync();
@@ -62,7 +65,7 @@ namespace ArtAttack.ViewModel
 
             OnPropertyChanged(nameof(ProductList));
 
-            OrderSummary orderSummary = await orderSummaryModel.GetOrderSummaryByIDAsync(orderHistoryID);
+            OrderSummary orderSummary = await orderSummaryService.GetOrderSummaryByIdAsync(orderHistoryID);
 
             await SetOrderHistoryInfo(orderSummary);
         }
@@ -74,7 +77,7 @@ namespace ArtAttack.ViewModel
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task SetOrderHistoryInfo(OrderSummary orderSummary)
         {
-            Orders = await orderModel.GetOrdersFromOrderHistoryAsync(orderHistoryID);
+            Orders = await orderService.GetOrdersFromOrderHistoryAsync(orderHistoryID);
             Subtotal = orderSummary.Subtotal;
             DeliveryFee = orderSummary.DeliveryFee;
             Total = orderSummary.FinalTotal;
@@ -107,7 +110,7 @@ namespace ArtAttack.ViewModel
         /// <returns>A task that returns a list of <see cref="DummyProduct"/> objects.</returns>
         public async Task<List<DummyProduct>> GetDummyProductsFromOrderHistoryAsync(int orderHistoryID)
         {
-            return await orderHistoryModel.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
+            return await orderHistoryService.GetDummyProductsFromOrderHistoryAsync(orderHistoryID);
         }
 
         /// <summary>
