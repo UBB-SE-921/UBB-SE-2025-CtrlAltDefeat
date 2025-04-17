@@ -11,8 +11,7 @@ using ArtAttack.ViewModel;
 using Microsoft.UI.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using ArtAttack.Service; // Add this using directive if not present
-using ArtAttack.Shared;
-using ArtAttack.Repository; // Add this using directive for Configuration
+using ArtAttack.Shared; // Add this using directive for Configuration
 
 namespace ArtAttack
 {
@@ -39,7 +38,7 @@ namespace ArtAttack
             InitializeComponent();
             this.userId = userId;
             orderViewModel = new OrderViewModel(connectionString);
-            contractViewModel = new ContractViewModel(new ContractService(new ContractRepository(connectionString)));
+            contractViewModel = new ContractViewModel(connectionString);
 
             this.Activated += Window_Activated;
         }

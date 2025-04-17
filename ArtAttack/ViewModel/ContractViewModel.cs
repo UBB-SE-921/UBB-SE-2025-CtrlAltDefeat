@@ -23,10 +23,10 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="contractService" type="IContractService">The contract service instance</param>
         // Update the constructor to accept IContractService
-        public ContractViewModel(IContractService contractService)
+        public ContractViewModel(string connectionString)
         {
             // Assign the injected service instance
-            this.contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
+            this.contractService = new ContractService(connectionString);
         }
 
         /// <summary>
@@ -82,7 +82,6 @@ namespace ArtAttack.ViewModel
             // Remove the NotImplementedException
             // throw new NotImplementedException("AddContractAsync is not implemented in IContractService.");
         }
-
 
         /// <summary>
         /// Get the seller of a contract
@@ -186,7 +185,6 @@ namespace ArtAttack.ViewModel
         // ... existing private methods GenerateContractPdf, GetFieldReplacements, GenerateAndSaveContractAsync ...
         // These private methods already call the public async methods of this ViewModel,
         // which now correctly delegate to the contractService. No changes needed here.
-
         private byte[] GenerateContractPdf(
                 IContract contract,
                 IPredefinedContract predefinedContract,

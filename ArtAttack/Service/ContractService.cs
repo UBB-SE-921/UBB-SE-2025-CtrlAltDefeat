@@ -14,6 +14,10 @@ namespace ArtAttack.Service
         private readonly IContractRepository contractRpository;
 
         // Add constructor injection for the repository
+        public ContractService(string connectionString)
+        {
+            contractRpository = new ContractRepository(connectionString) ?? throw new ArgumentNullException(nameof(connectionString));
+        }
         public ContractService(IContractRepository contractRepository)
         {
             contractRpository = contractRepository ?? throw new ArgumentNullException(nameof(contractRepository));
