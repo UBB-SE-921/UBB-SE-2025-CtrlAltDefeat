@@ -4,7 +4,7 @@ drop table if exists [Notification]
 drop table if exists [Contract]
 
 
-drop table if exists [Order]
+drop table if exists [Orders]
 
 
 
@@ -67,7 +67,7 @@ create table [PDF](
 create table [PredefinedContract](
 	[ID] integer identity primary key,
 	[content] TEXT not null,
-	--contract type should be expunged from Class Diagram as it is held by the Order Summary Table
+	--contract type should be expunged from Class Diagram as it is held by the Orders Summary Table
 );
 
 create table [OrderSummary](
@@ -104,7 +104,7 @@ create table [DummyProduct](
 );
 
 
-create table [Order](
+create table [Orders](
 	[OrderID] int identity primary key,
 	[ProductID] int not null foreign key references [DummyProduct]([ID]),
 	[BuyerID] int not null foreign key references [DummyBuyer]([ID]),
@@ -118,14 +118,14 @@ create table [Order](
 );
 
 
-alter table [Order] drop constraint [PaymentMethodConstraint]
-alter table [Order] add constraint [PaymentMethodConstraint] check ([PaymentMethod] in ('card', 'cash', 'wallet') or [PaymentMethod] is NULL) 
+alter table [Orders] drop constraint [PaymentMethodConstraint]
+alter table [Orders] add constraint [PaymentMethodConstraint] check ([PaymentMethod] in ('card', 'cash', 'wallet') or [PaymentMethod] is NULL) 
 
 
 create table [Contract](
 	[ID] int identity primary key,
 
-	[orderID] integer foreign key references [Order]([OrderID]),
+	[orderID] integer foreign key references [Orders]([OrderID]),
 
 	[contractStatus] Varchar(255) not null,
 	constraint [ContractStatusConstraint] check ([contractStatus] in ('ACTIVE', 'RENEWED', 'EXPIRED')),
@@ -156,7 +156,7 @@ create table [Notification](
 	[contractID] int foreign key references [Contract]([ID]),
 	[isAccepted] bit,
 	[productID] int foreign key references [DummyProduct]([ID]),
-	[orderID] int foreign key references [Order]([OrderID]),
+	[orderID] int foreign key references [Orders]([OrderID]),
 	[shippingState] varchar(25),
 	[deliveryDate] Datetime,
 	[expirationDate] Datetime,
@@ -171,7 +171,7 @@ create table [TrackedOrders]
 	[OrderStatus] varchar(100) not null,
 	constraint [TrackedOrderConstraint] 
 		check ([OrderStatus] in ('PROCESSING','SHIPPED','IN_WAREHOUSE','IN_TRANSIT','OUT_FOR_DELIVERY','DELIVERED')),
-	[OrderID] int foreign key references [Order]([OrderID]) unique not null
+	[OrderID] int foreign key references [Orders]([OrderID]) unique not null
 )
 
 
