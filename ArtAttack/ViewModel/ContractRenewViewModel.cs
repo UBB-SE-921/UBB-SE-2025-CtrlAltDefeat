@@ -18,78 +18,25 @@ namespace ArtAttack.ViewModel
     {
         // Changed repository interfaces to service interfaces
         private readonly IContractService contractService;
+        private readonly IPDFService pdfService;
         private readonly IContractRenewalService renewalService;
-        private readonly INotificationDataAdapter notificationAdapter;
-        private readonly IDatabaseProvider databaseProvider;
-        private readonly string connectionString;
+        private readonly INotificationContentService notificationContentService;
         private readonly IFileSystem fileSystem;
         private readonly IDateTimeProvider dateTimeProvider;
 
         public List<IContract> BuyerContracts { get; private set; }
         public IContract SelectedContract { get; private set; } = null!;
 
-        [ExcludeFromCodeCoverage]
-        public ContractRenewViewModel(string connectionString)
-            : this(
-                  // Instantiate services which in turn depend on repositories
-                  new ContractService(new ContractRepository(connectionString)),
-                  new ContractRenewalService(new ContractRenewalRepository(connectionString)),
-                  new NotificationDataAdapter(connectionString),
-                  new SqlDatabaseProvider(),
-                  connectionString,
-                  new FileSystemWrapper(),
-                  new DateTimeProvider())
-        {
-        }
-
         // Constructor with dependency injection for testing - updated parameter types
-        public ContractRenewViewModel(
-            IContractService contractService, // Changed from IContractRepository
-            IContractRenewalService renewalService, // Changed from IContractRenewalRepository
-            INotificationDataAdapter notificationAdapter,
-            IDatabaseProvider databaseProvider,
-            string connectionString,
-            IFileSystem fileSystem,
-            IDateTimeProvider dateTimeProvider)
+        public ContractRenewViewModel(string connectionString)
         {
-            // Updated null checks for service interfaces
-            if (contractService == null)
-            {
-                throw new ArgumentNullException(nameof(contractService));
-            }
-            if (renewalService == null)
-            {
-                throw new ArgumentNullException(nameof(renewalService));
-            }
-            if (notificationAdapter == null)
-            {
-                throw new ArgumentNullException(nameof(notificationAdapter));
-            }
-            if (databaseProvider == null)
-            {
-                throw new ArgumentNullException(nameof(databaseProvider));
-            }
-            if (connectionString == null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-            if (fileSystem == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystem));
-            }
-            if (dateTimeProvider == null)
-            {
-                throw new ArgumentNullException(nameof(dateTimeProvider));
-            }
-
             // Assign injected services to fields
-            this.contractService = contractService;
-            this.renewalService = renewalService;
-            this.notificationAdapter = notificationAdapter;
-            this.databaseProvider = databaseProvider;
-            this.connectionString = connectionString;
-            this.fileSystem = fileSystem;
-            this.dateTimeProvider = dateTimeProvider;
+            this.contractService = new ContractService(new ContractRepository(Configuration.CONNECTION_STRING));
+            this.pdfService = new PDFService();
+            this.renewalService = new ContractRenewalService(new ContractRenewalRepository(Configuration.CONNECTION_STRING));
+            this.notificationContentService = new NotificationContentService();
+            this.fileSystem = new FileSystemWrapper();
+            this.dateTimeProvider = new DateTimeProvider();
             BuyerContracts = new List<IContract>();
         }
 
@@ -178,21 +125,9 @@ namespace ArtAttack.ViewModel
         /// </summary>
         /// <param name="fileBytes">The byte array representing the PDF file.</param>
         /// <returns>The ID of the newly inserted PDF.</returns>
-        public virtual async Task<int> InsertPdfAsync(byte[] fileBytes)
+        public async Task<int> InsertPdfAsync(byte[] fileBytes)
         {
-            using (IDbConnection connection = databaseProvider.CreateConnection(connectionString))
-            using (IDbCommand command = connection.CreateCommand())
-            {
-                command.CommandText = "INSERT INTO PDF ([file]) OUTPUT INSERTED.ID VALUES (@file)";
-                var parameter = command.CreateParameter();
-                parameter.ParameterName = "@file";
-                parameter.Value = fileBytes;
-                command.Parameters.Add(parameter);
-
-                await connection.OpenAsync();
-                var result = await command.ExecuteScalarAsync();
-                return Convert.ToInt32(result);
-            }
+            return await this.pdfService.InsertPdfAsync(fileBytes); // Changed from pdfModel
         }
 
         /// <summary>
@@ -320,9 +255,9 @@ namespace ArtAttack.ViewModel
 
                 // Send notifications to seller, buyer, and waitlist
                 var now = dateTimeProvider.Now;
-                notificationAdapter.AddNotification(new ContractRenewalRequestNotification(sellerID, now, (int)SelectedContract.ContractID));
-                notificationAdapter.AddNotification(new ContractRenewalAnswerNotification(buyerID, now, (int)SelectedContract.ContractID, true));
-                notificationAdapter.AddNotification(new ContractRenewalWaitlistNotification(999, now, productID));
+                notificationContentService.AddNotification(new ContractRenewalRequestNotification(sellerID, now, (int)SelectedContract.ContractID));
+                notificationContentService.AddNotification(new ContractRenewalAnswerNotification(buyerID, now, (int)SelectedContract.ContractID, true));
+                notificationContentService.AddNotification(new ContractRenewalWaitlistNotification(999, now, productID));
 
                 return (true, "Contract renewed successfully!");
             }

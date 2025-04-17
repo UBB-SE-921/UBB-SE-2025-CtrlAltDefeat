@@ -21,10 +21,33 @@ namespace ArtAttack.Views
 
         internal TrackedOrderControlPage(ITrackedOrderViewModel viewModel, int trackedOrderID)
         {
-            InitializeComponent();
+            InitializeComponent(); // Must be called first to initialize XAML controls
             this.viewModel = viewModel;
             TrackedOrderID = trackedOrderID;
             DataContext = this.viewModel;
+
+            // Initialize UI state
+            if (DateTimePickers != null)
+            {
+                DateTimePickers.Visibility = Visibility.Collapsed;
+            }
+            if (deliveryCalendarDatePicker != null)
+            {
+                deliveryCalendarDatePicker.Visibility = Visibility.Collapsed;
+            }
+            if (confirmChangeEstimatedDeliveryDateButton != null)
+            {
+                confirmChangeEstimatedDeliveryDateButton.Visibility = Visibility.Collapsed;
+            }
+            if (AddDetails != null)
+            {
+                AddDetails.Visibility = Visibility.Collapsed;
+            }
+            if (UpdateDetails != null)
+            {
+                UpdateDetails.Visibility = Visibility.Collapsed;
+            }
+
         }
 
         /// <summary>
@@ -90,11 +113,13 @@ namespace ArtAttack.Views
         {
             try
             {
-                if (deliveryCalendarDatePicker.Date.HasValue)
+                if (deliveryCalendarDatePicker?.Date.HasValue == true)
+
                 {
                     await viewModel.UpdateEstimatedDeliveryDateAsync(TrackedOrderID, deliveryCalendarDatePicker.Date.Value.DateTime);
                     await ShowSuccessDialog("Successfully updated estimated delivery date");
                     deliveryCalendarDatePicker.Visibility = Visibility.Collapsed;
+                    confirmChangeEstimatedDeliveryDateButton.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
@@ -107,7 +132,7 @@ namespace ArtAttack.Views
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(DescriptionTextBoxAdd.Text))
+                if (!string.IsNullOrWhiteSpace(DescriptionTextBoxAdd?.Text))
                 {
                     await viewModel.AddNewCheckpointAsync(TrackedOrderID, DescriptionTextBoxAdd.Text);
                     await ShowSuccessDialog("Successfully added new checkpoint");
@@ -129,7 +154,7 @@ namespace ArtAttack.Views
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(DescriptionTextBoxUpdate.Text))
+                if (!string.IsNullOrWhiteSpace(DescriptionTextBoxUpdate?.Text))
                 {
                     await viewModel.UpdateLastCheckpointAsync(TrackedOrderID, DescriptionTextBoxUpdate.Text);
                     await ShowSuccessDialog("Successfully updated checkpoint");
@@ -149,28 +174,45 @@ namespace ArtAttack.Views
 
         private void UpdateCurrentCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
-            UpdateDetails.Visibility = Visibility.Visible;
+            if (UpdateDetails != null)
+            {
+                UpdateDetails.Visibility = Visibility.Visible;
+            }
         }
 
         private void ChangeEstimatedDeliveryDateButton_Clicked(object sender, RoutedEventArgs e)
         {
-            deliveryCalendarDatePicker.Visibility = Visibility.Visible;
-            confirmChangeEstimatedDeliveryDateButton.Visibility = Visibility.Visible;
+            if (deliveryCalendarDatePicker != null)
+            {
+                deliveryCalendarDatePicker.Visibility = Visibility.Visible;
+            }
+            if (confirmChangeEstimatedDeliveryDateButton != null)
+            {
+                confirmChangeEstimatedDeliveryDateButton.Visibility = Visibility.Visible;
+            }
         }
 
         private void AddNewCheckpointButton_Clicked(object sender, RoutedEventArgs e)
         {
-            AddDetails.Visibility = Visibility.Visible;
+            if (AddDetails != null)
+            {
+                AddDetails.Visibility = Visibility.Visible;
+            }
         }
 
         private void ManualTimestampRadio_Checked(object sender, RoutedEventArgs e)
+
         {
-            DateTimePickers.Visibility = Visibility.Visible;
+            UpdateDetails.Visibility = Visibility.Visible;
         }
 
         private void AutoTimestampRadio_Checked(object sender, RoutedEventArgs e)
         {
-            DateTimePickers.Visibility = Visibility.Collapsed;
+            if (DateTimePickers != null)
+            {
+                DateTimePickers.Visibility = Visibility.Collapsed;
+            }
+
         }
     }
 }

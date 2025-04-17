@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.Shared;
 using ArtAttack.Service;
 
@@ -60,13 +60,21 @@ namespace ArtAttack.ViewModel
     }
 
     /// <summary>
-    /// View model for managing tracked orders and their checkpoints
+    /// ViewModel for managing tracked orders
     /// </summary>
     public class TrackedOrderViewModel : ITrackedOrderViewModel
     {
         private readonly ITrackedOrderService trackedOrderService;
         private readonly IOrderViewModel orderViewModel;
         private readonly INotificationService notificationService;
+
+        // Properties for data binding
+        public int TrackedOrderID { get; private set; }
+        public int OrderID { get; private set; }
+        public OrderStatus CurrentStatus { get; private set; }
+        public DateOnly EstimatedDeliveryDate { get; private set; }
+        public string DeliveryAddress { get; private set; }
+        public List<OrderCheckpoint> Checkpoints { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the TrackedOrderViewModel with default implementations
@@ -78,6 +86,7 @@ namespace ArtAttack.ViewModel
             trackedOrderService = new TrackedOrderService();
             orderViewModel = new OrderViewModel(connectionString);
             notificationService = new DefaultNotificationService();
+            Checkpoints = new List<OrderCheckpoint>();
         }
 
         /// <summary>
@@ -107,6 +116,7 @@ namespace ArtAttack.ViewModel
             this.trackedOrderService = trackedOrderService;
             this.orderViewModel = orderViewModel;
             this.notificationService = notificationService;
+            Checkpoints = new List<OrderCheckpoint>();
         }
 
         /// <summary>
@@ -521,22 +531,22 @@ namespace ArtAttack.ViewModel
             }
         }
 
+        /// <summary>
+        /// Loads order data and updates ViewModel properties
+        /// </summary>
+        /// <param name="trackedOrderID">The ID of the tracked order to load</param>
         public async Task LoadOrderDataAsync(int trackedOrderID)
         {
-            try
+            var trackedOrder = await GetTrackedOrderByIDAsync(trackedOrderID);
+            if (trackedOrder != null)
             {
-                var order = await GetTrackedOrderByIDAsync(trackedOrderID);
-                if (order != null)
-                {
-                    var checkpoints = await GetAllOrderCheckpointsAsync(trackedOrderID);
-                    checkpoints.Reverse();
-                    // Update ViewModel properties that are bound to the view
-                    // This assumes you have properties in the ViewModel that the view binds to
-                }
-            }
-            catch (Exception)
-            {
-                // Handle error appropriately
+                TrackedOrderID = trackedOrder.TrackedOrderID;
+                OrderID = trackedOrder.OrderID;
+                CurrentStatus = trackedOrder.CurrentStatus;
+                EstimatedDeliveryDate = trackedOrder.EstimatedDeliveryDate;
+                DeliveryAddress = trackedOrder.DeliveryAddress;
+                Checkpoints = await GetAllOrderCheckpointsAsync(trackedOrderID);
+
             }
         }
 

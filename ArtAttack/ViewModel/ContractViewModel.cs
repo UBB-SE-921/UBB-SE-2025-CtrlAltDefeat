@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.Service; // Add this using directive
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -16,17 +16,17 @@ namespace ArtAttack.ViewModel
     public class ContractViewModel : IContractViewModel
     {
         // Change the type from IContractRepository to IContractService
-        private readonly IContractService _contractService;
+        private readonly IContractService contractService;
 
         /// <summary>
         /// Constructor for the ContractViewModel
         /// </summary>
         /// <param name="contractService" type="IContractService">The contract service instance</param>
         // Update the constructor to accept IContractService
-        public ContractViewModel(IContractService contractService)
+        public ContractViewModel(string connectionString)
         {
             // Assign the injected service instance
-            _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
+            this.contractService = new ContractService(connectionString);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace ArtAttack.ViewModel
         public async Task<IContract> GetContractByIdAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetContractByIdAsync(contractId);
+            return await contractService.GetContractByIdAsync(contractId);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace ArtAttack.ViewModel
         public async Task<List<IContract>> GetAllContractsAsync()
         {
             // Call the method on the service
-            return await _contractService.GetAllContractsAsync();
+            return await contractService.GetAllContractsAsync();
             // Remove the NotImplementedException
             // throw new NotImplementedException("GetAllContractsAsync is not implemented in IContractService.");
         }
@@ -61,7 +61,7 @@ namespace ArtAttack.ViewModel
         public async Task<List<IContract>> GetContractHistoryAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetContractHistoryAsync(contractId);
+            return await contractService.GetContractHistoryAsync(contractId);
         }
 
         /// <summary>
@@ -78,11 +78,10 @@ namespace ArtAttack.ViewModel
                 throw new ArgumentNullException(nameof(pdfFile));
             }
             // Call the method on the service
-            return await _contractService.AddContractAsync(contract, pdfFile);
+            return await contractService.AddContractAsync(contract, pdfFile);
             // Remove the NotImplementedException
             // throw new NotImplementedException("AddContractAsync is not implemented in IContractService.");
         }
-
 
         /// <summary>
         /// Get the seller of a contract
@@ -92,7 +91,7 @@ namespace ArtAttack.ViewModel
         public async Task<(int SellerID, string SellerName)> GetContractSellerAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetContractSellerAsync(contractId);
+            return await contractService.GetContractSellerAsync(contractId);
         }
 
         /// <summary>
@@ -103,7 +102,7 @@ namespace ArtAttack.ViewModel
         public async Task<(int BuyerID, string BuyerName)> GetContractBuyerAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetContractBuyerAsync(contractId);
+            return await contractService.GetContractBuyerAsync(contractId);
         }
 
         /// <summary>
@@ -114,7 +113,7 @@ namespace ArtAttack.ViewModel
         public async Task<Dictionary<string, object>> GetOrderSummaryInformationAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetOrderSummaryInformationAsync(contractId);
+            return await contractService.GetOrderSummaryInformationAsync(contractId);
         }
 
         /// <summary>
@@ -125,7 +124,7 @@ namespace ArtAttack.ViewModel
         public async Task<(DateTime? StartDate, DateTime? EndDate, double price, string name)?> GetProductDetailsByContractIdAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetProductDetailsByContractIdAsync(contractId);
+            return await contractService.GetProductDetailsByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -136,7 +135,7 @@ namespace ArtAttack.ViewModel
         public async Task<List<IContract>> GetContractsByBuyerAsync(int buyerId)
         {
             // Call the method on the service
-            return await _contractService.GetContractsByBuyerAsync(buyerId);
+            return await contractService.GetContractsByBuyerAsync(buyerId);
         }
 
         /// <summary>
@@ -147,7 +146,7 @@ namespace ArtAttack.ViewModel
         public async Task<IPredefinedContract> GetPredefinedContractByPredefineContractTypeAsync(PredefinedContractType predefinedContractType)
         {
             // Call the method on the service
-            return await _contractService.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
+            return await contractService.GetPredefinedContractByPredefineContractTypeAsync(predefinedContractType);
         }
 
         /// <summary>
@@ -158,7 +157,7 @@ namespace ArtAttack.ViewModel
         public async Task<(string? PaymentMethod, DateTime OrderDate)> GetOrderDetailsAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetOrderDetailsAsync(contractId);
+            return await contractService.GetOrderDetailsAsync(contractId);
         }
 
         /// <summary>
@@ -169,7 +168,7 @@ namespace ArtAttack.ViewModel
         public async Task<DateTime?> GetDeliveryDateByContractIdAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetDeliveryDateByContractIdAsync(contractId);
+            return await contractService.GetDeliveryDateByContractIdAsync(contractId);
         }
 
         /// <summary>
@@ -180,13 +179,12 @@ namespace ArtAttack.ViewModel
         public async Task<byte[]> GetPdfByContractIdAsync(long contractId)
         {
             // Call the method on the service
-            return await _contractService.GetPdfByContractIdAsync(contractId);
+            return await contractService.GetPdfByContractIdAsync(contractId);
         }
 
         // ... existing private methods GenerateContractPdf, GetFieldReplacements, GenerateAndSaveContractAsync ...
         // These private methods already call the public async methods of this ViewModel,
-        // which now correctly delegate to the _contractService. No changes needed here.
-
+        // which now correctly delegate to the contractService. No changes needed here.
         private byte[] GenerateContractPdf(
                 IContract contract,
                 IPredefinedContract predefinedContract,

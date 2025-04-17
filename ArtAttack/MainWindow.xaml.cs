@@ -29,12 +29,9 @@ namespace ArtAttack
             this.InitializeComponent();
             contract = new Contract();
 
-            // Create repository and service instances
-            IContractRepository contractRepository = new ContractRepository(Configuration.CONNECTION_STRING);
-            IContractService contractService = new ContractService(contractRepository);
 
-            // Instantiate ViewModel with the service
-            contractViewModel = new ContractViewModel(contractService);
+            // Instantiate ViewModel
+            contractViewModel = new ContractViewModel(Configuration.CONNECTION_STRING);
 
             // Assuming TrackedOrderViewModel also needs similar setup if it depends on a service
             // For now, keeping the original instantiation if it only needs the connection string
