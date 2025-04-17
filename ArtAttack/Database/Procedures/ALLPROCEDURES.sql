@@ -774,6 +774,42 @@ end
 
 go
 
+create procedure GetBuyerById @BuyerId int
+as
+begin
+	SELECT name FROM DummyBuyer
+	WHERE @BuyerId = ID
+END;
+GO
+
+CREATE PROCEDURE GetSellerById @SellerId int
+AS
+BEGIN
+	SELECT name FROM DummySeller
+	WHERE @SellerId = ID
+END;
+GO
+
+DROP PROCEDURE GetDummyProductByID
+GO
+CREATE PROCEDURE GetDummyProductByID 
+    @productID INT
+AS
+BEGIN
+    SELECT 
+        ID, 
+        Name, 
+        Price, 
+        SellerID, 
+        ProductType, 
+        StartDate, 
+        EndDate
+    FROM DummyProduct
+    WHERE ID = @productID
+END;
+GO
+
+
 create or alter procedure get_borrowed_order_history @BuyerID int
 as
 begin

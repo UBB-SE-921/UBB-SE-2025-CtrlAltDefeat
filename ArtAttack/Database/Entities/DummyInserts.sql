@@ -20,10 +20,14 @@ values
 insert into [DummyProduct]
 values
 ('Toothbrush', 10.00, 1, 'new', NULL,NULL),
-('Hair Dryer', 150.00, 1, 'borrowed', NULL,NULL),
+('Hair Dryer', 150.00, 1, 'borrowed', 2023-01-01,2023-03-01),
 ('Ancient Chinese Vase', 100, 2, 'bid',NULL,NULL),
 ('Wallet Top Up', 200,NULL,'refill',NULL,NULL),
 ('IPhone 4 Penguin Phone Case', 75.00, 3, 'used', NULL,NULL)
+
+use PurchaseDatabase
+select * from [DummyProduct]
+
 
 
 
