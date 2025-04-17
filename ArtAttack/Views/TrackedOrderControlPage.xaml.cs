@@ -47,6 +47,7 @@ namespace ArtAttack.Views
             {
                 UpdateDetails.Visibility = Visibility.Collapsed;
             }
+
         }
 
         /// <summary>
@@ -113,6 +114,7 @@ namespace ArtAttack.Views
             try
             {
                 if (deliveryCalendarDatePicker?.Date.HasValue == true)
+
                 {
                     await viewModel.UpdateEstimatedDeliveryDateAsync(TrackedOrderID, deliveryCalendarDatePicker.Date.Value.DateTime);
                     await ShowSuccessDialog("Successfully updated estimated delivery date");
@@ -199,11 +201,9 @@ namespace ArtAttack.Views
         }
 
         private void ManualTimestampRadio_Checked(object sender, RoutedEventArgs e)
+
         {
-            if (DateTimePickers != null)
-            {
-                DateTimePickers.Visibility = Visibility.Visible;
-            }
+            UpdateDetails.Visibility = Visibility.Visible;
         }
 
         private void AutoTimestampRadio_Checked(object sender, RoutedEventArgs e)
@@ -212,6 +212,7 @@ namespace ArtAttack.Views
             {
                 DateTimePickers.Visibility = Visibility.Collapsed;
             }
+
         }
     }
 }

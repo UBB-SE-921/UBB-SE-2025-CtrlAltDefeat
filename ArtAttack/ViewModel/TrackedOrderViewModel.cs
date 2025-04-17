@@ -546,6 +546,7 @@ namespace ArtAttack.ViewModel
                 EstimatedDeliveryDate = trackedOrder.EstimatedDeliveryDate;
                 DeliveryAddress = trackedOrder.DeliveryAddress;
                 Checkpoints = await GetAllOrderCheckpointsAsync(trackedOrderID);
+
             }
         }
 
