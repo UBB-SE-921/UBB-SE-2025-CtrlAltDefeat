@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.Shared;
 using ArtAttack.ViewModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

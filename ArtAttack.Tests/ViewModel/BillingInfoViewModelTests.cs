@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ArtAttack.Domain;
-using ArtAttack.Model;
+using ArtAttack.Repository;
 using ArtAttack.ViewModel;
 using Microsoft.UI.Xaml.Controls;
 using Moq;
